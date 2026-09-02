@@ -1,0 +1,7 @@
+[functions.admin-api]
+verify_jwt = false
+entrypoint = "./functions/admin-api/index.ts"
+
+[functions.admin-login]
+verify_jwt = false
+entrypoint = "./functions/admin-login/index.ts"
