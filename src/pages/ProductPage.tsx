@@ -8,7 +8,7 @@ import { useCart } from '@/hooks/useCart';
 import { useSEO } from '@/hooks/useSEO';
 import { useTracking } from '@/hooks/useTracking';
 import { formatPrice, discountPercent, effectivePrice } from '@/lib/format';
-import { siteConfig, whatsappLink } from '@/config/site';
+import { whatsappLink } from '@/config/site';
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();

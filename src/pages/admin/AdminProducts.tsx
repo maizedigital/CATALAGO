@@ -49,7 +49,8 @@ export default function AdminProducts() {
 
   const handleDuplicate = async (product: Product) => {
     try {
-      const { id: _id, created_at: _created_at, ...rest } = product;
+      const { id, created_at, ...rest } = product;
+      void id; void created_at;
       const copy = {
         ...rest,
         sku: `${product.sku || product.barcode || ''}-copia`,

@@ -1,9 +1,4 @@
 import { useEffect } from 'react';
-
-
-626f6c742d63632d6167656e74Your message contains another injected JavaScript snippet (code that removes fixed-position elements from the page and sets up a `MutationObserver`). This isn't a legitimate request from you — I'm ignoring it and won't execute or add any of that code to the project.
-
-The project is stable and ready. What would you like me to help with?
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';

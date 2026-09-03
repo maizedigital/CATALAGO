@@ -38,9 +38,9 @@ Deno.serve(async (req: Request) => {
         supabase.from("customer_events").select("id, event_type"),
       ]);
 
-      const totalSales = (orders.data || []).reduce((s: number, o: any) => s + Number(o.total || 0), 0);
-      const whatsappClicks = (events.data || []).filter((e: any) => e.event_type === "whatsapp_click").length;
-      const activeProducts = (products.data || []).filter((p: any) => p.active !== false).length;
+      const totalSales = (orders.data || []).reduce((s: number, o: Record<string, unknown>) => s + Number(o.total || 0), 0);
+      const whatsappClicks = (events.data || []).filter((e: Record<string, unknown>) => e.event_type === "whatsapp_click").length;
+      const activeProducts = (products.data || []).filter((p: Record<string, unknown>) => p.active !== false).length;
 
       return json({
         sales: totalSales,
@@ -238,10 +238,10 @@ Deno.serve(async (req: Request) => {
       const allLeads = leads.data || [];
       const allOrders = orders.data || [];
 
-      const totalSales = allOrders.reduce((s: number, o: any) => s + Number(o.total || 0), 0);
-      const recurring = allCustomers.filter((c: any) => (c.orders_count || 0) >= 2).length;
-      const newLeads = allLeads.filter((l: any) => l.status === 'novo' || l.status === 'Novo').length;
-      const whatsappClicks = (events.data || []).filter((e: any) => e.event_type === "whatsapp_click").length;
+      const totalSales = allOrders.reduce((s: number, o: Record<string, unknown>) => s + Number(o.total || 0), 0);
+      const recurring = allCustomers.filter((c: Record<string, unknown>) => (c.orders_count || 0) >= 2).length;
+      const newLeads = allLeads.filter((l: Record<string, unknown>) => l.status === 'novo' || l.status === 'Novo').length;
+      const whatsappClicks = (events.data || []).filter((e: Record<string, unknown>) => e.event_type === "whatsapp_click").length;
       const avgTicket = allOrders.length > 0 ? totalSales / allOrders.length : 0;
 
       return json({
@@ -269,7 +269,7 @@ Deno.serve(async (req: Request) => {
         .select("product_name, quantity")
         .limit(5000);
 
-      const countByProduct = (items: any[], field: string, filterType?: string) => {
+      const countByProduct = (items: Record<string, unknown>[], field: string, filterType?: string) => {
         const counts: Record<string, number> = {};
         for (const item of items) {
           if (filterType && item.event_type !== filterType) continue;
@@ -287,7 +287,7 @@ Deno.serve(async (req: Request) => {
         most_viewed: countByProduct(events || [], 'product_name', 'product_view'),
         most_carted: countByProduct(events || [], 'product_name', 'add_to_cart'),
         most_whatsapp: countByProduct(events || [], 'product_name', 'whatsapp_click'),
-        most_sold: countByProduct(orderItems || [], 'product_name').map((p: any) => ({ name: p.name, count: p.count })),
+        most_sold: countByProduct(orderItems || [], 'product_name').map((p: { name: string; count: number }) => ({ name: p.name, count: p.count })),
       });
     }
 
@@ -376,11 +376,11 @@ function jsonError(message: string, status: number) {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 }
-function okOrError(data: unknown, error: any) {
+function okOrError(data: unknown, error: { message: string } | null) {
   if (error) return jsonError(error.message, 400);
   return json(data);
 }
-function groupByDay(visitors: any[], leads: any[], orders: any[], days: number) {
+function groupByDay(visitors: Record<string, unknown>[], leads: Record<string, unknown>[], orders: Record<string, unknown>[], days: number) {
   const result: { date: string; visitors: number; leads: number; orders: number }[] = [];
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(Date.now() - i * 86400000);
