@@ -1,6 +1,58 @@
 import { useEffect } from 'react';
 
 
+import { useEffect } from "react";
+
+function RemoveBoltBadge() {
+  useEffect(() => {
+    const removeBoltBadge = () => {
+      document.querySelectorAll<HTMLElement>("body *").forEach((element) => {
+        const style = window.getComputedStyle(element);
+
+        const isFixed = style.position === "fixed";
+        const hasBottom = style.bottom !== "auto";
+        const hasRight = style.right !== "auto";
+        const hasExtremeZIndex = Number(style.zIndex) >= 2147483647;
+
+        if (
+          isFixed &&
+          hasBottom &&
+          hasRight &&
+          hasExtremeZIndex
+        ) {
+          element.remove();
+        }
+      });
+    };
+
+    removeBoltBadge();
+
+    const observer = new MutationObserver(() => {
+      removeBoltBadge();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  return null;
+}
+
+export default function App() {
+  return (
+    <>
+      <RemoveBoltBadge />
+
+      {/* MANTENHA AQUI TODO O SEU APP ATUAL */}
+    </>
+  );
+}
 const removeFloating = () => {
 
   document.querySelectorAll('[style="position: fixed"][style="bottom: 1rem"][style="right: 1rem"][style="z-index: 2147483647"]').forEach(el => el.remove());
