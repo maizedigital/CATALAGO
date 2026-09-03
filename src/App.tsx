@@ -32,6 +32,33 @@ import AdminOrderDetail from '@/pages/admin/AdminOrderDetail';
 import AdminAnalytics from '@/pages/admin/AdminAnalytics';
 import AdminSettings from '@/pages/admin/AdminSettings';
 
+function RemoveBoltBadge() {
+  useEffect(() => {
+    const removeBoltBadge = () => {
+      document.querySelectorAll<HTMLElement>("body *").forEach((element) => {
+        const style = window.getComputedStyle(element);
+        if (
+          style.position === "fixed" &&
+          style.bottom !== "auto" &&
+          style.right !== "auto" &&
+          Number(style.zIndex) >= 2147483647
+        ) {
+          element.remove();
+        }
+      });
+    };
+
+    removeBoltBadge();
+
+    const observer = new MutationObserver(removeBoltBadge);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return null;
+}
+
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -56,6 +83,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <ErrorBoundary>
+      <RemoveBoltBadge />
       <BrowserRouter>
         <AdminAuthProvider>
           <CartProvider>
