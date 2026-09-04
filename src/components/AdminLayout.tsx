@@ -30,7 +30,7 @@ const navItems: NavItem[] = [
   { to: '/admin/leads', label: 'Leads', icon: UserPlus },
   { to: '/admin/clientes', label: 'Clientes', icon: Users },
   { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
-  { to: '/admin/configuracoes', label: 'Configurações', icon: Settings },
+  { to: '/admin/banners', label: 'Banners', icon: ImageIcon },
 ];
 
 export function AdminLayout({ children }: { children: ReactNode }) {

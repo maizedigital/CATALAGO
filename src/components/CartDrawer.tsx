@@ -4,7 +4,7 @@ import { X, Minus, Plus, Trash2, ShoppingBag, Truck } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { formatPrice, effectivePrice } from '@/lib/format';
 
-const FREE_SHIPPING_THRESHOLD = 480;
+const FIXED_SHIPPING = 25;
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, updateQuantity, removeItem, total } = useCart();
@@ -22,8 +22,7 @@ export function CartDrawer() {
 
   if (!mounted) return null;
 
-  const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - total);
-  const progress = Math.min(100, (total / FREE_SHIPPING_THRESHOLD) * 100);
+
 
   return (
     <div className="fixed inset-0 z-50">
@@ -53,22 +52,12 @@ export function CartDrawer() {
           </button>
         </div>
 
-        {/* Free shipping progress */}
+        {/* Fixed shipping info */}
         {items.length > 0 && (
           <div className="border-b border-primary-100 bg-primary-50 px-5 py-3">
-            <div className="mb-2 flex items-center gap-2 text-xs text-primary-700">
-              <Truck size={15} className={remaining === 0 ? 'text-success-600' : ''} />
-              {remaining > 0 ? (
-                <span>Faltam <strong className="font-bold">{formatPrice(remaining)}</strong> para frete grátis</span>
-              ) : (
-                <span className="font-medium text-success-600">Voc&ecirc; ganhou frete grátis!</span>
-              )}
-            </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-primary-200">
-              <div
-                className="h-full rounded-full bg-success-500 transition-all duration-500"
-                style={{ width: `${progress}%` }}
-              />
+            <div className="flex items-center gap-2 text-xs text-primary-700">
+              <Truck size={15} />
+              <span>Frete fixo de <strong className="font-bold">R$ 25,00</strong> para toda a Bahia</span>
             </div>
           </div>
         )}

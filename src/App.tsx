@@ -31,6 +31,7 @@ import AdminOrders from '@/pages/admin/AdminOrders';
 import AdminOrderDetail from '@/pages/admin/AdminOrderDetail';
 import AdminAnalytics from '@/pages/admin/AdminAnalytics';
 import AdminSettings from '@/pages/admin/AdminSettings';
+import AdminBanners from '@/pages/admin/AdminBanners';
 
 function RemoveBoltBadge() {
   useEffect(() => {
@@ -105,6 +106,7 @@ export default function App() {
                 <Route path="/admin/clientes/:id" element={<ProtectedRoute><AdminCustomerDetail /></ProtectedRoute>} />
                 <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalytics /></ProtectedRoute>} />
                 <Route path="/admin/configuracoes" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
+                <Route path="/admin/banners" element={<ProtectedRoute><AdminBanners /></ProtectedRoute>} />
 
                 {/* Public routes */}
                 <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />

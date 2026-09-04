@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const heroImg =
   'https://images.pexels.com/photos/26448305/pexels-photo-26448305.jpeg?auto=compress&cs=tinysrgb&h=1200';
@@ -40,12 +40,11 @@ export function Hero() {
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col items-center justify-end px-4 pb-20 text-center text-white md:pb-28">
         <div
-          className={`mb-4 flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 backdrop-blur-md transition-all duration-700 ${
+          className={`mb-4 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 backdrop-blur-md transition-all duration-700 ${
             loaded ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
           }`}
           style={{ transitionDelay: '300ms' }}
         >
-          <Sparkles size={14} className="text-accent-400" />
           <span className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/90">
             Moda que combina com você
           </span>

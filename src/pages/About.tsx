@@ -46,8 +46,8 @@ export default function About() {
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
           <PolicyCard
             icon={<Truck size={24} />}
-            title="Frete grátis"
-            text="Para todo o Brasil nas compras acima de R$ 480,00."
+            title="Frete fixo R$ 25"
+            text="Frete fixo de R$ 25,00 para toda a Bahia."
           />
           <PolicyCard
             icon={<ShieldCheck size={24} />}
@@ -62,7 +62,7 @@ export default function About() {
           <p className="mt-1"><strong className="text-neutral-900">Horário:</strong> {siteConfig.hoursStore}</p>
           <p className="mt-1"><strong className="text-neutral-900">Site:</strong> {siteConfig.hoursSite}</p>
           <p className="mt-1"><strong className="text-neutral-900">Pagamento:</strong> PIX e cartão</p>
-          <p className="mt-1"><strong className="text-neutral-900">Frete grátis:</strong> para todo o Brasil nas compras acima de R$ 480,00</p>
+          <p className="mt-1"><strong className="text-neutral-900">Frete:</strong> fixo de R$ 25,00 para toda a Bahia</p>
         </div>
 
         <div className="mt-8 border border-neutral-200 bg-neutral-50 p-8 text-center">

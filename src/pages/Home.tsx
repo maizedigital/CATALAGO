@@ -17,14 +17,14 @@ const mascImg =
   'https://images.pexels.com/photos/30688132/pexels-photo-30688132.jpeg?auto=compress&cs=tinysrgb&h=800';
 
 const trustBadges = [
-  { icon: Truck, title: 'Frete grátis', desc: 'Acima de R$ 480' },
+  { icon: Truck, title: 'Frete fixo R$ 25', desc: 'Toda a Bahia' },
   { icon: ShieldCheck, title: 'Compra segura', desc: 'Dados protegidos' },
   { icon: CreditCard, title: 'Pagamento', desc: 'PIX e cartão' },
   { icon: RefreshCw, title: 'Site 24h', desc: '7 dias por semana' },
 ];
 
 const marqueeItems = [
-  'FRETE GRÁTIS PARA TODO O BRASIL ACIMA DE R$ 480',
+  'FRETE FIXO DE R$ 25,00 PARA TODA A BAHIA',
   'MODA QUE COMBINA COM VOCÊ',
   'SITE 24 HORAS, 7 DIAS POR SEMANA',
   'PAGAMENTO VIA PIX E CARTÃO',
@@ -79,7 +79,7 @@ export default function Home() {
         <div className="flex w-max animate-marquee gap-12 whitespace-nowrap">
           {[...marqueeItems, ...marqueeItems].map((item, i) => (
             <span key={i} className="text-xs font-bold uppercase tracking-[0.2em] text-white/80">
-              {item} <span className="ml-12 text-accent-400">✦</span>
+              {item} <span className="ml-12 text-neutral-500">·</span>
             </span>
           ))}
         </div>

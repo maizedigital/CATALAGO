@@ -1,4 +1,5 @@
 export type Gender = 'feminino' | 'masculino';
+export type ProductType = 'roupas' | 'calcados';
 
 export interface Product {
   id: string;
@@ -7,6 +8,7 @@ export interface Product {
   slug: string;
   category: string;
   gender: Gender;
+  product_type?: ProductType;
   description: string | null;
   price: number;
   promo_price: number | null;
@@ -29,6 +31,20 @@ export interface Product {
   active?: boolean;
   created_at: string;
 }
+
+export interface Banner {
+  id: string;
+  title: string;
+  image_url: string;
+  link_url: string | null;
+  active: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export const CLOTHING_SIZES = ['PP', 'P', 'M', 'G', 'GG', 'XGG'];
+export const FOOTWEAR_SIZES = ['36', '37', '38', '39', '40', '41', '42', '43', '44'];
 
 export interface CartItem {
   id: string;

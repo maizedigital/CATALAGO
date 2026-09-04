@@ -8,7 +8,8 @@ export const siteConfig = {
   address: 'BR-367, km 77 — Coroa Vermelha, Santa Cruz Cabrália — BA, 45810-000',
   hoursStore: 'Segunda a sábado: 08:30 às 18:30',
   hoursSite: 'Disponível 24 horas por dia, 7 dias por semana',
-  freeShippingThreshold: 480,
+  fixedShipping: 25,
+  shippingRegion: 'Bahia',
   whatsappDisplay: '(73) 99992-9009',
 };
 

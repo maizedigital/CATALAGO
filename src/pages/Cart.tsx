@@ -115,12 +115,12 @@ export default function Cart() {
             </div>
             <div className="flex justify-between">
               <span className="text-neutral-500">Frete</span>
-              <span className="text-neutral-500">A combinar</span>
+              <span className="text-neutral-500">R$ 25,00 (Bahia)</span>
             </div>
           </div>
           <div className="mt-4 flex justify-between border-t border-neutral-200 pt-4">
             <span className="font-bold text-neutral-900">Total</span>
-            <span className="text-lg font-bold text-neutral-900">{formatPrice(total)}</span>
+            <span className="text-lg font-bold text-neutral-900">{formatPrice(total + 25)}</span>
           </div>
           <Link
             to="/finalizar"

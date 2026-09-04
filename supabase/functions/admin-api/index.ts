@@ -78,6 +78,30 @@ Deno.serve(async (req: Request) => {
       return json({ url: urlData.publicUrl, path: uploadData.path });
     }
 
+    // --- Banner image upload ---
+    if (resource === "banner-upload" && req.method === "POST") {
+      const formData = await req.formData();
+      const file = formData.get("file") as File;
+      if (!file) return jsonError("Nenhum arquivo enviado", 400);
+
+      const allowed = ["image/jpeg", "image/png", "image/webp"];
+      if (!allowed.includes(file.type)) return jsonError("Tipo de arquivo nao suportado. Use JPG, PNG ou WebP.", 400);
+      if (file.size > 10 * 1024 * 1024) return jsonError("Arquivo muito grande (max 10MB)", 400);
+
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const path = `banners/${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("product-images")
+        .upload(path, file, { contentType: file.type, upsert: false });
+
+      if (uploadError) return jsonError(uploadError.message, 400);
+
+      const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(uploadData.path);
+      return json({ url: urlData.publicUrl, path: uploadData.path });
+    }
+
     // --- Delete uploaded image ---
     if (resource === "upload" && req.method === "DELETE" && id) {
       const { error } = await supabase.storage.from("product-images").remove([`products/${id}`]);
@@ -356,6 +380,38 @@ Deno.serve(async (req: Request) => {
         .update({ password_hash: newHash, updated_at: new Date().toISOString() })
         .eq("id", admin.id);
       return okOrError({ success: true }, error);
+    }
+
+    // --- Banners CRUD ---
+    if (resource === "banners") {
+      if (req.method === "GET") {
+        const { data, error } = await supabase.from("banners").select("*").order("sort_order", { ascending: true });
+        return okOrError(data, error);
+      }
+      if (req.method === "POST") {
+        const body = await req.json();
+        const { data, error } = await supabase.from("banners").insert(body).select().single();
+        return okOrError(data, error);
+      }
+      if (req.method === "PUT" && id) {
+        const body = await req.json();
+        const { data, error } = await supabase.from("banners").update({ ...body, updated_at: new Date().toISOString() }).eq("id", id).select().single();
+        return okOrError(data, error);
+      }
+      if (req.method === "DELETE" && id) {
+        const { error } = await supabase.from("banners").delete().eq("id", id);
+        return okOrError({ success: true }, error);
+      }
+    }
+
+    // --- Banner reorder ---
+    if (resource === "banners-reorder" && req.method === "POST") {
+      const body = await req.json();
+      const items: { id: string; sort_order: number }[] = body.items || [];
+      for (const item of items) {
+        await supabase.from("banners").update({ sort_order: item.sort_order, updated_at: new Date().toISOString() }).eq("id", item.id);
+      }
+      return json({ success: true });
     }
 
     return jsonError("Recurso nao encontrado", 404);

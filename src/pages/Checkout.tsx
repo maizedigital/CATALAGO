@@ -67,9 +67,19 @@ export default function Checkout() {
               </li>
             ))}
           </ul>
-          <div className="mt-4 flex justify-between border-t border-neutral-200 pt-4">
-            <span className="font-bold text-neutral-900">Total</span>
-            <span className="text-lg font-bold text-neutral-900">{formatPrice(total)}</span>
+          <div className="mt-4 space-y-2 border-t border-neutral-200 pt-4">
+            <div className="flex justify-between text-sm">
+              <span className="text-neutral-500">Subtotal</span>
+              <span className="font-medium text-neutral-900">{formatPrice(total)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-neutral-500">Frete</span>
+              <span className="text-neutral-500">R$ 25,00</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-bold text-neutral-900">Total</span>
+              <span className="text-lg font-bold text-neutral-900">{formatPrice(total + 25)}</span>
+            </div>
           </div>
         </aside>
       </div>

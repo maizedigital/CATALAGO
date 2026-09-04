@@ -4,7 +4,8 @@ import { ArrowLeft, Save, Upload, X, Image as ImageIcon, Loader2, Barcode } from
 import { adminApi, uploadProductImage } from '@/lib/adminApi';
 import { AdminLayout } from '@/components/AdminLayout';
 import { Logo } from '@/components/Logo';
-import type { Product, Gender } from '@/types';
+import type { Product, Gender, ProductType } from '@/types';
+import { CLOTHING_SIZES, FOOTWEAR_SIZES } from '@/types';
 
 const slugify = (s: string) =>
   s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -19,9 +20,10 @@ interface FormState {
   name: string;
   slug: string;
   gender: Gender;
+  product_type: ProductType;
   price: string;
   promo_price: string;
-  sizes: string;
+  sizes: string[];
   colors: string;
   images: string[];
   description: string;
@@ -37,9 +39,10 @@ const emptyForm: FormState = {
   name: '',
   slug: '',
   gender: 'feminino',
+  product_type: 'roupas',
   price: '',
   promo_price: '',
-  sizes: '',
+  sizes: [],
   colors: '',
   images: [],
   description: '',
@@ -75,9 +78,10 @@ export default function AdminProductForm() {
           name: product.name,
           slug: product.slug,
           gender: product.gender,
+          product_type: (product.product_type as ProductType) || 'roupas',
           price: String(product.price),
           promo_price: product.promo_price != null ? String(product.promo_price) : '',
-          sizes: product.sizes.join(', '),
+          sizes: product.sizes || [],
           colors: product.colors.join(', '),
           images: product.images || [],
           description: product.description || '',
@@ -96,12 +100,24 @@ export default function AdminProductForm() {
     })();
   }, [id, isEdit]);
 
-  const handleChange = (field: keyof FormState, value: string | boolean) => {
+  const handleChange = (field: keyof FormState, value: string | boolean | string[]) => {
     setForm((prev) => {
       const next = { ...prev, [field]: value };
       if (field === 'name' && !isEdit) next.slug = slugify(value as string);
+      if (field === 'product_type') {
+        next.sizes = [];
+      }
       return next;
     });
+  };
+
+  const toggleSize = (size: string) => {
+    setForm((prev) => ({
+      ...prev,
+      sizes: prev.sizes.includes(size)
+        ? prev.sizes.filter((s) => s !== size)
+        : [...prev.sizes, size],
+    }));
   };
 
   const handleFiles = async (files: FileList | File[]) => {
@@ -158,7 +174,8 @@ export default function AdminProductForm() {
       description: form.description.trim() || null,
       price: parseFloat(form.price) || 0,
       promo_price: form.promo_price ? parseFloat(form.promo_price) : null,
-      sizes: form.sizes.split(',').map((s) => s.trim()).filter(Boolean),
+      sizes: form.sizes,
+      product_type: form.product_type,
       colors: form.colors.split(',').map((s) => s.trim()).filter(Boolean),
       images: form.images,
       stock: 999,
@@ -342,13 +359,59 @@ export default function AdminProductForm() {
           </div>
         </div>
 
+        {/* Product type */}
+        <div className="rounded-xl border border-neutral-200 bg-white p-5">
+          <h2 className="mb-4 text-sm font-bold text-neutral-900">Tipo de produto</h2>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => handleChange('product_type', 'roupas')}
+              className={`flex-1 rounded-lg border px-4 py-3 text-sm font-semibold transition-colors ${
+                form.product_type === 'roupas'
+                  ? 'border-neutral-900 bg-neutral-900 text-white'
+                  : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400'
+              }`}
+            >
+              Roupas
+            </button>
+            <button
+              type="button"
+              onClick={() => handleChange('product_type', 'calcados')}
+              className={`flex-1 rounded-lg border px-4 py-3 text-sm font-semibold transition-colors ${
+                form.product_type === 'calcados'
+                  ? 'border-neutral-900 bg-neutral-900 text-white'
+                  : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400'
+              }`}
+            >
+              Calçados
+            </button>
+          </div>
+        </div>
+
         {/* Variants */}
         <div className="rounded-xl border border-neutral-200 bg-white p-5">
           <h2 className="mb-4 text-sm font-bold text-neutral-900">Tamanhos e cores</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-4">
             <div>
-              <label className={labelClass}>Tamanhos (vírgula)</label>
-              <input type="text" value={form.sizes} onChange={(e) => handleChange('sizes', e.target.value)} className={inputClass} placeholder="PP, P, M, G, GG" />
+              <label className={labelClass}>
+                Tamanhos {form.product_type === 'calcados' ? '(Calçados)' : '(Roupas)'}
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {(form.product_type === 'calcados' ? FOOTWEAR_SIZES : CLOTHING_SIZES).map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => toggleSize(size)}
+                    className={`min-w-[44px] rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
+                      form.sizes.includes(size)
+                        ? 'border-neutral-900 bg-neutral-900 text-white'
+                        : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
             </div>
             <div>
               <label className={labelClass}>Cores (vírgula)</label>

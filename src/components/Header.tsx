@@ -49,12 +49,12 @@ export function Header() {
         <div className="flex w-max animate-marquee gap-8 whitespace-nowrap text-[11px] font-medium uppercase tracking-[0.15em] text-white/80">
           {[0, 1].map((dup) => (
             <span key={dup} className="flex items-center gap-8">
-              <span>Frete grátis para todo o Brasil acima de R$ 480</span>
-              <span className="text-white/40">✦</span>
+              <span>Frete fixo de R$ 25,00 para toda a Bahia</span>
+              <span className="text-white/40">·</span>
               <span>Moda que combina com você</span>
-              <span className="text-white/40">✦</span>
+              <span className="text-white/40">·</span>
               <span>Site 24 horas, 7 dias por semana</span>
-              <span className="text-white/40">✦</span>
+              <span className="text-white/40">·</span>
             </span>
           ))}
         </div>

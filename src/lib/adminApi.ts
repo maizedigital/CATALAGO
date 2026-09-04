@@ -53,6 +53,30 @@ export async function uploadProductImage(file: File): Promise<string> {
   return data.url;
 }
 
+export async function uploadBannerImage(file: File): Promise<string> {
+  const token = localStorage.getItem('mb_admin_token');
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await fetch(apiUrl('banner-upload'), {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'X-Client-Info': 'mb-admin',
+      'Apikey': SUPABASE_ANON_KEY,
+      ...(token ? { 'X-Admin-Token': token } : {}),
+    },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || `Erro ${res.status}`);
+  }
+  const data = await res.json() as { url: string };
+  return data.url;
+}
+
 export async function adminLogin(username: string, password: string) {
   const res = await fetch(`${SUPABASE_URL}/functions/v1/admin-login`, {
     method: 'POST',
