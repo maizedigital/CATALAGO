@@ -36,24 +36,13 @@ import AdminBanners from '@/pages/admin/AdminBanners';
 function RemoveBoltBadge() {
   useEffect(() => {
     const removeBoltBadge = () => {
-      document.querySelectorAll<HTMLElement>("body *").forEach((element) => {
-        const style = window.getComputedStyle(element);
-        if (
-          style.position === "fixed" &&
-          style.bottom !== "auto" &&
-          style.right !== "auto" &&
-          Number(style.zIndex) >= 2147483647
-        ) {
-          element.remove();
-        }
-      });
+      const badge = document.querySelector('[data-bolt-badge], [class*="bolt-badge"]');
+      if (badge) badge.remove();
     };
 
     removeBoltBadge();
-
     const observer = new MutationObserver(removeBoltBadge);
     observer.observe(document.body, { childList: true, subtree: true });
-
     return () => observer.disconnect();
   }, []);
 

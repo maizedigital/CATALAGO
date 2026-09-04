@@ -3,8 +3,8 @@ import { X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useTracking } from '@/hooks/useTracking';
 
-const DISMISS_KEY = 'mb_lead_dismissed';
-const LEAD_KEY = 'mb_lead_submitted';
+const REGISTERED_KEY = 'mb_lead_submitted';
+const FIRST_VISIT_KEY = 'mb_first_visit';
 
 function formatWhatsApp(input: string): string {
   const digits = input.replace(/\D/g, '').slice(0, 11);
@@ -35,8 +35,11 @@ function detectOrigin(): string {
   return 'site';
 }
 
+const GRACE_PERIOD_MS = 15000;
+
 export function LeadCaptureModal() {
   const [open, setOpen] = useState(false);
+  const [mandatory, setMandatory] = useState(false);
   const [name, setName] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [whatsappError, setWhatsappError] = useState('');
@@ -45,16 +48,29 @@ export function LeadCaptureModal() {
   const { setWhatsappId, trackEvent } = useTracking();
 
   useEffect(() => {
-    const dismissed = localStorage.getItem(DISMISS_KEY);
-    const submitted = localStorage.getItem(LEAD_KEY);
-    if (!dismissed && !submitted) {
-      const timer = setTimeout(() => setOpen(true), 5000);
-      return () => clearTimeout(timer);
+    const registered = localStorage.getItem(REGISTERED_KEY);
+    if (registered) return;
+
+    let firstVisit = localStorage.getItem(FIRST_VISIT_KEY);
+    if (!firstVisit) {
+      firstVisit = Date.now().toString();
+      localStorage.setItem(FIRST_VISIT_KEY, firstVisit);
     }
+
+    const elapsed = Date.now() - parseInt(firstVisit, 10);
+    const remaining = Math.max(0, GRACE_PERIOD_MS - elapsed);
+
+    const showTimer = setTimeout(() => setOpen(true), remaining);
+    const mandatoryTimer = setTimeout(() => setMandatory(true), remaining + 5000);
+
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(mandatoryTimer);
+    };
   }, []);
 
   const dismiss = () => {
-    localStorage.setItem(DISMISS_KEY, new Date().toISOString());
+    if (mandatory) return;
     setOpen(false);
   };
 
@@ -85,7 +101,7 @@ export function LeadCaptureModal() {
       await supabase.from('leads').update({
         name: name.trim(),
         origin,
-        last_interaction: 'Modal de novidades',
+        last_interaction: 'Cadastro no catálogo',
         updated_at: new Date().toISOString(),
       }).eq('id', existing.id);
     } else {
@@ -94,49 +110,53 @@ export function LeadCaptureModal() {
         whatsapp: rawDigits,
         origin,
         status: 'novo',
-        last_interaction: 'Modal de novidades',
+        last_interaction: 'Cadastro no catálogo',
       });
     }
 
     setWhatsappId(rawDigits);
     trackEvent('lead_captured', { name: name.trim(), whatsapp: rawDigits, origin });
-    localStorage.setItem(LEAD_KEY, new Date().toISOString());
+    localStorage.setItem(REGISTERED_KEY, new Date().toISOString());
     setSubmitting(false);
     setDone(true);
-    setTimeout(() => setOpen(false), 3000);
+    setTimeout(() => setOpen(false), 2000);
   };
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50" onClick={dismiss} />
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div className="relative z-10 w-full max-w-md bg-white p-8 shadow-2xl">
-        <button
-          onClick={dismiss}
-          className="absolute right-4 top-4 text-neutral-400 hover:text-neutral-900"
-          aria-label="Fechar"
-        >
-          <X size={20} />
-        </button>
+        {!mandatory && (
+          <button
+            onClick={dismiss}
+            className="absolute right-4 top-4 text-neutral-400 hover:text-neutral-900"
+            aria-label="Fechar"
+          >
+            <X size={20} />
+          </button>
+        )}
 
         {done ? (
           <div className="py-8 text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
               <span className="text-xl text-green-600">✓</span>
             </div>
-            <h3 className="font-serif text-xl font-bold text-neutral-900">Obrigado!</h3>
+            <h3 className="font-serif text-xl font-bold text-neutral-900">Bem-vindo!</h3>
             <p className="mt-2 text-sm text-neutral-500">
-              Você agora receberá as novidades da MB em primeira mão.
+              Cadastro realizado. Aproveite o catálogo MB.
             </p>
           </div>
         ) : (
           <>
             <h2 className="font-serif text-2xl font-bold text-neutral-900">
-              Quer receber novidades da MB?
+              {mandatory ? 'Cadastre-se para continuar' : 'Quer receber novidades da MB?'}
             </h2>
             <p className="mt-2 text-sm text-neutral-500">
-              Deixe seu WhatsApp e receba lançamentos, ofertas exclusivas e novidades em primeira mão.
+              {mandatory
+                ? 'Para continuar navegando no catálogo, precisamos do seu nome e WhatsApp.'
+                : 'Deixe seu nome e WhatsApp para continuar navegando e receber lançamentos em primeira mão.'}
             </p>
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -167,8 +187,7 @@ export function LeadCaptureModal() {
               </div>
 
               <p className="text-xs text-neutral-400">
-                Ao continuar, você concorda em receber comunicações da MB. Seus dados são tratados
-                conforme a LGPD e não serão compartilhados com terceiros.
+                Seus dados são tratados conforme a LGPD e não serão compartilhados com terceiros.
               </p>
 
               <button
@@ -176,15 +195,17 @@ export function LeadCaptureModal() {
                 disabled={submitting}
                 className="w-full bg-neutral-900 py-3.5 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-800 disabled:opacity-50"
               >
-                {submitting ? 'Enviando...' : 'Continuar'}
+                {submitting ? 'Enviando...' : mandatory ? 'Cadastrar e continuar' : 'Continuar'}
               </button>
-              <button
-                type="button"
-                onClick={dismiss}
-                className="w-full text-center text-xs text-neutral-400 hover:text-neutral-900"
-              >
-                Agora não
-              </button>
+              {!mandatory && (
+                <button
+                  type="button"
+                  onClick={dismiss}
+                  className="w-full text-center text-xs text-neutral-400 hover:text-neutral-900"
+                >
+                  Depois eu cadastro
+                </button>
+              )}
             </form>
           </>
         )}

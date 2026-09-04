@@ -9,6 +9,7 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  Image as ImageIcon,
   Menu,
   X,
   ExternalLink,
@@ -31,6 +32,7 @@ const navItems: NavItem[] = [
   { to: '/admin/clientes', label: 'Clientes', icon: Users },
   { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/admin/banners', label: 'Banners', icon: ImageIcon },
+  { to: '/admin/configuracoes', label: 'Configurações', icon: Settings },
 ];
 
 export function AdminLayout({ children }: { children: ReactNode }) {

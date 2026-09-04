@@ -28,9 +28,6 @@ export function CategoryBanner({ title, image, to, subtitle }: CategoryBannerPro
       />
       <div className="absolute inset-0 bg-gradient-to-t from-primary-950/70 via-primary-950/10 to-transparent transition-all duration-500 group-hover:from-primary-950/80" />
 
-      {/* Animated corner accent */}
-      <div className="absolute right-5 top-5 h-12 w-12 border-r-2 border-t-2 border-white/40 transition-all duration-500 group-hover:h-16 group-hover:w-16" />
-
       <div className="absolute inset-0 flex flex-col items-center justify-end pb-8 text-center text-white">
         {subtitle && (
           <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.25em] text-white/60 transition-all duration-500 group-hover:text-white/80">

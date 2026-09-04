@@ -11,6 +11,7 @@ export function PromoBanner() {
       <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-950 to-primary-900" />
       <div className="absolute left-1/2 top-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-400/5 blur-3xl" />
 
+
       <div className={`relative z-10 transition-all duration-700 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-white/40">Dúvidas?</p>
         <h2 className="mt-3 font-serif text-3xl font-bold md:text-5xl">
