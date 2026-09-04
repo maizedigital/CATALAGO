@@ -1,103 +1,3 @@
-Fix the current `src/App.tsx` compilation error.
-
-The error is:
-
-`Identifier 'useEffect' has already been declared. (4:9)`
-
-This happened because `useEffect` is already imported in the existing `App.tsx`.
-
-IMPORTANT:
-
-* DO NOT replace the entire App.tsx.
-* DO NOT delete existing application code.
-* DO NOT duplicate imports.
-* DO NOT change the existing application architecture.
-* DO NOT remove any existing functionality.
-
-### TASK
-
-1. Open the CURRENT `src/App.tsx`.
-2. Inspect the existing imports.
-3. If `useEffect` is already imported from React, reuse the existing import.
-4. Remove ONLY the duplicated `import { useEffect } from "react";`.
-5. Keep all existing imports and components intact.
-
-Then inspect the Bolt badge-removal code that was recently added.
-
-Integrate it into the EXISTING App.tsx correctly.
-
-If `useEffect` is already available, use it directly. Do not import it again.
-
-The component should follow this structure:
-
-```tsx
-function RemoveBoltBadge() {
-  useEffect(() => {
-    const removeBoltBadge = () => {
-      document.querySelectorAll<HTMLElement>("body *").forEach((element) => {
-        const style = window.getComputedStyle(element);
-
-        const isFixed = style.position === "fixed";
-        const hasBottom = style.bottom !== "auto";
-        const hasRight = style.right !== "auto";
-        const hasExtremeZIndex = Number(style.zIndex) >= 2147483647;
-
-        if (
-          isFixed &&
-          hasBottom &&
-          hasRight &&
-          hasExtremeZIndex
-        ) {
-          element.remove();
-        }
-      });
-    };
-
-    removeBoltBadge();
-
-    const observer = new MutationObserver(removeBoltBadge);
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  return null;
-}
-```
-
-Then render `<RemoveBoltBadge />` INSIDE the existing App component without removing any existing JSX.
-
-### VERY IMPORTANT
-
-Before keeping this removal logic, verify that it will NOT accidentally remove:
-
-* WhatsApp button
-* Instagram button
-* Admin controls
-* menus
-* modals
-* legitimate fixed-position UI
-
-If the selector is too broad, identify the actual Bolt element and make the selector specific to that element.
-
-Finally:
-
-1. Fix the duplicate `useEffect` import.
-2. Fix any related TypeScript/React errors.
-3. Run the Vite production build.
-4. Confirm the build succeeds.
-5. Do not change anything unrelated to this issue.
-
-Report exactly which lines/files were changed.
-
-
-
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Header } from '@/components/Header';
@@ -216,3 +116,103 @@ export default function App() {
     </ErrorBoundary>
   );
 }
+
+
+
+Fix the current `src/App.tsx` compilation error.
+
+The error is:
+
+`Identifier 'useEffect' has already been declared. (4:9)`
+
+This happened because `useEffect` is already imported in the existing `App.tsx`.
+
+IMPORTANT:
+
+* DO NOT replace the entire App.tsx.
+* DO NOT delete existing application code.
+* DO NOT duplicate imports.
+* DO NOT change the existing application architecture.
+* DO NOT remove any existing functionality.
+
+### TASK
+
+1. Open the CURRENT `src/App.tsx`.
+2. Inspect the existing imports.
+3. If `useEffect` is already imported from React, reuse the existing import.
+4. Remove ONLY the duplicated `import { useEffect } from "react";`.
+5. Keep all existing imports and components intact.
+
+Then inspect the Bolt badge-removal code that was recently added.
+
+Integrate it into the EXISTING App.tsx correctly.
+
+If `useEffect` is already available, use it directly. Do not import it again.
+
+The component should follow this structure:
+
+```tsx
+function RemoveBoltBadge() {
+  useEffect(() => {
+    const removeBoltBadge = () => {
+      document.querySelectorAll<HTMLElement>("body *").forEach((element) => {
+        const style = window.getComputedStyle(element);
+
+        const isFixed = style.position === "fixed";
+        const hasBottom = style.bottom !== "auto";
+        const hasRight = style.right !== "auto";
+        const hasExtremeZIndex = Number(style.zIndex) >= 2147483647;
+
+        if (
+          isFixed &&
+          hasBottom &&
+          hasRight &&
+          hasExtremeZIndex
+        ) {
+          element.remove();
+        }
+      });
+    };
+
+    removeBoltBadge();
+
+    const observer = new MutationObserver(removeBoltBadge);
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  return null;
+}
+```
+
+Then render `<RemoveBoltBadge />` INSIDE the existing App component without removing any existing JSX.
+
+### VERY IMPORTANT
+
+Before keeping this removal logic, verify that it will NOT accidentally remove:
+
+* WhatsApp button
+* Instagram button
+* Admin controls
+* menus
+* modals
+* legitimate fixed-position UI
+
+If the selector is too broad, identify the actual Bolt element and make the selector specific to that element.
+
+Finally:
+
+1. Fix the duplicate `useEffect` import.
+2. Fix any related TypeScript/React errors.
+3. Run the Vite production build.
+4. Confirm the build succeeds.
+5. Do not change anything unrelated to this issue.
+
+Report exactly which lines/files were changed.
