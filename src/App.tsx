@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 
-CÓDIGO PARA RETIRAR MARCA D´AGUA DO BOLT.NEW
-
 // Função que remove elementos flutuantes com estilos específicos
 const removeFloating = () => {
   document.querySelectorAll('[style^="position: fixed"][style*="bottom: 1rem"][style*="z-index: 2147483647"]').forEach(el => el.remove());
