@@ -1,17 +1,5 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-
-// Função que remove elementos flutuantes com estilos específicos
-const removeFloating = () => {
-  document.querySelectorAll('[style^="position: fixed"][style*="bottom: 1rem"][style*="z-index: 2147483647"]').forEach(el => el.remove());
-};
-
-// Executa a função imediatamente ao carregar
-removeFloating();
-
-// Observa mudanças no DOM e reaplica a função se novos elementos forem adicionados
-const observer = new MutationObserver(removeFloating);
-observer.observe(document.body, { childList: true, subtree: true });
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
@@ -44,6 +32,7 @@ import AdminOrderDetail from '@/pages/admin/AdminOrderDetail';
 import AdminAnalytics from '@/pages/admin/AdminAnalytics';
 import AdminSettings from '@/pages/admin/AdminSettings';
 import AdminBanners from '@/pages/admin/AdminBanners';
+import AdminWhatsApp from '@/pages/admin/AdminWhatsApp';
 
 function RemoveBoltBadge() {
   useEffect(() => {
@@ -108,6 +97,7 @@ export default function App() {
                 <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalytics /></ProtectedRoute>} />
                 <Route path="/admin/configuracoes" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
                 <Route path="/admin/banners" element={<ProtectedRoute><AdminBanners /></ProtectedRoute>} />
+                <Route path="/admin/whatsapp" element={<ProtectedRoute><AdminWhatsApp /></ProtectedRoute>} />
 
                 {/* Public routes */}
                 <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />

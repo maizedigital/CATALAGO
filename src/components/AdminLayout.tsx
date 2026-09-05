@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   ExternalLink,
+  MessageCircle,
 } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { Logo } from '@/components/Logo';
@@ -32,6 +33,7 @@ const navItems: NavItem[] = [
   { to: '/admin/clientes', label: 'Clientes', icon: Users },
   { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/admin/banners', label: 'Banners', icon: ImageIcon },
+  { to: '/admin/whatsapp', label: 'WhatsApp', icon: MessageCircle },
   { to: '/admin/configuracoes', label: 'Configurações', icon: Settings },
 ];
 

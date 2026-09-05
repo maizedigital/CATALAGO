@@ -5,3 +5,7 @@ entrypoint = "./functions/admin-api/index.ts"
 [functions.admin-login]
 verify_jwt = false
 entrypoint = "./functions/admin-login/index.ts"
+
+[functions.whatsapp-api]
+verify_jwt = false
+entrypoint = "./functions/whatsapp-api/index.ts"
