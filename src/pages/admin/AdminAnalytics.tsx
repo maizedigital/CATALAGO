@@ -11,17 +11,15 @@ interface AnalyticsData {
   event_counts: Record<string, number>;
 }
 
-interface RankingItem {
-  name: string;
-  count: number;
-}
-
+interface RankingItem { name: string; count: number; }
 interface Rankings {
   most_viewed: RankingItem[];
   most_carted: RankingItem[];
   most_whatsapp: RankingItem[];
   most_sold: RankingItem[];
 }
+
+const card = 'rounded-xl border border-neutral-800 bg-neutral-900 p-6';
 
 export default function AdminAnalytics() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
@@ -54,7 +52,7 @@ export default function AdminAnalytics() {
     return (
       <AdminLayout>
         <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-900" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-700 border-t-neutral-300" />
         </div>
       </AdminLayout>
     );
@@ -63,12 +61,9 @@ export default function AdminAnalytics() {
   if (error) {
     return (
       <AdminLayout>
-        <div className="flex flex-col items-center justify-center rounded-lg bg-red-50 p-12 text-center">
-          <p className="text-sm font-medium text-red-600">Nao foi possivel carregar os dados.</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-6 bg-neutral-900 px-6 py-3 text-xs font-bold uppercase tracking-widest text-white"
-          >
+        <div className="flex flex-col items-center justify-center rounded-xl border border-neutral-800 bg-neutral-900 p-12 text-center">
+          <p className="text-sm font-medium text-red-400">Nao foi possivel carregar os dados.</p>
+          <button onClick={() => window.location.reload()} className="mt-6 rounded-lg bg-neutral-100 px-6 py-3 text-xs font-bold uppercase tracking-widest text-neutral-900 transition-colors hover:bg-white">
             Tentar novamente
           </button>
         </div>
@@ -78,11 +73,11 @@ export default function AdminAnalytics() {
 
   const ec = analytics?.event_counts || {};
   const funnel = [
-    { label: 'Visitantes', value: analytics?.visitors || 0, icon: Eye, color: 'text-cyan-600' },
-    { label: 'Leads', value: analytics?.new_leads || 0, icon: UserPlus, color: 'text-orange-600' },
-    { label: 'Carrinhos', value: ec['add_to_cart'] || 0, icon: ShoppingCart, color: 'text-blue-600' },
-    { label: 'Checkouts', value: ec['checkout_started'] || 0, icon: Package, color: 'text-purple-600' },
-    { label: 'Clientes', value: analytics?.new_customers || 0, icon: Users, color: 'text-green-600' },
+    { label: 'Visitantes', value: analytics?.visitors || 0, icon: Eye, color: 'text-cyan-400' },
+    { label: 'Leads', value: analytics?.new_leads || 0, icon: UserPlus, color: 'text-orange-400' },
+    { label: 'Carrinhos', value: ec['add_to_cart'] || 0, icon: ShoppingCart, color: 'text-blue-400' },
+    { label: 'Checkouts', value: ec['checkout_started'] || 0, icon: Package, color: 'text-purple-400' },
+    { label: 'Clientes', value: analytics?.new_customers || 0, icon: Users, color: 'text-green-400' },
   ];
 
   const maxFunnel = Math.max(...funnel.map((f) => f.value), 1);
@@ -98,13 +93,13 @@ export default function AdminAnalytics() {
     <AdminLayout>
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-neutral-900">Analytics</h1>
-          <p className="mt-1 text-sm text-neutral-500">Comportamento e conversao</p>
+          <h1 className="font-serif text-2xl font-bold text-white">Analytics</h1>
+          <p className="mt-1 text-sm text-neutral-400">Comportamento e conversao</p>
         </div>
         <select
           value={days}
           onChange={(e) => { setDays(parseInt(e.target.value, 10)); setLoading(true); }}
-          className="border border-neutral-200 px-4 py-2.5 text-sm outline-none focus:border-neutral-900"
+          className="rounded-lg border border-neutral-800 bg-neutral-900 px-4 py-2.5 text-sm text-white outline-none focus:border-neutral-600"
         >
           <option value={7}>Ultimos 7 dias</option>
           <option value={30}>Ultimos 30 dias</option>
@@ -112,32 +107,28 @@ export default function AdminAnalytics() {
         </select>
       </div>
 
-      {/* Summary cards */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {[
-          { label: 'Visitantes', value: analytics?.visitors || 0, icon: Eye, color: 'text-cyan-600' },
-          { label: 'Novos leads', value: analytics?.new_leads || 0, icon: UserPlus, color: 'text-orange-600' },
+          { label: 'Visitantes', value: analytics?.visitors || 0, icon: Eye, color: 'text-cyan-400' },
+          { label: 'Novos leads', value: analytics?.new_leads || 0, icon: UserPlus, color: 'text-orange-400' },
           { label: 'Cliques WhatsApp', value: ec['whatsapp_click'] || 0, icon: MessageCircle, color: 'text-green-500' },
-          { label: 'Pedidos', value: analytics?.orders || 0, icon: Package, color: 'text-blue-600' },
-        ].map((card) => {
-          const Icon = card.icon;
+          { label: 'Pedidos', value: analytics?.orders || 0, icon: Package, color: 'text-blue-400' },
+        ].map((c) => {
+          const Icon = c.icon;
           return (
-            <div key={card.label} className="rounded-lg border border-neutral-200 bg-white p-4">
+            <div key={c.label} className="rounded-xl border border-neutral-800 bg-neutral-900 p-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">{card.label}</span>
-                <Icon size={18} className={card.color} />
+                <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">{c.label}</span>
+                <Icon size={18} className={c.color} />
               </div>
-              <p className="mt-2 text-2xl font-bold text-neutral-900">{card.value}</p>
+              <p className="mt-2 text-2xl font-bold text-white">{c.value}</p>
             </div>
           );
         })}
       </div>
 
-      {/* Funnel */}
-      <div className="mt-6 rounded-lg border border-neutral-200 bg-white p-6">
-        <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-neutral-900">
-          Funil de conversao
-        </h2>
+      <div className={`${card} mt-6`}>
+        <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-neutral-300">Funil de conversao</h2>
         <div className="space-y-3">
           {funnel.map((stage, i) => {
             const Icon = stage.icon;
@@ -146,28 +137,21 @@ export default function AdminAnalytics() {
             const drop = prevVal > 0 ? ((prevVal - stage.value) / prevVal) * 100 : 0;
             return (
               <div key={stage.label} className="flex items-center gap-4">
-                <div className="flex w-40 items-center gap-2 text-sm font-medium text-neutral-700">
+                <div className="flex w-40 items-center gap-2 text-sm font-medium text-neutral-300">
                   <Icon size={16} className={stage.color} /> {stage.label}
                 </div>
                 <div className="flex-1">
-                  <div className="h-8 rounded bg-neutral-100">
-                    <div
-                      className="flex h-8 items-center rounded bg-neutral-800 px-3 text-xs font-bold text-white transition-all"
-                      style={{ width: `${Math.max(pct, 8)}%` }}
-                    >
+                  <div className="h-8 rounded bg-neutral-800">
+                    <div className="flex h-8 items-center rounded bg-neutral-600 px-3 text-xs font-bold text-white transition-all" style={{ width: `${Math.max(pct, 8)}%` }}>
                       {stage.value}
                     </div>
                   </div>
                 </div>
                 {i > 0 && drop > 0 && (
-                  <span className="flex w-20 items-center gap-1 text-xs text-red-500">
-                    <TrendingDown size={12} /> -{Math.round(drop)}%
-                  </span>
+                  <span className="flex w-20 items-center gap-1 text-xs text-red-400"><TrendingDown size={12} /> -{Math.round(drop)}%</span>
                 )}
                 {i > 0 && drop === 0 && prevVal > 0 && (
-                  <span className="flex w-20 items-center gap-1 text-xs text-green-600">
-                    <TrendingUp size={12} /> 0%
-                  </span>
+                  <span className="flex w-20 items-center gap-1 text-xs text-green-400"><TrendingUp size={12} /> 0%</span>
                 )}
               </div>
             );
@@ -175,28 +159,25 @@ export default function AdminAnalytics() {
         </div>
       </div>
 
-      {/* Rankings */}
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         {rankingSections.map((section) => {
           const Icon = section.icon;
           return (
-            <div key={section.title} className="rounded-lg border border-neutral-200 bg-white p-6">
-              <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-neutral-900">
+            <div key={section.title} className={card}>
+              <h3 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-neutral-300">
                 <Icon size={16} /> {section.title}
               </h3>
               {section.items.length === 0 ? (
-                <p className="text-xs text-neutral-400">Sem dados ainda.</p>
+                <p className="text-xs text-neutral-600">Sem dados ainda.</p>
               ) : (
                 <ol className="space-y-2">
                   {section.items.map((item, i) => (
                     <li key={item.name} className="flex items-center justify-between text-sm">
                       <span className="flex items-center gap-3">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 text-xs font-bold text-neutral-600">
-                          {i + 1}
-                        </span>
-                        <span className="text-neutral-700">{item.name}</span>
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-800 text-xs font-bold text-neutral-400">{i + 1}</span>
+                        <span className="text-neutral-300">{item.name}</span>
                       </span>
-                      <span className="font-bold text-neutral-900">{item.count}</span>
+                      <span className="font-bold text-white">{item.count}</span>
                     </li>
                   ))}
                 </ol>

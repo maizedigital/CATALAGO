@@ -197,6 +197,29 @@ Deno.serve(async (req: Request) => {
         const { data, error } = await supabase.from("customers").select("*").order("created_at", { ascending: false });
         return okOrError(data, error);
       }
+      if (req.method === "POST") {
+        const body = await req.json();
+        const phone = (body.whatsapp || "").replace(/\D/g, "");
+        if (phone) {
+          const { data: existing } = await supabase
+            .from("customers")
+            .select("id, name")
+            .eq("whatsapp", phone)
+            .maybeSingle();
+          if (existing) {
+            const { data, error } = await supabase
+              .from("customers")
+              .update({ name: body.name || existing.name, ...body, whatsapp: phone })
+              .eq("id", existing.id)
+              .select()
+              .single();
+            return okOrError(data, error);
+          }
+          body.whatsapp = phone;
+        }
+        const { data, error } = await supabase.from("customers").insert(body).select().single();
+        return okOrError(data, error);
+      }
       if (req.method === "PUT" && id) {
         const body = await req.json();
         const { data, error } = await supabase.from("customers").update(body).eq("id", id).select().single();

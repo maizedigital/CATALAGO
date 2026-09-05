@@ -11,9 +11,7 @@ export default function AdminLogin() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  if (isAuthenticated) {
-    return <Navigate to="/admin" replace />;
-  }
+  if (isAuthenticated) return <Navigate to="/admin" replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,70 +28,46 @@ export default function AdminLogin() {
     }
   };
 
+  const inputClass = 'w-full rounded-lg border border-neutral-700 bg-neutral-800 py-3 pl-10 pr-3 text-sm text-white outline-none transition-colors placeholder:text-neutral-500 focus:border-neutral-500';
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-900 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-neutral-950 px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <span className="font-serif text-4xl font-bold tracking-[0.3em] text-white">MB</span>
-          <p className="mt-2 text-xs font-medium uppercase tracking-widest text-neutral-500">
-            Painel Administrativo
-          </p>
+          <p className="mt-2 text-xs font-medium uppercase tracking-widest text-neutral-500">Painel Administrativo</p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5 rounded-lg bg-white p-8 shadow-2xl"
-        >
+        <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-neutral-800 bg-neutral-900 p-8 shadow-2xl">
           <div>
-            <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-700">
-              Usuário
-            </label>
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-400">Usuário</label>
             <div className="relative">
-              <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                autoFocus
-                className="w-full border border-neutral-200 py-3 pl-10 pr-3 text-sm outline-none transition-colors focus:border-neutral-900"
-                placeholder="admin"
-              />
+              <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+              <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} autoFocus className={inputClass} placeholder="admin" />
             </div>
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-700">
-              Senha
-            </label>
+            <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-400">Senha</label>
             <div className="relative">
-              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-neutral-200 py-3 pl-10 pr-3 text-sm outline-none transition-colors focus:border-neutral-900"
-                placeholder="••••"
-              />
+              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} placeholder="••••" />
             </div>
           </div>
 
-          {error && (
-            <p className="rounded bg-red-50 px-4 py-3 text-xs font-medium text-red-600">{error}</p>
-          )}
+          {error && <p className="rounded-lg border border-red-900 bg-red-950/40 px-4 py-3 text-xs font-medium text-red-400">{error}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 bg-neutral-900 py-3.5 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-800 disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-neutral-100 py-3.5 text-xs font-bold uppercase tracking-widest text-neutral-900 transition-colors hover:bg-white disabled:opacity-50"
           >
             {loading ? 'Entrando...' : 'Entrar'}
             {!loading && <ArrowRight size={16} />}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-neutral-600">
-          Acesso restrito a administradores.
-        </p>
+        <p className="mt-6 text-center text-xs text-neutral-600">Acesso restrito a administradores.</p>
       </div>
     </div>
   );
