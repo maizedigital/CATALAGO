@@ -1,3 +1,40 @@
+import { useEffect } from "react";
+
+function RemoveFloatingBadge() {
+useEffect(() => {
+const removeFloating = () => {
+document
+.querySelectorAll(
+'[style*="position: fixed"][style*="bottom: 1rem"][style*="right: 1rem"][style*="z-index: 2147483647"]'
+)
+.forEach((el) => el.remove());
+};
+
+```
+// Executa imediatamente
+removeFloating();
+
+// Observa alterações no DOM
+const observer = new MutationObserver(() => {
+  removeFloating();
+});
+
+observer.observe(document.body, {
+  childList: true,
+  subtree: true,
+});
+
+return () => {
+  observer.disconnect();
+};
+```
+
+}, []);
+
+return null;
+}
+
+
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Header } from '@/components/Header';
