@@ -4,7 +4,6 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { CartDrawer } from '@/components/CartDrawer';
-import { LeadCaptureModal } from '@/components/LeadCaptureModal';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { CartProvider } from '@/hooks/useCart';
@@ -24,8 +23,6 @@ import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminProducts from '@/pages/admin/AdminProducts';
 import AdminProductForm from '@/pages/admin/AdminProductForm';
 import AdminCRM from '@/pages/admin/AdminCRM';
-import AdminLeads from '@/pages/admin/AdminLeads';
-import AdminCustomers from '@/pages/admin/AdminCustomers';
 import AdminCustomerDetail from '@/pages/admin/AdminCustomerDetail';
 import AdminOrders from '@/pages/admin/AdminOrders';
 import AdminOrderDetail from '@/pages/admin/AdminOrderDetail';
@@ -65,7 +62,6 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       <Footer />
       <CartDrawer />
       <WhatsAppButton />
-      <LeadCaptureModal />
     </div>
   );
 }

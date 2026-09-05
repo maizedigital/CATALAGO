@@ -15,21 +15,15 @@ interface FormData {
   name: string;
   whatsapp: string;
   cpf: string;
-  city: string;
-  district: string;
-  address: string;
-  number: string;
-  complement: string;
 }
 
-const empty: FormData = {
-  name: '', whatsapp: '', cpf: '', city: '', district: '', address: '', number: '', complement: '',
-};
+const empty: FormData = { name: '', whatsapp: '', cpf: '' };
 
 export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
   const [form, setForm] = useState<FormData>(empty);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const { trackEvent, setWhatsappId } = useTracking();
 
   const update = (key: keyof FormData, value: string) => {
@@ -41,10 +35,6 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
     const next: Partial<Record<keyof FormData, string>> = {};
     if (!form.name.trim()) next.name = 'Informe seu nome';
     if (!form.whatsapp.trim()) next.whatsapp = 'Informe seu WhatsApp';
-    if (!form.city.trim()) next.city = 'Informe sua cidade';
-    if (!form.district.trim()) next.district = 'Informe seu bairro';
-    if (!form.address.trim()) next.address = 'Informe seu endereço';
-    if (!form.number.trim()) next.number = 'Informe o número';
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -52,6 +42,7 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setSubmitError(null);
 
     const orderLines = items
       .map(
@@ -64,21 +55,11 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
 
     const message = `Olá, MB! Gostaria de finalizar meu pedido.\n\n*Itens:*\n${orderLines}\n\n*Total: ${formatPrice(
       total
-    )}*\n\n*Dados de entrega:*\nNome: ${form.name}\nWhatsApp: ${form.whatsapp}${
+    )}*\n\n*Dados:*\nNome: ${form.name}\nWhatsApp: ${form.whatsapp}${
       form.cpf ? `\nCPF: ${form.cpf}` : ''
-    }\nEndereço: ${form.address}, ${form.number}${
-      form.complement ? ` — ${form.complement}` : ''
-    }\nBairro: ${form.district}\nCidade: ${form.city}\n\nForma de pagamento: PIX`;
+    }\n\nForma de pagamento: PIX`;
 
-    window.open(whatsappLink(message), '_blank');
-    setSubmitted(true);
-    onClear();
-
-    // Track order placed and save customer to CRM
-    trackEvent('order_placed', { total, items: items.length }, items[0]?.name);
-    setWhatsappId(form.whatsapp);
-
-    // Save or update customer in CRM
+    let saved = false;
     try {
       const { data: existing } = await supabase
         .from('customers')
@@ -87,16 +68,11 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
         .maybeSingle();
 
       if (existing) {
-        await supabase
+        const { error } = await supabase
           .from('customers')
           .update({
             name: form.name,
             cpf: form.cpf || null,
-            city: form.city,
-            district: form.district,
-            address: form.address,
-            number: form.number,
-            complement: form.complement || null,
             last_purchase: new Date().toISOString(),
             last_contact: new Date().toISOString(),
             orders_count: (existing.orders_count || 0) + 1,
@@ -104,16 +80,12 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
             status: (existing.orders_count || 0) >= 1 ? 'cliente recorrente' : 'cliente',
           })
           .eq('id', existing.id);
+        if (!error) saved = true;
       } else {
-        await supabase.from('customers').insert({
+        const { error } = await supabase.from('customers').insert({
           name: form.name,
           whatsapp: form.whatsapp,
           cpf: form.cpf || null,
-          city: form.city,
-          district: form.district,
-          address: form.address,
-          number: form.number,
-          complement: form.complement || null,
           origin: 'site',
           status: 'cliente',
           last_purchase: new Date().toISOString(),
@@ -121,16 +93,28 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
           orders_count: 1,
           total_spent: total,
         });
+        if (!error) saved = true;
       }
 
-      // Also update lead status if exists
       await supabase
         .from('leads')
         .update({ status: 'cliente', last_interaction: new Date().toISOString() })
         .eq('whatsapp', form.whatsapp);
     } catch {
-      // Tracking/CRM errors must not break checkout
+      // CRM errors won't block checkout
     }
+
+    if (!saved) {
+      setSubmitError('Nao foi possivel registrar seus dados. Tente novamente.');
+      return;
+    }
+
+    window.open(whatsappLink(message), '_blank');
+    setSubmitted(true);
+    onClear();
+
+    trackEvent('order_placed', { total, items: items.length }, items[0]?.name);
+    setWhatsappId(form.whatsapp);
   };
 
   if (submitted) {
@@ -167,88 +151,26 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
         {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="mb-1 block text-xs font-medium text-neutral-700">WhatsApp *</label>
-          <input
-            type="tel"
-            value={form.whatsapp}
-            onChange={(e) => update('whatsapp', e.target.value)}
-            className={inputClass('whatsapp')}
-            placeholder="(11) 99999-9999"
-          />
-          {errors.whatsapp && <p className="mt-1 text-xs text-red-500">{errors.whatsapp}</p>}
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-neutral-700">CPF (opcional)</label>
-          <input
-            type="text"
-            value={form.cpf}
-            onChange={(e) => update('cpf', e.target.value)}
-            className={inputClass('cpf')}
-            placeholder="000.000.000-00"
-          />
-        </div>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="mb-1 block text-xs font-medium text-neutral-700">Cidade *</label>
-          <input
-            type="text"
-            value={form.city}
-            onChange={(e) => update('city', e.target.value)}
-            className={inputClass('city')}
-            placeholder="Sua cidade"
-          />
-          {errors.city && <p className="mt-1 text-xs text-red-500">{errors.city}</p>}
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-neutral-700">Bairro *</label>
-          <input
-            type="text"
-            value={form.district}
-            onChange={(e) => update('district', e.target.value)}
-            className={inputClass('district')}
-            placeholder="Seu bairro"
-          />
-          {errors.district && <p className="mt-1 text-xs text-red-500">{errors.district}</p>}
-        </div>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="sm:col-span-2">
-          <label className="mb-1 block text-xs font-medium text-neutral-700">Endereço *</label>
-          <input
-            type="text"
-            value={form.address}
-            onChange={(e) => update('address', e.target.value)}
-            className={inputClass('address')}
-            placeholder="Rua, avenida..."
-          />
-          {errors.address && <p className="mt-1 text-xs text-red-500">{errors.address}</p>}
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-neutral-700">Número *</label>
-          <input
-            type="text"
-            value={form.number}
-            onChange={(e) => update('number', e.target.value)}
-            className={inputClass('number')}
-            placeholder="Nº"
-          />
-          {errors.number && <p className="mt-1 text-xs text-red-500">{errors.number}</p>}
-        </div>
+      <div>
+        <label className="mb-1 block text-xs font-medium text-neutral-700">WhatsApp *</label>
+        <input
+          type="tel"
+          value={form.whatsapp}
+          onChange={(e) => update('whatsapp', e.target.value)}
+          className={inputClass('whatsapp')}
+          placeholder="(11) 99999-9999"
+        />
+        {errors.whatsapp && <p className="mt-1 text-xs text-red-500">{errors.whatsapp}</p>}
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium text-neutral-700">Complemento</label>
+        <label className="mb-1 block text-xs font-medium text-neutral-700">CPF (opcional)</label>
         <input
           type="text"
-          value={form.complement}
-          onChange={(e) => update('complement', e.target.value)}
-          className={inputClass('complement')}
-          placeholder="Apto, bloco, referência..."
+          value={form.cpf}
+          onChange={(e) => update('cpf', e.target.value)}
+          className={inputClass('cpf')}
+          placeholder="000.000.000-00"
         />
       </div>
 
@@ -261,6 +183,10 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
           <span className="text-xs text-neutral-500">Pagamento instantâneo</span>
         </div>
       </div>
+
+      {submitError && (
+        <p className="text-sm text-red-500">{submitError}</p>
+      )}
 
       <button
         type="submit"
