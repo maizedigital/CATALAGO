@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { WhatsAppButton } from '@/components/WhatsAppButton';
@@ -32,7 +32,6 @@ import AdminOrderDetail from '@/pages/admin/AdminOrderDetail';
 import AdminAnalytics from '@/pages/admin/AdminAnalytics';
 import AdminSettings from '@/pages/admin/AdminSettings';
 import AdminBanners from '@/pages/admin/AdminBanners';
-import AdminWhatsApp from '@/pages/admin/AdminWhatsApp';
 
 function RemoveBoltBadge() {
   useEffect(() => {
@@ -91,13 +90,12 @@ export default function App() {
                 <Route path="/admin/pedidos" element={<ProtectedRoute><AdminOrders /></ProtectedRoute>} />
                 <Route path="/admin/pedidos/:id" element={<ProtectedRoute><AdminOrderDetail /></ProtectedRoute>} />
                 <Route path="/admin/crm" element={<ProtectedRoute><AdminCRM /></ProtectedRoute>} />
-                <Route path="/admin/leads" element={<ProtectedRoute><AdminLeads /></ProtectedRoute>} />
-                <Route path="/admin/clientes" element={<ProtectedRoute><AdminCustomers /></ProtectedRoute>} />
+                <Route path="/admin/leads" element={<Navigate to="/admin/crm" replace />} />
+                <Route path="/admin/clientes" element={<Navigate to="/admin/crm" replace />} />
                 <Route path="/admin/clientes/:id" element={<ProtectedRoute><AdminCustomerDetail /></ProtectedRoute>} />
                 <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalytics /></ProtectedRoute>} />
                 <Route path="/admin/configuracoes" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
                 <Route path="/admin/banners" element={<ProtectedRoute><AdminBanners /></ProtectedRoute>} />
-                <Route path="/admin/whatsapp" element={<ProtectedRoute><AdminWhatsApp /></ProtectedRoute>} />
 
                 {/* Public routes */}
                 <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />

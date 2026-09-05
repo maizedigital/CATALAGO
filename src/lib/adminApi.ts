@@ -29,33 +29,6 @@ export const adminApi = {
   delete: <T>(path: string) => request<T>(path, { method: 'DELETE' }),
 };
 
-const whatsappApiUrl = (path: string) => `${SUPABASE_URL}/functions/v1/whatsapp-api/${path}`;
-
-async function whatsappRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = localStorage.getItem('mb_admin_token');
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-    'X-Client-Info': 'mb-admin',
-    'Apikey': SUPABASE_ANON_KEY,
-    ...(options.headers as Record<string, string> || {}),
-  };
-  if (token) headers['X-Admin-Token'] = token;
-
-  const res = await fetch(whatsappApiUrl(path), { ...options, headers });
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(data.error || `Erro ${res.status}`);
-  }
-  return res.json();
-}
-
-export const whatsappApi = {
-  get: <T>(path: string) => whatsappRequest<T>(path),
-  post: <T>(path: string, body: unknown) => whatsappRequest<T>(path, { method: 'POST', body: JSON.stringify(body) }),
-  put: <T>(path: string, body: unknown) => whatsappRequest<T>(path, { method: 'PUT', body: JSON.stringify(body) }),
-};
-
 export async function uploadProductImage(file: File): Promise<string> {
   const token = localStorage.getItem('mb_admin_token');
   const formData = new FormData();

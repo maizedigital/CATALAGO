@@ -5,7 +5,6 @@ import {
   Package,
   ShoppingCart,
   Users,
-  UserPlus,
   BarChart3,
   Settings,
   LogOut,
@@ -13,7 +12,6 @@ import {
   Menu,
   X,
   ExternalLink,
-  MessageCircle,
 } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { Logo } from '@/components/Logo';
@@ -29,11 +27,8 @@ const navItems: NavItem[] = [
   { to: '/admin/produtos', label: 'Produtos', icon: Package },
   { to: '/admin/pedidos', label: 'Pedidos', icon: ShoppingCart },
   { to: '/admin/crm', label: 'CRM', icon: Users },
-  { to: '/admin/leads', label: 'Leads', icon: UserPlus },
-  { to: '/admin/clientes', label: 'Clientes', icon: Users },
   { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/admin/banners', label: 'Banners', icon: ImageIcon },
-  { to: '/admin/whatsapp', label: 'WhatsApp', icon: MessageCircle },
   { to: '/admin/configuracoes', label: 'Configurações', icon: Settings },
 ];
 
