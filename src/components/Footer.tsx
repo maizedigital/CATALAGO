@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Instagram, MessageCircle, MapPin, Clock, Globe } from 'lucide-react';
 import { siteConfig, whatsappLink } from '@/config/site';
+import { Logo } from '@/components/Logo';
 
 export function Footer() {
   const handleWhatsApp = () => {
@@ -32,10 +33,10 @@ export function Footer() {
       {/* Main footer */}
       <div className="mx-auto max-w-7xl px-4 py-12 md:px-6">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-          <div className="col-span-2 md:col-span-1">
-            <span className="font-serif text-2xl font-bold tracking-[0.2em] text-primary-900">
-              MB
-            </span>
+          <div className="col-span-2 flex flex-col items-center text-center md:col-span-1 md:items-start md:text-left">
+            <div className="flex justify-center md:justify-start">
+              <Logo />
+            </div>
             <p className="mt-3 text-sm leading-relaxed text-primary-500">
               {siteConfig.tagline}
             </p>
@@ -115,6 +116,18 @@ export function Footer() {
             <span className="rounded border border-primary-200 bg-white px-2 py-1">PIX</span>
             <span className="rounded border border-primary-200 bg-white px-2 py-1">CARTÃO</span>
           </div>
+        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="border-t border-primary-200 bg-primary-100">
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-8 text-center md:px-6">
+          <Logo />
+          <div>
+            <p className="text-sm font-bold uppercase tracking-widest text-primary-900">MB Moda Brasil</p>
+            <p className="mt-1 text-xs text-primary-500">CNPJ: 61.941.085/0001-05</p>
+          </div>
+          <p className="text-xs text-primary-400">© MB Moda Brasil. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

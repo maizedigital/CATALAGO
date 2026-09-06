@@ -193,10 +193,10 @@ export default function AdminCRM() {
                         href={waLink(c.whatsapp)}
                         target="_blank"
                         rel="noreferrer"
-                        className="rounded-lg p-2 text-green-500 transition-colors hover:bg-green-950/40"
-                        title="Enviar WhatsApp"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-green-800 px-3 py-1.5 text-xs font-semibold text-green-500 transition-colors hover:bg-green-950/40"
+                        title="Enviar mensagem WhatsApp"
                       >
-                        <MessageCircle size={16} />
+                        <MessageCircle size={14} /> WhatsApp
                       </a>
                     </div>
                   </td>

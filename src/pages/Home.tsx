@@ -19,7 +19,7 @@ const mascImg =
   'https://images.pexels.com/photos/30688132/pexels-photo-30688132.jpeg?auto=compress&cs=tinysrgb&h=800';
 
 const trustBadges = [
-  { icon: Truck, title: 'Frete fixo R$ 25', desc: 'Toda a Bahia' },
+  { icon: Truck, title: 'Frete fixo R$ 25,00', desc: 'Toda a Bahia' },
   { icon: ShieldCheck, title: 'Compra segura', desc: 'Dados protegidos' },
   { icon: CreditCard, title: 'Pagamento', desc: 'PIX e cartão' },
   { icon: RefreshCw, title: 'Site 24h', desc: '7 dias por semana' },
@@ -145,7 +145,7 @@ export default function Home() {
       {/* Ofertas */}
       <section ref={setOfertasRef} className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-20">
         <div className={`mb-10 text-center transition-all duration-700 ${ofertasInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          <p className="mb-2 text-xs font-bold uppercase tracking-[0.25em] text-accent-600">Preços especiais</p>
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.25em] text-primary-900">Preços especiais</p>
           <h2 className="font-serif text-3xl font-bold tracking-tight text-primary-900 md:text-5xl">
             Ofertas
           </h2>

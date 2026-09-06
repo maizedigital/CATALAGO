@@ -20,7 +20,7 @@ export function ProductCard({ product }: { product: Product }) {
   };
 
   return (
-    <Link to={`/produto/${product.slug}`} className="group block">
+    <Link to={`/produto/${product.slug}`} className="group block overflow-hidden rounded-lg border border-neutral-200 transition-colors hover:border-neutral-400">
       <div className="relative aspect-[3/4] overflow-hidden bg-neutral-100">
         {/* Primary image */}
         <img
@@ -91,8 +91,8 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
       </div>
 
-      <div className="mt-3">
-        <h3 className="text-sm font-medium text-primary-900 transition-colors duration-300 group-hover:text-primary-600">
+      <div className="mt-3 px-1 pb-1">
+        <h3 className="truncate text-sm font-medium text-primary-900 transition-colors duration-300 group-hover:text-primary-600">
           {product.name}
         </h3>
         <div className="mt-1 flex items-baseline gap-2">
