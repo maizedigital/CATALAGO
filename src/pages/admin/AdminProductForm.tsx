@@ -192,7 +192,20 @@ export default function AdminProductForm() {
             <div><label className={labelClass}>Nome do produto *</label><input type="text" required value={form.name} onChange={(e) => handleChange('name', e.target.value)} className={inputClass} placeholder="Ex: Camiseta MB Essential" /></div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div><label className={labelClass}>Gênero *</label><select value={form.gender} onChange={(e) => handleChange('gender', e.target.value as Gender)} className={inputClass}><option value="feminino">Feminino</option><option value="masculino">Masculino</option></select></div>
-              <div><label className={labelClass}>Categoria (opcional)</label><input type="text" value={form.category} onChange={(e) => handleChange('category', e.target.value)} className={inputClass} placeholder="Ex: Camiseta" /></div>
+              <div><label className={labelClass}>Categoria (opcional)</label>
+              <select value={form.category} onChange={(e) => handleChange('category', e.target.value)} className={inputClass}>
+                <option value="">Selecione...</option>
+                <option value="Camisetas">Camisetas</option>
+                <option value="Blusas">Blusas</option>
+                <option value="Calças">Calças</option>
+                <option value="Vestidos">Vestidos</option>
+                <option value="Shorts">Shorts</option>
+                <option value="Conjuntos">Conjuntos</option>
+                <option value="Calçados">Calçados</option>
+                <option value="Sandálias">Sandálias</option>
+                <option value="Geral">Geral</option>
+              </select>
+            </div>
             </div>
             <div><label className={labelClass}>Descrição (opcional)</label><textarea value={form.description} onChange={(e) => handleChange('description', e.target.value)} rows={2} className={inputClass} placeholder="Breve descrição do produto" /></div>
             <div>

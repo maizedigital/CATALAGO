@@ -62,6 +62,11 @@ export default function Cart() {
                   </div>
                   <p className="mt-1 text-xs text-neutral-500">
                     Tamanho: {item.size} · Cor: {item.color}
+                    {item.sizes && item.sizes.length > 1 && (
+                      <span className="block text-neutral-400">
+                        Unidades: {item.sizes.join(', ')}
+                      </span>
+                    )}
                   </p>
                   <div className="mt-auto flex items-center justify-between pt-3">
                     <div className="inline-flex items-center border border-neutral-200">

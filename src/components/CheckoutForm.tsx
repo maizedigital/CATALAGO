@@ -47,7 +47,7 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
     const orderLines = items
       .map(
         (item) =>
-          `• ${item.name} — Tam: ${item.size}, Cor: ${item.color}, Qtd: ${item.quantity} — ${formatPrice(
+          `• ${item.name} — Tam: ${item.size}, Cor: ${item.color}, Qtd: ${item.quantity}${item.sizes && item.sizes.length > 1 ? ` (Unidades: ${item.sizes.join(', ')})` : ''} — ${formatPrice(
             effectivePrice(item.price, item.promo_price) * item.quantity
           )}`
       )

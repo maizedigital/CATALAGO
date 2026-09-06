@@ -39,12 +39,15 @@ export interface Banner {
   link_url: string | null;
   active: boolean;
   sort_order: number;
+  media_type: 'image' | 'video';
+  video_url: string | null;
+  product_id: string | null;
   created_at: string;
   updated_at: string;
 }
 
-export const CLOTHING_SIZES = ['PP', 'P', 'M', 'G', 'GG', 'XGG'];
-export const FOOTWEAR_SIZES = ['36', '37', '38', '39', '40', '41', '42', '43', '44'];
+export const CLOTHING_SIZES = ['PP', 'P', 'M', 'G', 'GG', 'XG'];
+export const FOOTWEAR_SIZES = ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'];
 
 export interface CartItem {
   id: string;
@@ -57,6 +60,7 @@ export interface CartItem {
   size: string;
   color: string;
   quantity: number;
+  sizes?: string[];
 }
 
 export type SortOption = 'recentes' | 'menor-preco' | 'maior-preco' | 'mais-vendidos';

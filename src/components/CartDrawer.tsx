@@ -95,7 +95,14 @@ export function CartDrawer() {
                           <Trash2 size={16} />
                         </button>
                       </div>
-                      <p className="mt-0.5 text-xs text-primary-500">{item.size} · {item.color}</p>
+                      <p className="mt-0.5 text-xs text-primary-500">
+                        {item.size} · {item.color}
+                        {item.sizes && item.sizes.length > 1 && (
+                          <span className="block text-primary-400">
+                            Unidades: {item.sizes.join(', ')}
+                          </span>
+                        )}
+                      </p>
                       <div className="mt-auto flex items-center justify-between">
                         <div className="flex items-center border border-primary-200">
                           <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1.5 text-primary-700 transition-colors hover:bg-primary-50" aria-label="Diminuir">

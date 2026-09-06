@@ -6,7 +6,7 @@ const STORAGE_KEY = 'mb_cart';
 
 interface CartContextValue {
   items: CartItem[];
-  addItem: (product: Product, size: string, color: string, quantity: number) => void;
+  addItem: (product: Product, size: string, color: string, quantity: number, sizes?: string[]) => void;
   updateQuantity: (id: string, quantity: number) => void;
   removeItem: (id: string) => void;
   clearCart: () => void;
@@ -34,13 +34,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
-  const addItem = (product: Product, size: string, color: string, quantity: number) => {
+  const addItem = (product: Product, size: string, color: string, quantity: number, sizes?: string[]) => {
     const lineId = `${product.id}-${size}-${color}`;
     setItems((prev) => {
       const existing = prev.find((i) => i.id === lineId);
       if (existing) {
         return prev.map((i) =>
-          i.id === lineId ? { ...i, quantity: i.quantity + quantity } : i
+          i.id === lineId ? { ...i, quantity: i.quantity + quantity, sizes: sizes ?? i.sizes } : i
         );
       }
       return [
@@ -56,6 +56,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           size,
           color,
           quantity,
+          sizes,
         },
       ];
     });

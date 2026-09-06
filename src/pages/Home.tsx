@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Truck, ShieldCheck, RefreshCw, CreditCard } from 'lucide-react';
 import { Hero } from '@/components/Hero';
 import { BannerCarousel } from '@/components/BannerCarousel';
+import { VideoBanner } from '@/components/VideoBanner';
 import { CategoryBanner } from '@/components/CategoryBanner';
 import { ProductGrid } from '@/components/ProductGrid';
 import { PromoBanner } from '@/components/PromoBanner';
@@ -74,6 +75,7 @@ export default function Home() {
   return (
     <div>
       <BannerCarousel />
+      <VideoBanner />
       <Hero />
 
       {/* Marquee */}

@@ -59,6 +59,11 @@ export default function Checkout() {
                   <p className="font-medium text-neutral-900">{item.name}</p>
                   <p className="text-xs text-neutral-500">
                     {item.size} · {item.color} · Qtd: {item.quantity}
+                    {item.sizes && item.sizes.length > 1 && (
+                      <span className="block text-neutral-400">
+                        Unidades: {item.sizes.join(', ')}
+                      </span>
+                    )}
                   </p>
                   <p className="mt-1 text-xs font-semibold text-neutral-900">
                     {formatPrice(effectivePrice(item.price, item.promo_price) * item.quantity)}

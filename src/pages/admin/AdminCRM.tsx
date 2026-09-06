@@ -96,10 +96,6 @@ export default function AdminCRM() {
           whatsapp: phone,
         });
       } else {
-        const { data: existing } = await (async () => {
-          return null;
-        })();
-        void existing;
         await adminApi.post('/customers', {
           name: formName.trim(),
           whatsapp: phone,

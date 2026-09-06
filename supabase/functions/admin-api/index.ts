@@ -102,6 +102,30 @@ Deno.serve(async (req: Request) => {
       return json({ url: urlData.publicUrl, path: uploadData.path });
     }
 
+    // --- Video upload ---
+    if (resource === "video-upload" && req.method === "POST") {
+      const formData = await req.formData();
+      const file = formData.get("file") as File;
+      if (!file) return jsonError("Nenhum arquivo enviado", 400);
+
+      const allowed = ["video/mp4", "video/webm", "video/ogg"];
+      if (!allowed.includes(file.type)) return jsonError("Formato nao suportado. Use MP4, WebM ou OGG.", 400);
+      if (file.size > 100 * 1024 * 1024) return jsonError("Arquivo muito grande (max 100MB)", 400);
+
+      const ext = file.name.split(".").pop()?.toLowerCase() || "mp4";
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const path = `videos/${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("product-images")
+        .upload(path, file, { contentType: file.type, upsert: false });
+
+      if (uploadError) return jsonError(uploadError.message, 400);
+
+      const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(uploadData.path);
+      return json({ url: urlData.publicUrl, path: uploadData.path });
+    }
+
     // --- Delete uploaded image ---
     if (resource === "upload" && req.method === "DELETE" && id) {
       const { error } = await supabase.storage.from("product-images").remove([`products/${id}`]);
@@ -422,6 +446,11 @@ Deno.serve(async (req: Request) => {
         return okOrError(data, error);
       }
       if (req.method === "DELETE" && id) {
+        const { data: banner } = await supabase.from("banners").select("video_url").eq("id", id).maybeSingle();
+        if (banner?.video_url) {
+          const videoPath = banner.video_url.split("/product-images/")[1];
+          if (videoPath) await supabase.storage.from("product-images").remove([videoPath]);
+        }
         const { error } = await supabase.from("banners").delete().eq("id", id);
         return okOrError({ success: true }, error);
       }
