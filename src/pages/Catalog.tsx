@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { SlidersHorizontal, X } from 'lucide-react';
 import { ProductGrid } from '@/components/ProductGrid';
 import { ProductFilter, type FilterState } from '@/components/ProductFilter';
 import { useProducts } from '@/hooks/useProducts';
@@ -17,6 +18,7 @@ const defaultFilters: FilterState = {
 export default function Catalog({ gender }: { gender: Gender }) {
   const { products, loading } = useProducts();
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
+  const [filterOpen, setFilterOpen] = useState(false);
 
   const isFemale = gender === 'feminino';
   useSEO({
@@ -76,10 +78,15 @@ export default function Catalog({ gender }: { gender: Gender }) {
     return result as Product[];
   }, [genderProducts, filters]);
 
+  const activeFilterCount =
+    filters.categories.length + filters.sizes.length + filters.colors.length +
+    (filters.priceMax !== null ? 1 : 0) +
+    (filters.sort !== 'recentes' ? 1 : 0);
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12">
       {/* Header */}
-      <div className="mb-8 border-b border-neutral-200 pb-6 text-center">
+      <div className="mb-6 border-b border-neutral-200 pb-6 text-center">
         <h1 className="font-serif text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">
           {isFemale ? 'Feminino' : 'Masculino'}
         </h1>
@@ -88,31 +95,65 @@ export default function Catalog({ gender }: { gender: Gender }) {
         </p>
       </div>
 
-      <div className="flex gap-8">
-        <ProductFilter
-          categories={categories}
-          sizes={sizes}
-          colors={colors}
-          priceRange={priceRange}
-          filters={filters}
-          onChange={setFilters}
-        />
-        <div className="flex-1">
-          {loading ? (
-            <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="aspect-[3/4] bg-neutral-100" />
-                  <div className="mt-3 h-4 w-3/4 bg-neutral-100" />
-                  <div className="mt-2 h-4 w-1/3 bg-neutral-100" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <ProductGrid products={filtered} />
+      {/* Filter bar */}
+      <div className="mb-6 flex items-center justify-between">
+        <button
+          onClick={() => setFilterOpen(true)}
+          className="inline-flex items-center gap-2 border border-neutral-300 bg-white px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-neutral-900 transition-colors hover:border-neutral-900"
+        >
+          <SlidersHorizontal size={14} /> Filtrar
+          {activeFilterCount > 0 && (
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-neutral-900 px-1.5 text-[10px] font-bold text-white">
+              {activeFilterCount}
+            </span>
           )}
-        </div>
+        </button>
+        <p className="text-xs text-neutral-400">{filtered.length} resultados</p>
       </div>
+
+      {/* Products — full width */}
+      {loading ? (
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="aspect-[3/4] bg-neutral-100" />
+              <div className="mt-3 h-4 w-3/4 bg-neutral-100" />
+              <div className="mt-2 h-4 w-1/3 bg-neutral-100" />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <ProductGrid products={filtered} />
+      )}
+
+      {/* Filter drawer */}
+      {filterOpen && (
+        <div className="fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setFilterOpen(false)} />
+          <div className="absolute right-0 top-0 h-full w-80 max-w-[85%] overflow-y-auto bg-white p-6 shadow-xl">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-sm font-bold uppercase tracking-widest text-neutral-900">Filtros</h2>
+              <button onClick={() => setFilterOpen(false)} aria-label="Fechar">
+                <X size={22} className="text-neutral-900" />
+              </button>
+            </div>
+            <ProductFilter
+              categories={categories}
+              sizes={sizes}
+              colors={colors}
+              priceRange={priceRange}
+              filters={filters}
+              onChange={setFilters}
+            />
+            <button
+              onClick={() => setFilterOpen(false)}
+              className="mt-8 w-full bg-neutral-900 py-3 text-xs font-bold uppercase tracking-widest text-white"
+            >
+              Ver {filtered.length} resultados
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

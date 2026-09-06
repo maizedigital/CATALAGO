@@ -6,6 +6,7 @@ import { useCart } from '@/hooks/useCart';
 import { siteConfig, whatsappLink } from '@/config/site';
 
 const navLinks = [
+  { label: 'Início', to: '/' },
   { label: 'Feminino', to: '/feminino' },
   { label: 'Masculino', to: '/masculino' },
   { label: 'Novidades', to: '/?section=novidades' },
