@@ -120,14 +120,14 @@ export function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-primary-200 bg-primary-100">
+      <div className="bg-black">
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-8 text-center md:px-6">
           <Logo />
           <div>
-            <p className="text-sm font-bold uppercase tracking-widest text-primary-900">MB Moda Brasil</p>
-            <p className="mt-1 text-xs text-primary-500">CNPJ: 61.941.085/0001-05</p>
+            <p className="text-sm font-bold uppercase tracking-widest text-white">MB Moda Brasil</p>
+            <p className="mt-1 text-xs text-neutral-400">CNPJ: 61.941.085/0001-05</p>
           </div>
-          <p className="text-xs text-primary-400">© MB Moda Brasil. Todos os direitos reservados.</p>
+          <p className="text-xs text-neutral-500">© MB Moda Brasil. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

@@ -14,19 +14,28 @@ const inputClass = 'w-full rounded-lg border border-neutral-700 bg-neutral-800 p
 const labelClass = 'mb-1.5 block text-xs font-semibold text-neutral-400';
 
 type MediaType = 'image' | 'video';
+type DisplayMode = 'mobile_only' | 'responsive';
 
 interface FormState {
   title: string;
   media_type: MediaType;
+  display_mode: DisplayMode;
   image_url: string;
+  mobile_image_url: string;
+  desktop_image_url: string;
   video_url: string;
+  mobile_video_url: string;
+  desktop_video_url: string;
   link_url: string;
   product_id: string | null;
   active: boolean;
 }
 
 const emptyForm: FormState = {
-  title: '', media_type: 'image', image_url: '', video_url: '', link_url: '', product_id: null, active: true,
+  title: '', media_type: 'image', display_mode: 'mobile_only',
+  image_url: '', mobile_image_url: '', desktop_image_url: '',
+  video_url: '', mobile_video_url: '', desktop_video_url: '',
+  link_url: '', product_id: null, active: true,
 };
 
 export default function AdminBanners() {
@@ -36,8 +45,8 @@ export default function AdminBanners() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [dragging, setDragging] = useState(false);
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const [draggingField, setDraggingField] = useState<string | null>(null);
   const [imageInfo, setImageInfo] = useState<{ width: number; height: number } | null>(null);
   const [videoDuration, setVideoDuration] = useState<number | null>(null);
   const [videoError, setVideoError] = useState<string | null>(null);
@@ -79,6 +88,8 @@ export default function AdminBanners() {
     setShowProductSelect(false);
     setShowForm(false);
     setEditingId(null);
+    setUploadingField(null);
+    setDraggingField(null);
   };
 
   const openNew = (type: MediaType) => {
@@ -92,8 +103,13 @@ export default function AdminBanners() {
     setForm({
       title: banner.title,
       media_type: banner.media_type || 'image',
+      display_mode: (banner.display_mode as DisplayMode) || 'mobile_only',
       image_url: banner.media_type === 'video' ? '' : banner.image_url,
+      mobile_image_url: banner.mobile_image_url || banner.image_url || '',
+      desktop_image_url: banner.desktop_image_url || '',
       video_url: banner.video_url || '',
+      mobile_video_url: banner.mobile_video_url || banner.video_url || '',
+      desktop_video_url: banner.desktop_video_url || '',
       link_url: banner.link_url || '',
       product_id: banner.product_id,
       active: banner.active,
@@ -104,23 +120,25 @@ export default function AdminBanners() {
     setShowForm(true);
   };
 
-  const handleImageFile = async (file: File) => {
+  const handleImageFile = async (file: File, field: 'image_url' | 'mobile_image_url' | 'desktop_image_url') => {
     if (!file.type.startsWith('image/')) { setError('Apenas imagens são aceitas (JPG, PNG, WebP)'); return; }
     if (file.size > 10 * 1024 * 1024) { setError('Arquivo muito grande (máximo 10MB)'); return; }
-    const img = new window.Image();
-    const url = URL.createObjectURL(file);
-    img.onload = async () => { setImageInfo({ width: img.naturalWidth, height: img.naturalHeight }); URL.revokeObjectURL(url); };
-    img.src = url;
-    setUploading(true); setError(null);
+    if (field === 'image_url') {
+      const img = new window.Image();
+      const url = URL.createObjectURL(file);
+      img.onload = async () => { setImageInfo({ width: img.naturalWidth, height: img.naturalHeight }); URL.revokeObjectURL(url); };
+      img.src = url;
+    }
+    setUploadingField(field); setError(null);
     try {
       const imageUrl = await uploadBannerImage(file);
-      setForm((prev) => ({ ...prev, image_url: imageUrl }));
+      setForm((prev) => ({ ...prev, [field]: imageUrl }));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao enviar imagem');
-    } finally { setUploading(false); }
+    } finally { setUploadingField(null); }
   };
 
-  const handleVideoFile = async (file: File) => {
+  const handleVideoFile = async (file: File, field: 'video_url' | 'mobile_video_url' | 'desktop_video_url') => {
     if (!file.type.startsWith('video/')) { setVideoError('Apenas vídeos são aceitos (MP4, WebM)'); return; }
     if (file.size > 100 * 1024 * 1024) { setVideoError('Arquivo muito grande (máximo 100MB)'); return; }
     setVideoError(null);
@@ -128,30 +146,30 @@ export default function AdminBanners() {
     video.preload = 'metadata';
     video.onloadedmetadata = async () => {
       const duration = video.duration;
-      setVideoDuration(duration);
+      if (field === 'video_url' || field === 'mobile_video_url') setVideoDuration(duration);
       if (duration > MAX_VIDEO_DURATION) {
         setVideoError(`Vídeo muito longo: ${Math.round(duration)}s. O limite é de ${MAX_VIDEO_DURATION / 60} minuto(s).`);
         return;
       }
-      setUploading(true);
+      setUploadingField(field);
       try {
         const videoUrl = await uploadBannerVideo(file);
-        setForm((prev) => ({ ...prev, video_url: videoUrl }));
+        setForm((prev) => ({ ...prev, [field]: videoUrl }));
       } catch (err) {
         setVideoError(err instanceof Error ? err.message : 'Erro ao enviar vídeo');
-      } finally { setUploading(false); }
+      } finally { setUploadingField(null); }
     };
     video.onerror = () => { setVideoError('Não foi possível ler o arquivo de vídeo'); };
     video.src = URL.createObjectURL(file);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: React.DragEvent, field: 'image_url' | 'mobile_image_url' | 'desktop_image_url' | 'video_url' | 'mobile_video_url' | 'desktop_video_url') => {
     e.preventDefault();
-    setDragging(false);
+    setDraggingField(null);
     const file = e.dataTransfer.files[0];
     if (!file) return;
-    if (form.media_type === 'video') handleVideoFile(file);
-    else handleImageFile(file);
+    if (field.startsWith('video')) handleVideoFile(file, field as 'video_url' | 'mobile_video_url' | 'desktop_video_url');
+    else handleImageFile(file, field as 'image_url' | 'mobile_image_url' | 'desktop_image_url');
   };
 
   const handleSave = async (e: React.FormEvent) => {

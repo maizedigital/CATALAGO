@@ -68,6 +68,21 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
+  // Heartbeat for live visitors (every 60s)
+  useEffect(() => {
+    if (!visitorIdRef.current) return;
+    const interval = setInterval(() => {
+      const path = window.location.pathname;
+      if (path.startsWith('/admin')) return;
+      supabase.from('customer_events').insert({
+        visitor_id: visitorIdRef.current,
+        event_type: 'heartbeat',
+        event_data: { path },
+      }).then(() => {});
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   const getVisitorId = () => visitorIdRef.current;
   const getWhatsappId = () => localStorage.getItem(WHATSAPP_KEY);
   const setWhatsappId = (whatsapp: string) => localStorage.setItem(WHATSAPP_KEY, whatsapp);

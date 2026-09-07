@@ -12,6 +12,7 @@ import {
   Menu,
   X,
   ExternalLink,
+  Link as LinkIcon,
 } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { Logo } from '@/components/Logo';
@@ -29,6 +30,7 @@ const navItems: NavItem[] = [
   { to: '/admin/crm', label: 'CRM', icon: Users },
   { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/admin/banners', label: 'Banners', icon: ImageIcon },
+  { to: '/admin/links', label: 'Links', icon: LinkIcon },
   { to: '/admin/configuracoes', label: 'Configurações', icon: Settings },
 ];
 

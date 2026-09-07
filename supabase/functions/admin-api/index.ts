@@ -466,6 +466,129 @@ Deno.serve(async (req: Request) => {
       return json({ success: true });
     }
 
+    // --- Short links CRUD ---
+    if (resource === "short-links") {
+      if (req.method === "GET" && id && subResource === "stats") {
+        const { data: clicks } = await supabase
+          .from("link_clicks")
+          .select("id, visitor_id, referrer, user_agent, country, device_type, created_at")
+          .eq("link_id", id)
+          .order("created_at", { ascending: false })
+          .limit(5000);
+        const all = clicks || [];
+        const now = Date.now();
+        const today = new Date().toISOString().slice(0, 10);
+        const sevenDaysAgo = new Date(now - 7 * 86400000).toISOString();
+        const thirtyDaysAgo = new Date(now - 30 * 86400000).toISOString();
+        const uniqueVisitors = new Set(all.map((c: Record<string, unknown>) => c.visitor_id).filter(Boolean));
+        const lastClick = all.length > 0 ? (all[0] as Record<string, unknown>).created_at : null;
+        const referrers: Record<string, number> = {};
+        const devices: Record<string, number> = {};
+        const countries: Record<string, number> = {};
+        for (const c of all) {
+          const r = (c as Record<string, unknown>).referrer as string || "(direto)";
+          referrers[r] = (referrers[r] || 0) + 1;
+          const d = (c as Record<string, unknown>).device_type as string || "unknown";
+          devices[d] = (devices[d] || 0) + 1;
+          const co = (c as Record<string, unknown>).country as string || "unknown";
+          countries[co] = (countries[co] || 0) + 1;
+        }
+        return json({
+          total: all.length,
+          unique: uniqueVisitors.size,
+          today: all.filter((c: Record<string, unknown>) => (c.created_at as string)?.slice(0, 10) === today).length,
+          last7: all.filter((c: Record<string, unknown>) => (c.created_at as string) >= sevenDaysAgo).length,
+          last30: all.filter((c: Record<string, unknown>) => (c.created_at as string) >= thirtyDaysAgo).length,
+          last_click: lastClick,
+          referrers: Object.entries(referrers).sort((a, b) => b[1] - a[1]).slice(0, 10),
+          devices: Object.entries(devices).sort((a, b) => b[1] - a[1]),
+          countries: Object.entries(countries).sort((a, b) => b[1] - a[1]).slice(0, 10),
+        });
+      }
+      if (req.method === "GET") {
+        const { data, error } = await supabase.from("short_links").select("*").order("created_at", { ascending: false });
+        return okOrError(data, error);
+      }
+      if (req.method === "POST") {
+        const body = await req.json();
+        const slug = (body.slug || body.name || "").toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+        if (!slug) return jsonError("Slug inválido", 400);
+        const { data: existing } = await supabase.from("short_links").select("id").eq("slug", slug).maybeSingle();
+        if (existing) return jsonError("Este slug já está em uso", 400);
+        const { data, error } = await supabase.from("short_links").insert({ ...body, slug }).select().single();
+        return okOrError(data, error);
+      }
+      if (req.method === "PUT" && id) {
+        const body = await req.json();
+        if (body.slug) {
+          body.slug = body.slug.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+        }
+        const { data, error } = await supabase.from("short_links").update({ ...body, updated_at: new Date().toISOString() }).eq("id", id).select().single();
+        return okOrError(data, error);
+      }
+      if (req.method === "DELETE" && id) {
+        const { error } = await supabase.from("short_links").delete().eq("id", id);
+        return okOrError({ success: true }, error);
+      }
+    }
+
+    // --- Short link redirect (public) ---
+    if (resource === "go" && req.method === "GET" && id) {
+      const { data: link } = await supabase.from("short_links").select("id, destination_url, active").eq("slug", id).maybeSingle();
+      if (!link) return jsonError("Link não encontrado", 404);
+      if (!link.active) return jsonError("Link inativo", 410);
+
+      const ua = req.headers.get("user-agent") || "";
+      const referrer = req.headers.get("referer") || "";
+      const acceptLang = req.headers.get("accept-language") || "";
+      const deviceType = /mobile|android|iphone/i.test(ua) ? "mobile" : /tablet|ipad/i.test(ua) ? "tablet" : "desktop";
+      const country = (req.headers.get("x-vercel-ip-country") || req.headers.get("cf-ipcountry") || req.headers.get("x-superb-country") || "") as string;
+
+      // Generate an anonymous fingerprint from IP + UA prefix for unique visitor counting
+      const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown";
+      const fingerprint = `${ip}_${ua.slice(0, 60)}_${acceptLang.slice(0, 10)}`;
+
+      await supabase.from("link_clicks").insert({
+        link_id: link.id,
+        visitor_id: fingerprint,
+        referrer: referrer || null,
+        user_agent: ua || null,
+        country: country || null,
+        device_type: deviceType,
+      });
+
+      return Response.redirect(link.destination_url, 302);
+    }
+
+    // --- Live visitors ---
+    if (resource === "live-visitors" && req.method === "GET") {
+      const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+      const { data, error } = await supabase
+        .from("customer_events")
+        .select("visitor_id, event_data, created_at")
+        .gte("created_at", twoMinAgo)
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (error) return jsonError(error.message, 400);
+      const events = (data || []) as Record<string, unknown>[];
+      // Exclude admin paths and deduplicate by visitor_id
+      const visitorLastSeen: Record<string, string> = {};
+      const paths: Record<string, number> = {};
+      for (const e of events) {
+        const vid = e.visitor_id as string;
+        if (!vid) continue;
+        const ed = e.event_data as Record<string, unknown> | null;
+        const path = (ed?.path as string) || "";
+        if (path.startsWith("/admin")) continue;
+        visitorLastSeen[vid] = e.created_at as string;
+        if (path) paths[path] = (paths[path] || 0) + 1;
+      }
+      const activeCount = Object.keys(visitorLastSeen).length;
+      const lastActivity = Object.values(visitorLastSeen).sort().reverse()[0] || null;
+      const topPaths = Object.entries(paths).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([path, count]) => ({ path, count }));
+      return json({ active: activeCount, last_activity: lastActivity, top_paths: topPaths });
+    }
+
     return jsonError("Recurso nao encontrado", 404);
   } catch (err) {
     return jsonError(err.message, 500);

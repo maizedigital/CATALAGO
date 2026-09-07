@@ -29,12 +29,21 @@ import AdminOrderDetail from '@/pages/admin/AdminOrderDetail';
 import AdminAnalytics from '@/pages/admin/AdminAnalytics';
 import AdminSettings from '@/pages/admin/AdminSettings';
 import AdminBanners from '@/pages/admin/AdminBanners';
+import AdminLinks from '@/pages/admin/AdminLinks';
 
 function RemoveBoltBadge() {
   useEffect(() => {
     const removeBoltBadge = () => {
-      const badge = document.querySelector('[data-bolt-badge], [class*="bolt-badge"]');
-      if (badge) badge.remove();
+      const knownBadge = document.querySelector('[data-bolt-badge], [class*="bolt-badge"]');
+      if (knownBadge) knownBadge.remove();
+      const textBadge = Array.from(document.body.querySelectorAll<HTMLElement>('*'))
+        .filter((element) => {
+          const text = element.textContent?.trim() || '';
+          const position = window.getComputedStyle(element).position;
+          return text.includes('Made in Bolt') && text.length < 80 && (position === 'fixed' || position === 'absolute');
+        })
+        .sort((a, b) => a.textContent!.length - b.textContent!.length)[0];
+      if (textBadge) textBadge.remove();
     };
 
     removeBoltBadge();
@@ -92,6 +101,7 @@ export default function App() {
                 <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalytics /></ProtectedRoute>} />
                 <Route path="/admin/configuracoes" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
                 <Route path="/admin/banners" element={<ProtectedRoute><AdminBanners /></ProtectedRoute>} />
+                <Route path="/admin/links" element={<ProtectedRoute><AdminLinks /></ProtectedRoute>} />
 
                 {/* Public routes */}
                 <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />

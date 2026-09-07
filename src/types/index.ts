@@ -42,6 +42,11 @@ export interface Banner {
   media_type: 'image' | 'video';
   video_url: string | null;
   product_id: string | null;
+  display_mode?: 'mobile_only' | 'responsive';
+  mobile_image_url?: string | null;
+  desktop_image_url?: string | null;
+  mobile_video_url?: string | null;
+  desktop_video_url?: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -58,14 +58,16 @@ export function VideoBanner() {
                   style={{ aspectRatio: '9 / 16', width: 'clamp(220px, 60vw, 340px)' }}
                 >
                   <video
-                    src={video.video_url || undefined}
                     autoPlay
                     muted
                     loop
                     playsInline
                     preload={idx === 0 ? 'auto' : 'metadata'}
                     className="h-full w-full object-cover"
-                  />
+                  >
+                    {(video.desktop_video_url || video.video_url) && <source media="(min-width: 768px)" src={video.desktop_video_url || video.video_url || undefined} />}
+                    <source src={video.mobile_video_url || video.video_url || undefined} />
+                  </video>
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                   <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-white/20 px-3 py-1 text-[10px] font-medium uppercase tracking-wider text-white backdrop-blur-sm transition-opacity group-hover:opacity-0">
                     Toque para ver

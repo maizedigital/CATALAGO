@@ -40,9 +40,24 @@ export function BannerCarousel() {
 
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+  const dragStartX = useRef(0);
+  const dragEndX = useRef(0);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+  };
+  const handlePointerDown = (e: React.PointerEvent) => {
+    dragStartX.current = e.clientX;
+    dragEndX.current = e.clientX;
+  };
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (e.buttons > 0) dragEndX.current = e.clientX;
+  };
+  const handlePointerUp = () => {
+    const diff = dragStartX.current - dragEndX.current;
+    if (Math.abs(diff) > 50) (diff > 0 ? next : prev)();
+    dragStartX.current = 0;
+    dragEndX.current = 0;
   };
   const handleTouchMove = (e: React.TouchEvent) => {
     touchEndX.current = e.touches[0].clientX;
@@ -65,6 +80,11 @@ export function BannerCarousel() {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      style={{ touchAction: 'pan-y' }}
     >
       <div className="relative w-full" style={{ aspectRatio: '16 / 6' }}>
         {banners.map((banner, idx) => (
@@ -75,61 +95,46 @@ export function BannerCarousel() {
           >
             {banner.link_url ? (
               <a href={banner.link_url} target="_blank" rel="noreferrer" className="block h-full w-full">
+                <picture>
+                  {banner.desktop_image_url && <source media="(min-width: 768px)" srcSet={banner.desktop_image_url} />}
+                  <img
+                    src={banner.mobile_image_url || banner.image_url}
+                    alt={banner.title}
+                    className="h-full w-full object-cover"
+                    loading={idx === 0 ? 'eager' : 'lazy'}
+                    fetchPriority={idx === 0 ? 'high' : 'low'}
+                  />
+                </picture>
+              </a>
+            ) : (
+              <picture>
+                {banner.desktop_image_url && <source media="(min-width: 768px)" srcSet={banner.desktop_image_url} />}
                 <img
-                  src={banner.image_url}
+                  src={banner.mobile_image_url || banner.image_url}
                   alt={banner.title}
                   className="h-full w-full object-cover"
                   loading={idx === 0 ? 'eager' : 'lazy'}
                   fetchPriority={idx === 0 ? 'high' : 'low'}
                 />
-              </a>
-            ) : (
-              <img
-                src={banner.image_url}
-                alt={banner.title}
-                className="h-full w-full object-cover"
-                loading={idx === 0 ? 'eager' : 'lazy'}
-                fetchPriority={idx === 0 ? 'high' : 'low'}
-              />
+              </picture>
             )}
           </div>
         ))}
       </div>
 
       {banners.length > 1 && (
-        <>
-          <button
-            onClick={prev}
-            className="absolute left-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition-colors hover:bg-black/50 md:left-5 md:h-10 md:w-10"
-            aria-label="Banner anterior"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-          <button
-            onClick={next}
-            className="absolute right-3 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition-colors hover:bg-black/50 md:right-5 md:h-10 md:w-10"
-            aria-label="Próximo banner"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 18l6-6-6-6" />
-            </svg>
-          </button>
-
-          <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-2">
-            {banners.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrent(idx)}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  idx === current ? 'w-6 bg-white' : 'w-1.5 bg-white/50'
-                }`}
-                aria-label={`Ir para banner ${idx + 1}`}
-              />
-            ))}
-          </div>
-        </>
+        <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-2">
+          {banners.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrent(idx)}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                idx === current ? 'w-6 bg-white' : 'w-1.5 bg-white/50'
+              }`}
+              aria-label={`Ir para banner ${idx + 1}`}
+            />
+          ))}
+        </div>
       )}
     </section>
   );
