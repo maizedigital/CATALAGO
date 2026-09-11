@@ -2,21 +2,12 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Truck, ShieldCheck, RefreshCw, CreditCard } from 'lucide-react';
 import { Hero } from '@/components/Hero';
-import { BannerCarousel } from '@/components/BannerCarousel';
-import { VideoBanner } from '@/components/VideoBanner';
-import { CategoryBanner } from '@/components/CategoryBanner';
 import { ProductGrid } from '@/components/ProductGrid';
-import { PromoBanner } from '@/components/PromoBanner';
 import { useReveal } from '@/hooks/useReveal';
 import { useProducts } from '@/hooks/useProducts';
 import { useSEO } from '@/hooks/useSEO';
 import { siteConfig } from '@/config/site';
 import type { Product } from '@/types';
-
-const femImg =
-  'https://images.pexels.com/photos/31674938/pexels-photo-31674938.jpeg?auto=compress&cs=tinysrgb&h=800';
-const mascImg =
-  'https://images.pexels.com/photos/30688132/pexels-photo-30688132.jpeg?auto=compress&cs=tinysrgb&h=800';
 
 const trustBadges = [
   { icon: Truck, title: 'Frete fixo R$ 25,00', desc: 'Toda a Bahia' },
@@ -38,7 +29,7 @@ export default function Home() {
     title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description:
       'Catálogo oficial MB. Moda feminina e masculina com estilo, qualidade e atitude. Confira lançamentos, destaques e ofertas.',
-    image: femImg,
+
   });
 
   const [searchParams] = useSearchParams();
@@ -74,8 +65,6 @@ export default function Home() {
 
   return (
     <div>
-      <BannerCarousel />
-      <VideoBanner />
       <Hero />
 
       {/* Marquee */}
@@ -107,14 +96,6 @@ export default function Home() {
               </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-20">
-        <div className="grid gap-4 md:grid-cols-2 md:gap-6">
-          <CategoryBanner title="Feminino" subtitle="Coleção" image={femImg} to="/feminino" />
-          <CategoryBanner title="Masculino" subtitle="Coleção" image={mascImg} to="/masculino" />
         </div>
       </section>
 
@@ -153,7 +134,6 @@ export default function Home() {
         {loading ? <SkeletonGrid /> : <ProductGrid products={ofertas as Product[]} />}
       </section>
 
-      <PromoBanner />
     </div>
   );
 }
