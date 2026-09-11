@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Truck, ShieldCheck, RefreshCw, CreditCard } from 'lucide-react';
+import { BannerCarousel } from '@/components/BannerCarousel';
 import { Hero } from '@/components/Hero';
 import { ProductGrid } from '@/components/ProductGrid';
 import { useReveal } from '@/hooks/useReveal';
@@ -65,6 +66,7 @@ export default function Home() {
 
   return (
     <div>
+      <BannerCarousel />
       <Hero />
 
       {/* Marquee */}
