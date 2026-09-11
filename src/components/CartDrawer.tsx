@@ -4,7 +4,7 @@ import { X, Minus, Plus, Trash2, ShoppingBag, Truck } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { formatPrice, effectivePrice } from '@/lib/format';
 
-const FIXED_SHIPPING = 25;
+const FIXED_SHIPPING = 20;
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, updateQuantity, removeItem, total } = useCart();
@@ -57,7 +57,7 @@ export function CartDrawer() {
           <div className="border-b border-primary-100 bg-primary-50 px-5 py-3">
             <div className="flex items-center gap-2 text-xs text-primary-700">
               <Truck size={15} />
-              <span>Frete fixo de <strong className="font-bold">R$ 25,00</strong> para toda a Bahia</span>
+              <span>Frete fixo de <strong className="font-bold">R$ 20,00</strong> para toda a Bahia</span>
             </div>
           </div>
         )}

@@ -2,31 +2,25 @@ import { Link } from 'react-router-dom';
 import { Instagram, MessageCircle, MapPin, Clock, Globe } from 'lucide-react';
 import { siteConfig, whatsappLink } from '@/config/site';
 import { Logo } from '@/components/Logo';
+import { NewsletterSignup } from '@/components/NewsletterSignup';
 
 export function Footer() {
-  const handleWhatsApp = () => {
-    window.open(whatsappLink('Olá, MB! Quero receber novidades e ofertas em primeira mão.'), '_blank');
-  };
-
   return (
-    <footer className="border-t border-primary-200 bg-primary-50">
-      {/* WhatsApp opt-in band */}
-      <div className="border-b border-primary-200 bg-primary-900">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 py-12 text-center md:flex-row md:justify-between md:px-6 md:text-left">
+    <footer className="bg-black">
+      {/* Newsletter opt-in band */}
+      <div className="border-b border-white/10">
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 py-12 text-center md:px-6">
           <div>
             <h3 className="font-serif text-2xl font-bold text-white md:text-3xl">
-              Receba novidades em primeira mão
+              Receber novidades
             </h3>
             <p className="mt-2 text-sm text-white/60">
-              Lançamentos, ofertas exclusivas e conteúdos especiais direto no seu WhatsApp.
+              Cadastre seu nome e WhatsApp para receber lançamentos e ofertas da MB.
             </p>
           </div>
-          <button
-            onClick={handleWhatsApp}
-            className="inline-flex items-center gap-2 bg-white px-6 py-3.5 text-xs font-bold uppercase tracking-widest text-primary-950 transition-all duration-300 hover:scale-105 hover:bg-accent-400"
-          >
-            <MessageCircle size={16} /> Quero receber no WhatsApp
-          </button>
+          <div className="w-full max-w-md">
+            <NewsletterSignup />
+          </div>
         </div>
       </div>
 
@@ -37,7 +31,7 @@ export function Footer() {
             <div className="flex justify-center md:justify-start">
               <Logo />
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-primary-500">
+            <p className="mt-3 text-sm leading-relaxed text-white/50">
               {siteConfig.tagline}
             </p>
             <div className="mt-4 flex gap-3">
@@ -45,7 +39,7 @@ export function Footer() {
                 href={siteConfig.instagramUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-900 text-white transition-colors hover:bg-primary-700"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
                 aria-label="Instagram"
               >
                 <Instagram size={17} />
@@ -54,7 +48,7 @@ export function Footer() {
                 href={whatsappLink('Olá, MB!')}
                 target="_blank"
                 rel="noreferrer"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-900 text-white transition-colors hover:bg-primary-700"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
                 aria-label="WhatsApp"
               >
                 <MessageCircle size={17} />
@@ -63,64 +57,64 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-primary-900">
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-white">
               Compre
             </h3>
-            <ul className="space-y-2.5 text-sm text-primary-600">
-              <li><Link to="/feminino" className="transition-colors hover:text-primary-950">Feminino</Link></li>
-              <li><Link to="/masculino" className="transition-colors hover:text-primary-950">Masculino</Link></li>
-              <li><Link to="/?section=novidades" className="transition-colors hover:text-primary-950">Novidades</Link></li>
-              <li><Link to="/?section=ofertas" className="transition-colors hover:text-primary-950">Ofertas</Link></li>
+            <ul className="space-y-2.5 text-sm text-white/50">
+              <li><Link to="/feminino" className="transition-colors hover:text-white">Feminino</Link></li>
+              <li><Link to="/masculino" className="transition-colors hover:text-white">Masculino</Link></li>
+              <li><Link to="/?section=novidades" className="transition-colors hover:text-white">Novidades</Link></li>
+              <li><Link to="/?section=ofertas" className="transition-colors hover:text-white">Ofertas</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-primary-900">
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-white">
               Atendimento
             </h3>
-            <ul className="space-y-2.5 text-sm text-primary-600">
+            <ul className="space-y-2.5 text-sm text-white/50">
               <li>
-                <a href={whatsappLink('Olá, MB! Preciso de ajuda.')} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 transition-colors hover:text-primary-950">
+                <a href={whatsappLink('Olá, MB! Preciso de ajuda.')} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 transition-colors hover:text-white">
                   <MessageCircle size={15} /> WhatsApp
                 </a>
               </li>
-              <li><Link to="/contato" className="transition-colors hover:text-primary-950">Contato</Link></li>
-              <li><Link to="/sobre" className="transition-colors hover:text-primary-950">Sobre a MB</Link></li>
+              <li><Link to="/contato" className="transition-colors hover:text-white">Contato</Link></li>
+              <li><Link to="/sobre" className="transition-colors hover:text-white">Sobre a MB</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-primary-900">
+            <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-white">
               Loja física
             </h3>
-            <ul className="space-y-2.5 text-sm text-primary-600">
+            <ul className="space-y-2.5 text-sm text-white/50">
               <li className="flex items-start gap-2">
-                <MapPin size={15} className="mt-0.5 shrink-0 text-primary-400" /> {siteConfig.address}
+                <MapPin size={15} className="mt-0.5 shrink-0 text-white/30" /> {siteConfig.address}
               </li>
               <li className="flex items-start gap-2">
-                <Clock size={15} className="mt-0.5 shrink-0 text-primary-400" /> {siteConfig.hoursStore}
+                <Clock size={15} className="mt-0.5 shrink-0 text-white/30" /> {siteConfig.hoursStore}
               </li>
               <li className="flex items-start gap-2">
-                <Globe size={15} className="mt-0.5 shrink-0 text-primary-400" /> {siteConfig.hoursSite}
+                <Globe size={15} className="mt-0.5 shrink-0 text-white/30" /> {siteConfig.hoursSite}
               </li>
             </ul>
           </div>
         </div>
 
         {/* Payment */}
-        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-primary-200 pt-6 md:flex-row">
-          <p className="text-xs text-primary-400">
+        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 md:flex-row">
+          <p className="text-xs text-white/40">
             MB — Moda que combina com você
           </p>
-          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-primary-400">
-            <span className="rounded border border-primary-200 bg-white px-2 py-1">PIX</span>
-            <span className="rounded border border-primary-200 bg-white px-2 py-1">CARTÃO</span>
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-white/40">
+            <span className="rounded border border-white/20 px-2 py-1">PIX</span>
+            <span className="rounded border border-white/20 px-2 py-1">CARTÃO</span>
           </div>
         </div>
       </div>
 
       {/* Bottom bar */}
-      <div className="bg-black">
+      <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-8 text-center md:px-6">
           <Logo />
           <div>

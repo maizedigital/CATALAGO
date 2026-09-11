@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Truck, ShieldCheck, RefreshCw, CreditCard } from 'lucide-react';
 import { BannerCarousel } from '@/components/BannerCarousel';
 import { ProductGrid } from '@/components/ProductGrid';
+import { NewsletterSignup } from '@/components/NewsletterSignup';
 import { useReveal } from '@/hooks/useReveal';
 import { useProducts } from '@/hooks/useProducts';
 import { useSEO } from '@/hooks/useSEO';
@@ -10,7 +11,7 @@ import { siteConfig } from '@/config/site';
 import type { Product } from '@/types';
 
 const trustBadges = [
-  { icon: Truck, title: 'Frete fixo R$ 25,00', desc: 'Toda a Bahia' },
+  { icon: Truck, title: 'Frete fixo R$ 20,00', desc: 'Toda a Bahia' },
   { icon: ShieldCheck, title: 'Compra segura', desc: 'Dados protegidos' },
   { icon: CreditCard, title: 'Pagamento', desc: 'PIX e cartão' },
   { icon: RefreshCw, title: 'Site 24h', desc: '7 dias por semana' },
@@ -59,6 +60,9 @@ export default function Home() {
   return (
     <div>
       <BannerCarousel />
+
+      {/* Thin divider below main banner */}
+      <div className="mx-auto h-px w-full max-w-7xl bg-neutral-900" />
 
       {/* Trust badges */}
       <section className="mx-auto max-w-7xl px-4 py-8 md:px-6">
@@ -114,6 +118,21 @@ export default function Home() {
           </h2>
         </div>
         {loading ? <SkeletonGrid /> : <ProductGrid products={ofertas as Product[]} />}
+      </section>
+
+      {/* Newsletter signup */}
+      <section className="border-t border-neutral-200 px-4 py-12 md:px-6">
+        <div className="mx-auto max-w-7xl text-center">
+          <h2 className="font-serif text-2xl font-bold text-neutral-900 md:text-3xl">
+            Receber novidades
+          </h2>
+          <p className="mt-2 text-sm text-neutral-500">
+            Cadastre seu nome e WhatsApp para receber lançamentos e ofertas da MB.
+          </p>
+          <div className="mt-6">
+            <NewsletterSignup />
+          </div>
+        </div>
       </section>
 
     </div>

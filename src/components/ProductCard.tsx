@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import { Heart, ShoppingBag, Eye } from 'lucide-react';
+import { ShoppingBag, Eye } from 'lucide-react';
 import type { Product } from '@/types';
-import { formatPrice, discountPercent, effectivePrice } from '@/lib/format';
+import { formatPrice, effectivePrice } from '@/lib/format';
 import { useCart } from '@/hooks/useCart';
 
 export function ProductCard({ product }: { product: Product }) {
@@ -11,7 +10,6 @@ export function ProductCard({ product }: { product: Product }) {
   const hasDiscount = promo !== null && promo < price;
   const final = effectivePrice(price, promo);
   const { addItem } = useCart();
-  const [liked, setLiked] = useState(false);
 
   const quickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -40,41 +38,6 @@ export function ProductCard({ product }: { product: Product }) {
           />
         )}
 
-        {/* Top badges */}
-        <div className="absolute left-3 top-3 flex flex-col gap-1.5">
-          {product.new_arrival && (
-            <span className="bg-white/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-950 shadow-sm backdrop-blur-sm">
-              Novidade
-            </span>
-          )}
-          {hasDiscount && (
-            <span className="bg-accent-400 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-950 shadow-sm">
-              -{discountPercent(price, promo!)}%
-            </span>
-          )}
-          {product.on_sale && !hasDiscount && (
-            <span className="bg-primary-950 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
-              Oferta
-            </span>
-          )}
-        </div>
-
-        {/* Wishlist button */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setLiked((v) => !v);
-          }}
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-white"
-          aria-label="Favoritar"
-        >
-          <Heart
-            size={16}
-            className={`transition-colors ${liked ? 'fill-error-500 text-error-500' : 'text-primary-700'}`}
-          />
-        </button>
-
         {/* Quick actions bar (slides up on hover) */}
         <div className="absolute inset-x-0 bottom-0 translate-y-full transition-transform duration-400 ease-out group-hover:translate-y-0">
           <div className="flex items-center justify-center gap-2 bg-white/95 p-3 backdrop-blur-md">
@@ -92,14 +55,14 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
 
       <div className="mt-3 px-1 pb-1">
-        <h3 className="truncate text-sm font-medium text-primary-900 transition-colors duration-300 group-hover:text-primary-600">
+        <h3 className="text-[13px] font-semibold uppercase leading-snug tracking-wide text-neutral-900 transition-colors duration-300 group-hover:text-neutral-600">
           {product.name}
         </h3>
         <div className="mt-1 flex items-baseline gap-2">
           {hasDiscount && (
             <span className="text-xs text-neutral-400 line-through">{formatPrice(price)}</span>
           )}
-          <span className="text-sm font-semibold text-primary-900">{formatPrice(final)}</span>
+          <span className="text-sm font-semibold text-neutral-900">{formatPrice(final)}</span>
         </div>
       </div>
     </Link>

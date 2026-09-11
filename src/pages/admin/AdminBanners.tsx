@@ -305,13 +305,13 @@ export default function AdminBanners() {
                   <p className="mb-2 text-xs text-neutral-500">Tamanho recomendado: {BANNER_W} × {BANNER_H}px · JPG, PNG ou WebP · Máx 10MB</p>
                   {!form.image_url ? (
                     <div
-                      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-                      onDragLeave={() => setDragging(false)}
-                      onDrop={handleDrop}
+                      onDragOver={(e) => { e.preventDefault(); setDraggingField('image_url'); }}
+                      onDragLeave={() => setDraggingField(null)}
+                      onDrop={(e) => handleDrop(e, 'image_url')}
                       onClick={() => fileInputRef.current?.click()}
-                      className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed py-12 transition-colors ${dragging ? 'border-neutral-500 bg-neutral-800' : 'border-neutral-700 hover:border-neutral-600'}`}
+                      className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed py-12 transition-colors ${draggingField === 'image_url' ? 'border-neutral-500 bg-neutral-800' : 'border-neutral-700 hover:border-neutral-600'}`}
                     >
-                      {uploading ? <Loader2 className="h-7 w-7 animate-spin text-neutral-500" /> : (
+                      {uploadingField === 'image_url' ? <Loader2 className="h-7 w-7 animate-spin text-neutral-500" /> : (
                         <><Upload size={24} className="text-neutral-500" /><p className="mt-2 text-xs text-neutral-500">Clique ou arraste uma imagem</p></>
                       )}
                     </div>
@@ -341,13 +341,13 @@ export default function AdminBanners() {
                   <p className="mb-2 text-xs text-neutral-500">Formato vertical 9:16 · MP4, WebM ou OGG · Máx 100MB · Limite de {MAX_VIDEO_DURATION / 60} minuto(s)</p>
                   {!form.video_url ? (
                     <div
-                      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-                      onDragLeave={() => setDragging(false)}
-                      onDrop={handleDrop}
+                      onDragOver={(e) => { e.preventDefault(); setDraggingField('video_url'); }}
+                      onDragLeave={() => setDraggingField(null)}
+                      onDrop={(e) => handleDrop(e, 'video_url')}
                       onClick={() => fileInputRef.current?.click()}
-                      className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed py-12 transition-colors ${dragging ? 'border-neutral-500 bg-neutral-800' : 'border-neutral-700 hover:border-neutral-600'}`}
+                      className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed py-12 transition-colors ${draggingField === 'video_url' ? 'border-neutral-500 bg-neutral-800' : 'border-neutral-700 hover:border-neutral-600'}`}
                     >
-                      {uploading ? <Loader2 className="h-7 w-7 animate-spin text-neutral-500" /> : (
+                      {uploadingField === 'video_url' ? <Loader2 className="h-7 w-7 animate-spin text-neutral-500" /> : (
                         <><Upload size={24} className="text-neutral-500" /><p className="mt-2 text-xs text-neutral-500">Clique ou arraste um vídeo</p></>
                       )}
                     </div>
@@ -420,7 +420,7 @@ export default function AdminBanners() {
             </div>
 
             <div className="flex gap-3">
-              <button type="submit" disabled={saving || uploading || !!videoError} className="inline-flex items-center gap-2 rounded-lg bg-neutral-100 px-6 py-3 text-xs font-bold uppercase tracking-widest text-neutral-900 transition-colors hover:bg-white disabled:opacity-50">
+              <button type="submit" disabled={saving || !!uploadingField || !!videoError} className="inline-flex items-center gap-2 rounded-lg bg-neutral-100 px-6 py-3 text-xs font-bold uppercase tracking-widest text-neutral-900 transition-colors hover:bg-white disabled:opacity-50">
                 {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} {saving ? 'Salvando...' : 'Salvar'}
               </button>
               <button type="button" onClick={resetForm} className="rounded-lg border border-neutral-700 px-6 py-3 text-xs font-bold uppercase tracking-widest text-neutral-300 transition-colors hover:bg-neutral-800">Cancelar</button>
