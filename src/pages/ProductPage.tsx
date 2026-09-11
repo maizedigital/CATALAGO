@@ -127,23 +127,31 @@ export default function ProductPage() {
           <p className="text-xs font-medium uppercase tracking-widest text-neutral-400">
             {product.category} · {product.gender}
           </p>
-          <h1 className="mt-2 font-serif text-2xl font-bold text-neutral-900 md:text-3xl">
+          <h1 className="main-product-name mt-2 font-serif text-2xl font-bold text-neutral-900 md:text-3xl">
             {product.name}
+            <img
+              src="https://download.host2b.net/imagem/selo-veri.svg"
+              alt=""
+              className="ml-1 inline-block h-5 w-5 align-top"
+            />
           </h1>
 
-          <div className="mt-4 flex items-baseline gap-3">
+          <div className="main-product-prices mt-4 flex items-baseline gap-3">
             {hasDiscount && (
               <span className="text-sm text-neutral-400 line-through">
                 {formatPrice(product.price)}
               </span>
             )}
-            <span className="text-2xl font-bold text-neutral-900">{formatPrice(final)}</span>
+            <span className="text-2xl font-bold text-black" style={{ color: '#000' }}>{formatPrice(final)}</span>
             {hasDiscount && (
               <span className="bg-neutral-900 px-2 py-0.5 text-xs font-bold text-white">
                 -{discountPercent(product.price, product.promo_price!)}%
               </span>
             )}
           </div>
+          <p className="installment-text mt-1 text-xs text-neutral-500">
+            ou em até 3x sem juros no cartão
+          </p>
 
           <div className="mt-6">
             <ProductDescription raw={product.description} />

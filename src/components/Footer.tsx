@@ -63,8 +63,7 @@ export function Footer() {
             <ul className="space-y-2.5 text-sm text-white/50">
               <li><Link to="/feminino" className="transition-colors hover:text-white">Feminino</Link></li>
               <li><Link to="/masculino" className="transition-colors hover:text-white">Masculino</Link></li>
-              <li><Link to="/?section=novidades" className="transition-colors hover:text-white">Novidades</Link></li>
-              <li><Link to="/?section=ofertas" className="transition-colors hover:text-white">Ofertas</Link></li>
+              <li><Link to="/ofertas" className="transition-colors hover:text-white">Ofertas</Link></li>
             </ul>
           </div>
 

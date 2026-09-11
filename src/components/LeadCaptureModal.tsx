@@ -91,27 +91,24 @@ export function LeadCaptureModal() {
     const rawDigits = whatsapp.replace(/\D/g, '');
     const origin = detectOrigin();
 
-    const { data: existing } = await supabase
+    const { error: upsertError } = await supabase
       .from('leads')
-      .select('id')
-      .eq('whatsapp', rawDigits)
-      .maybeSingle();
+      .upsert(
+        {
+          name: name.trim(),
+          whatsapp: rawDigits,
+          origin,
+          status: 'novo',
+          last_interaction: 'Cadastro no catálogo',
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'whatsapp' }
+      );
 
-    if (existing) {
-      await supabase.from('leads').update({
-        name: name.trim(),
-        origin,
-        last_interaction: 'Cadastro no catálogo',
-        updated_at: new Date().toISOString(),
-      }).eq('id', existing.id);
-    } else {
-      await supabase.from('leads').insert({
-        name: name.trim(),
-        whatsapp: rawDigits,
-        origin,
-        status: 'novo',
-        last_interaction: 'Cadastro no catálogo',
-      });
+    if (upsertError) {
+      setWhatsappError('Erro ao cadastrar. Tente novamente.');
+      setSubmitting(false);
+      return;
     }
 
     setWhatsappId(rawDigits);

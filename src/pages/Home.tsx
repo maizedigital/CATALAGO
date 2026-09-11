@@ -1,140 +1,105 @@
-import { useEffect, useRef, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Truck, ShieldCheck, RefreshCw, CreditCard } from 'lucide-react';
-import { BannerCarousel } from '@/components/BannerCarousel';
-import { ProductGrid } from '@/components/ProductGrid';
-import { NewsletterSignup } from '@/components/NewsletterSignup';
-import { useReveal } from '@/hooks/useReveal';
-import { useProducts } from '@/hooks/useProducts';
 import { useSEO } from '@/hooks/useSEO';
 import { siteConfig } from '@/config/site';
-import type { Product } from '@/types';
+import { BannerCarousel } from '@/components/BannerCarousel';
+import { ProductGrid } from '@/components/ProductGrid';
+import { useProducts } from '@/hooks/useProducts';
+import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
 
-const trustBadges = [
-  { icon: Truck, title: 'Frete fixo R$ 20,00', desc: 'Toda a Bahia' },
-  { icon: ShieldCheck, title: 'Compra segura', desc: 'Dados protegidos' },
-  { icon: CreditCard, title: 'Pagamento', desc: 'PIX e cartão' },
-  { icon: RefreshCw, title: 'Site 24h', desc: '7 dias por semana' },
-];
+const gradientBar = {
+  background:
+    'linear-gradient(to right, rgb(255,255,74), rgb(252,208,0), rgb(255,193,18), rgb(255,193,18), rgb(255,138,0), rgb(255,95,95), rgb(255,37,58), rgb(255,55,168), rgb(199,57,255), rgb(164,0,225), rgb(46,206,255), rgb(0,134,255), rgb(114,247,114), rgb(0,214,4))',
+} as const;
 
 export default function Home() {
   const { products, loading } = useProducts();
   useSEO({
     title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description:
-      'Catálogo oficial MB. Moda feminina e masculina com estilo, qualidade e atitude. Confira lançamentos, destaques e ofertas.',
-
+      'Catálogo oficial MB. Moda feminina e masculina com estilo, qualidade e atitude. Confira lançamentos e ofertas.',
   });
 
-  const [searchParams] = useSearchParams();
-  const section = searchParams.get('section');
-  const novidadesScrollRef = useRef<HTMLDivElement | null>(null);
-  const ofertasScrollRef = useRef<HTMLDivElement | null>(null);
+  const categories = useMemo(() => {
+    const set = new Set(products.map((p) => p.category).filter(Boolean));
+    return [...set].sort();
+  }, [products]);
 
-  const { ref: featuredRef, inView: featuredInView } = useReveal<HTMLDivElement>();
-  const { ref: novidadesReveal, inView: novidadesInView } = useReveal<HTMLDivElement>();
-  const { ref: ofertasReveal, inView: ofertasInView } = useReveal<HTMLDivElement>();
-
-  const setNovidadesRef = useCallback((el: HTMLDivElement | null) => {
-    novidadesScrollRef.current = el;
-    novidadesReveal.current = el;
-  }, [novidadesReveal]);
-
-  const setOfertasRef = useCallback((el: HTMLDivElement | null) => {
-    ofertasScrollRef.current = el;
-    ofertasReveal.current = el;
-  }, [ofertasReveal]);
-
-  useEffect(() => {
-    if (!section) return;
-    const target = section === 'novidades' ? novidadesScrollRef : section === 'ofertas' ? ofertasScrollRef : null;
-    if (target?.current) {
-      setTimeout(() => target.current!.scrollIntoView({ behavior: 'smooth' }), 200);
-    }
-  }, [section, loading]);
-
-  const featured = products.filter((p) => p.featured).slice(0, 8);
-  const novidades = products.filter((p) => p.new_arrival).slice(0, 8);
-  const ofertas = products.filter((p) => p.on_sale || (p.promo_price !== null && p.promo_price < p.price)).slice(0, 8);
+  const ofertas = useMemo(
+    () =>
+      products
+        .filter((p) => p.on_sale || (p.promo_price !== null && p.promo_price < p.price))
+        .slice(0, 8),
+    [products]
+  );
 
   return (
     <div>
       <BannerCarousel />
 
-      {/* Thin divider below main banner */}
-      <div className="mx-auto h-px w-full max-w-7xl bg-neutral-900" />
+      {/* 6px multicolor gradient bar */}
+      <div className="h-[6px] w-full" style={gradientBar} />
 
-      {/* Trust badges */}
-      <section className="mx-auto max-w-7xl px-4 py-8 md:px-6">
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8">
-          {trustBadges.map((badge, i) => (
-            <div
-              key={badge.title}
-              className="flex items-center gap-3 animate-fade-up"
-              style={{ animationDelay: `${i * 100}ms` }}
+      {/* Category navigation */}
+      <section className="border-b border-neutral-200 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-4 md:px-6">
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
+            <Link
+              to="/feminino"
+              className="shrink-0 px-4 py-2 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900"
             >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-100">
-                <badge.icon size={20} className="text-primary-700" />
-              </div>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-primary-900">{badge.title}</p>
-                <p className="text-[11px] text-primary-500">{badge.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Destaques */}
-      <section ref={featuredRef} className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-20">
-        <div className={`mb-10 text-center transition-all duration-700 ${featuredInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          <p className="mb-2 text-xs font-bold uppercase tracking-[0.25em] text-primary-400">Selecionados</p>
-          <h2 className="font-serif text-3xl font-bold tracking-tight text-primary-900 md:text-5xl">
-            Destaques MB
-          </h2>
-        </div>
-        {loading ? <SkeletonGrid /> : <ProductGrid products={featured} />}
-      </section>
-
-      {/* Novidades */}
-      <section ref={setNovidadesRef} className="bg-primary-50 px-4 py-12 md:px-6 md:py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className={`mb-10 text-center transition-all duration-700 ${novidadesInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-            <p className="mb-2 text-xs font-bold uppercase tracking-[0.25em] text-primary-400">Recém-chegados</p>
-            <h2 className="font-serif text-3xl font-bold tracking-tight text-primary-900 md:text-5xl">
-              Novidades
-            </h2>
+              Feminino
+            </Link>
+            <Link
+              to="/masculino"
+              className="shrink-0 px-4 py-2 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900"
+            >
+              Masculino
+            </Link>
+            {categories.map((cat) => (
+              <Link
+                key={cat}
+                to={`/categoria/${encodeURIComponent(cat.toLowerCase())}`}
+                className="shrink-0 px-4 py-2 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900"
+              >
+                {cat}
+              </Link>
+            ))}
+            <Link
+              to="/ofertas"
+              className="shrink-0 px-4 py-2 text-xs font-bold uppercase tracking-wider text-neutral-900 underline underline-offset-4"
+            >
+              Ofertas
+            </Link>
           </div>
-          {loading ? <SkeletonGrid /> : <ProductGrid products={novidades} />}
         </div>
       </section>
 
-      {/* Ofertas */}
-      <section ref={setOfertasRef} className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-20">
-        <div className={`mb-10 text-center transition-all duration-700 ${ofertasInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          <p className="mb-2 text-xs font-bold uppercase tracking-[0.25em] text-primary-900">Preços especiais</p>
-          <h2 className="font-serif text-3xl font-bold tracking-tight text-primary-900 md:text-5xl">
-            Ofertas
-          </h2>
-        </div>
-        {loading ? <SkeletonGrid /> : <ProductGrid products={ofertas as Product[]} />}
-      </section>
-
-      {/* Newsletter signup */}
-      <section className="border-t border-neutral-200 px-4 py-12 md:px-6">
-        <div className="mx-auto max-w-7xl text-center">
-          <h2 className="font-serif text-2xl font-bold text-neutral-900 md:text-3xl">
-            Receber novidades
+      {/* All products grid */}
+      <section className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
+        <div className="mb-10 text-center">
+          <h2 className="font-serif text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">
+            Catálogo MB
           </h2>
           <p className="mt-2 text-sm text-neutral-500">
-            Cadastre seu nome e WhatsApp para receber lançamentos e ofertas da MB.
+            {loading ? '' : `${products.length} produtos disponíveis`}
           </p>
-          <div className="mt-6">
-            <NewsletterSignup />
-          </div>
         </div>
+        {loading ? <SkeletonGrid /> : <ProductGrid products={products} />}
       </section>
 
+      {/* Ofertas section */}
+      {ofertas.length > 0 && (
+        <section className="bg-neutral-50 px-4 py-12 md:px-6 md:py-16">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-10 text-center">
+              <h2 className="font-serif text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">
+                Ofertas
+              </h2>
+            </div>
+            {loading ? <SkeletonGrid /> : <ProductGrid products={ofertas} />}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

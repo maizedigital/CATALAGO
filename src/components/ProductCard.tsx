@@ -20,6 +20,12 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <Link to={`/produto/${product.slug}`} className="group block overflow-hidden rounded-lg border border-neutral-200 transition-colors hover:border-neutral-400">
       <div className="relative aspect-[3/4] overflow-hidden bg-neutral-100">
+        {/* OFERTAS badge — only when product is on sale */}
+        {hasDiscount && (
+          <span className="absolute left-2 top-2 z-10 bg-black px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-white">
+            Ofertas
+          </span>
+        )}
         {/* Primary image */}
         <img
           src={product.images[0]}

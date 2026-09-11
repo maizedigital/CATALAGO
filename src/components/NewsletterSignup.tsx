@@ -9,14 +9,6 @@ function formatWhatsApp(input: string): string {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
-function normalizeWhatsApp(input: string): string {
-  let digits = input.replace(/\D/g, '');
-  if (digits.length === 11 || digits.length === 10) {
-    digits = '55' + digits;
-  }
-  return digits;
-}
-
 function validateWhatsApp(input: string): boolean {
   const digits = input.replace(/\D/g, '');
   return digits.length === 10 || digits.length === 11;
@@ -44,30 +36,25 @@ export function NewsletterSignup() {
     setError('');
 
     const rawDigits = whatsapp.replace(/\D/g, '');
-    const normalized = normalizeWhatsApp(whatsapp);
 
     try {
-      const { data: existing } = await supabase
+      const { error: upsertError } = await supabase
         .from('leads')
-        .select('id')
-        .eq('whatsapp', rawDigits)
-        .maybeSingle();
+        .upsert(
+          {
+            name: name.trim(),
+            whatsapp: rawDigits,
+            origin: 'newsletter',
+            status: 'novo',
+            last_interaction: 'Inscrição novidades',
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'whatsapp' }
+        );
 
-      if (existing) {
-        await supabase.from('leads').update({
-          name: name.trim(),
-          origin: 'newsletter',
-          last_interaction: 'Inscrição novidades',
-          updated_at: new Date().toISOString(),
-        }).eq('id', existing.id);
-      } else {
-        await supabase.from('leads').insert({
-          name: name.trim(),
-          whatsapp: rawDigits,
-          origin: 'newsletter',
-          status: 'novo',
-          last_interaction: 'Inscrição novidades',
-        });
+      if (upsertError) {
+        setError('Erro ao cadastrar. Tente novamente.');
+        return;
       }
 
       setSuccess(true);
@@ -83,7 +70,7 @@ export function NewsletterSignup() {
   if (success) {
     return (
       <div className="mx-auto max-w-md text-center">
-        <p className="text-sm font-medium text-neutral-900">
+        <p className="text-sm font-medium text-white">
           Cadastro realizado com sucesso. Você receberá nossas novidades.
         </p>
       </div>
@@ -97,20 +84,20 @@ export function NewsletterSignup() {
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Nome"
-        className="w-full border-b border-neutral-300 bg-transparent py-2.5 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 focus:border-neutral-900"
+        className="w-full border-b border-white/30 bg-transparent py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/40 focus:border-white"
       />
       <input
         type="tel"
         value={whatsapp}
         onChange={(e) => setWhatsapp(formatWhatsApp(e.target.value))}
         placeholder="WhatsApp"
-        className="w-full border-b border-neutral-300 bg-transparent py-2.5 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 focus:border-neutral-900"
+        className="w-full border-b border-white/30 bg-transparent py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/40 focus:border-white"
       />
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-xs text-red-400">{error}</p>}
       <button
         type="submit"
         disabled={submitting}
-        className="mt-2 self-center border border-neutral-900 px-8 py-3 text-[11px] font-bold uppercase tracking-widest text-neutral-900 transition-colors hover:bg-neutral-900 hover:text-white disabled:opacity-50"
+        className="mt-2 self-center border border-white px-8 py-3 text-[11px] font-bold uppercase tracking-widest text-white transition-colors hover:bg-white hover:text-black disabled:opacity-50"
       >
         {submitting ? 'Enviando...' : 'Quero receber novidades'}
       </button>
