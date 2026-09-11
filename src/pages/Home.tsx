@@ -1,28 +1,12 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Truck, ShieldCheck, RefreshCw, CreditCard } from 'lucide-react';
 import { BannerCarousel } from '@/components/BannerCarousel';
-import { Hero } from '@/components/Hero';
 import { ProductGrid } from '@/components/ProductGrid';
 import { useReveal } from '@/hooks/useReveal';
 import { useProducts } from '@/hooks/useProducts';
 import { useSEO } from '@/hooks/useSEO';
 import { siteConfig } from '@/config/site';
 import type { Product } from '@/types';
-
-const trustBadges = [
-  { icon: Truck, title: 'Frete fixo R$ 25,00', desc: 'Toda a Bahia' },
-  { icon: ShieldCheck, title: 'Compra segura', desc: 'Dados protegidos' },
-  { icon: CreditCard, title: 'Pagamento', desc: 'PIX e cartão' },
-  { icon: RefreshCw, title: 'Site 24h', desc: '7 dias por semana' },
-];
-
-const marqueeItems = [
-  'FRETE FIXO DE R$ 25,00 PARA TODA A BAHIA',
-  'MODA QUE COMBINA COM VOCÊ',
-  'SITE 24 HORAS, 7 DIAS POR SEMANA',
-  'PAGAMENTO VIA PIX E CARTÃO',
-];
 
 export default function Home() {
   const { products, loading } = useProducts();
@@ -67,39 +51,6 @@ export default function Home() {
   return (
     <div>
       <BannerCarousel />
-      <Hero />
-
-      {/* Marquee */}
-      <div className="overflow-hidden border-y border-primary-900 bg-primary-950 py-3">
-        <div className="flex w-max animate-marquee gap-12 whitespace-nowrap">
-          {[...marqueeItems, ...marqueeItems].map((item, i) => (
-            <span key={i} className="text-xs font-bold uppercase tracking-[0.2em] text-white/80">
-              {item} <span className="ml-12 text-neutral-500">·</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Trust badges */}
-      <section className="mx-auto max-w-7xl px-4 py-8 md:px-6">
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8">
-          {trustBadges.map((badge, i) => (
-            <div
-              key={badge.title}
-              className="flex items-center gap-3 animate-fade-up"
-              style={{ animationDelay: `${i * 100}ms` }}
-            >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-100">
-                <badge.icon size={20} className="text-primary-700" />
-              </div>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-primary-900">{badge.title}</p>
-                <p className="text-[11px] text-primary-500">{badge.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* Destaques */}
       <section ref={featuredRef} className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-20">
