@@ -1,7 +1,120 @@
-For all designs I ask you to make, have them be beautiful, not cookie cutter. Make webpages that are fully featured and worthy for production.
+## 24. DESIGN QUALITY
 
-By default, this template supports JSX syntax with Tailwind CSS classes, React hooks, and Lucide React for icons. Do not install other packages for UI themes, icons, etc unless absolutely necessary or I request them.
+For every interface or visual design requested in this project:
 
-Use icons from lucide-react for logos.
+* Create beautiful, distinctive, production-quality interfaces.
+* Avoid generic, cookie-cutter SaaS templates.
+* Avoid repetitive AI-generated visual patterns.
+* Designs should feel intentional, premium and professionally designed.
+* Prioritize strong visual hierarchy, spacing, typography, composition and usability.
+* Every page should feel complete and production-ready, not like a prototype.
+* Use the existing MB visual identity when working on the MB catalog.
+* Do not add decorative elements just for the sake of decoration.
+* Visual complexity should serve usability and brand perception.
 
-Import project modules with the `@/` path alias, which maps to `src/` (e.g. `@/components/Foo` == `src/components/Foo`), instead of deep relative paths like `../../components/Foo`.
+When improving an existing page, preserve what already works and improve only what is necessary.
+
+---
+
+## 25. UI TECHNOLOGY
+
+The default UI stack for this project is:
+
+* JSX
+* React
+* Tailwind CSS
+* React Hooks
+* lucide-react
+
+Do NOT install additional UI libraries, icon libraries, theme packages, component frameworks or design systems unless:
+
+1. They are absolutely necessary for the requested functionality, or
+2. The user explicitly requests them.
+
+Prefer the existing project components and Tailwind utilities.
+
+---
+
+## 26. ICONS
+
+Use icons from `lucide-react` whenever an interface icon is required.
+
+Do not install another icon library.
+
+Do not use random Unicode characters or emoji as substitutes for interface icons when a suitable Lucide icon exists.
+
+For brand logos:
+
+* Preserve and use the actual project logo/assets when available.
+* Do not replace a real brand logo with a generic Lucide icon.
+* Lucide icons may be used for interface controls around the brand, not as a replacement for the actual MB logo.
+
+---
+
+## 27. IMPORT ALIAS
+
+Always prefer the project's `@/` path alias for internal project modules.
+
+Example:
+
+```tsx
+import Foo from "@/components/Foo";
+```
+
+instead of:
+
+```tsx
+import Foo from "../../components/Foo";
+```
+
+Use `@/` for imports from `src/`.
+
+Follow the existing project import conventions when a specific exception is technically required.
+
+---
+
+## 28. DO NOT CHANGE THE STACK WITHOUT A REASON
+
+The existing stack is already suitable for this project.
+
+Do not introduce alternative UI frameworks, icon systems, styling systems or unnecessary packages simply because they are available.
+
+Before adding a dependency, first determine whether the existing:
+
+* React
+* Tailwind
+* lucide-react
+* project utilities
+* existing components
+
+can solve the problem.
+
+Prefer zero new dependencies whenever possible.
+
+---
+
+## 29. PRODUCTION STANDARD
+
+Treat every requested interface as if it will be used by real customers immediately after deployment.
+
+Before considering a UI task complete, verify:
+
+* responsive behavior
+* desktop layout
+* mobile layout
+* visual hierarchy
+* accessibility
+* interactive states
+* hover/focus states where appropriate
+* loading states where relevant
+* empty states where relevant
+* error states where relevant
+* typography consistency
+* spacing consistency
+* no duplicated components
+* no broken imports
+* no console/build errors
+
+Do not stop at "it renders."
+
+The result must be visually polished and technically production-ready.
