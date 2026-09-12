@@ -30,7 +30,7 @@ export default function Catalog({ gender, offersOnly }: { gender?: Gender; offer
         ? 'Geral — MB'
         : urlCategory
           ? `${decodeURIComponent(urlCategory)} — MB`
-          : `${isFemale ? 'Feminino' : 'Masculino'} — MB',
+          : `${isFemale ? 'Feminino' : 'Masculino'} — MB`,
     description: offersOnly
       ? 'Ofertas especiais da MB. Aproveite os melhores preços.'
       : `Catálogo ${isFemale ? 'feminino' : 'masculino'} MB. Filtre por categoria, tamanho, cor e preço.`,

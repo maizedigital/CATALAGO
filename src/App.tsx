@@ -17,7 +17,6 @@ observer.observe(document.body, { childList: true, subtree: true });
 
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { WhatsAppButton } from '@/components/WhatsAppButton';
 import { CartDrawer } from '@/components/CartDrawer';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
@@ -85,7 +84,6 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       <main className="flex-1">{children}</main>
       <Footer />
       <CartDrawer />
-      <WhatsAppButton />
     </div>
   );
 }
