@@ -58,7 +58,7 @@ export default function AdminSettings() {
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordError(null); setPasswordSuccess(false);
-    if (newPassword.length < 4) { setPasswordError('A nova senha deve ter pelo menos 4 caracteres'); return; }
+    if (newPassword.length < 10) { setPasswordError('A nova senha deve ter pelo menos 10 caracteres'); return; }
     if (newPassword !== confirmPassword) { setPasswordError('As senhas não coincidem'); return; }
     setSavingPassword(true);
     try {

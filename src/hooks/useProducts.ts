@@ -2,6 +2,15 @@ import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Product } from '@/types';
 
+// Public catalogue columns only. Cost, supplier and other internal fields are
+// never sent to the storefront.
+const PUBLIC_PRODUCT_COLUMNS =
+  'id, sku, name, slug, category, subcategory, gender, product_type, description, price, promo_price, images, sizes, colors, stock, featured, bestseller, new_arrival, on_sale, active, created_at';
+
+// PostgREST parses `or` filters from a string, so user input must not be able to
+// introduce extra filter terms.
+const escapeFilter = (value: string) => value.replace(/[(),.:"\\*]/g, ' ').trim();
+
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +22,7 @@ export function useProducts() {
       setLoading(true);
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(PUBLIC_PRODUCT_COLUMNS)
         .eq('active', true)
         .order('created_at', { ascending: false });
       if (cancelled) return;
@@ -21,12 +30,12 @@ export function useProducts() {
         // Fallback: se a coluna active não existir, busca sem filtro
         const { data: fallback } = await supabase
           .from('products')
-          .select('*')
+          .select(PUBLIC_PRODUCT_COLUMNS)
           .order('created_at', { ascending: false });
         if (cancelled) return;
-        setProducts((fallback ?? []) as Product[]);
+        setProducts((fallback ?? []) as unknown as Product[]);
         setError(null);
-      } else setProducts((data ?? []) as Product[]);
+      } else setProducts((data ?? []) as unknown as Product[]);
       setLoading(false);
     })();
     return () => {
@@ -52,12 +61,14 @@ export function useProduct(slug: string | undefined) {
       setLoading(true);
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(PUBLIC_PRODUCT_COLUMNS)
         .eq('slug', slug)
         .maybeSingle();
       if (cancelled) return;
-      if (error) setError(error.message);
-      else setProduct(data as Product | null);
+      if (error) {
+        console.error('Falha ao carregar o produto', error);
+        setError('Nao foi possivel carregar este produto. Tente novamente.');
+      } else setProduct(data as unknown as Product | null);
       setLoading(false);
     })();
     return () => {
@@ -74,10 +85,16 @@ export function useSearch(query: string) {
 
   const search = useCallback(async (q: string) => {
     setLoading(true);
-    const { data } = await supabase.from('products').select('*').or(
-      `name.ilike.%${q}%,sku.ilike.%${q}%,category.ilike.%${q}%,description.ilike.%${q}%`
+    const term = escapeFilter(q);
+    if (!term) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
+    const { data } = await supabase.from('products').select(PUBLIC_PRODUCT_COLUMNS).or(
+      `name.ilike.%${term}%,sku.ilike.%${term}%,category.ilike.%${term}%,description.ilike.%${term}%`
     ).order('created_at', { ascending: false });
-    setResults((data ?? []) as Product[]);
+    setResults((data ?? []) as unknown as Product[]);
     setLoading(false);
   }, []);
 

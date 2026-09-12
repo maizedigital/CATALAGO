@@ -7,6 +7,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
+const SESSION_TTL_HOURS = 12;
+
+async function sha256Hex(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
@@ -53,16 +62,41 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Generate a simple session token (timestamp + random + base64)
-    const token = btoa(`${admin.id}:${Date.now()}:${crypto.randomUUID()}`);
+    // Issue a high-entropy session token and persist only its hash so the
+    // admin-api can verify it server-side on every request.
+    const raw = new Uint8Array(32);
+    crypto.getRandomValues(raw);
+    const token = Array.from(raw)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    const tokenHash = await sha256Hex(token);
+    const expiresAt = new Date(Date.now() + SESSION_TTL_HOURS * 3600 * 1000).toISOString();
+
+    const { error: sessionError } = await supabase.from("admin_sessions").insert({
+      admin_id: admin.id,
+      token_hash: tokenHash,
+      expires_at: expiresAt,
+    });
+
+    if (sessionError) {
+      console.error("admin-login session insert failed", sessionError);
+      return new Response(
+        JSON.stringify({ error: "Não foi possível iniciar a sessão" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Best-effort cleanup of expired sessions.
+    await supabase.from("admin_sessions").delete().lt("expires_at", new Date().toISOString());
 
     return new Response(
       JSON.stringify({ token, username: admin.username, id: admin.id }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
+    console.error("admin-login error", err);
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({ error: "Erro interno" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

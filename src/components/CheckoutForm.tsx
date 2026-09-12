@@ -61,45 +61,18 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
 
     let saved = false;
     try {
-      const { data: existing } = await supabase
-        .from('customers')
-        .select('id, orders_count, total_spent')
-        .eq('whatsapp', form.whatsapp)
-        .maybeSingle();
-
-      if (existing) {
-        const { error } = await supabase
-          .from('customers')
-          .update({
-            name: form.name,
-            cpf: form.cpf || null,
-            last_purchase: new Date().toISOString(),
-            last_contact: new Date().toISOString(),
-            orders_count: (existing.orders_count || 0) + 1,
-            total_spent: (existing.total_spent || 0) + total,
-            status: (existing.orders_count || 0) >= 1 ? 'cliente recorrente' : 'cliente',
-          })
-          .eq('id', existing.id);
-        if (!error) saved = true;
-      } else {
-        const { error } = await supabase.from('customers').insert({
-          name: form.name,
-          whatsapp: form.whatsapp,
-          cpf: form.cpf || null,
-          origin: 'site',
-          status: 'cliente',
-          last_purchase: new Date().toISOString(),
-          last_contact: new Date().toISOString(),
-          orders_count: 1,
-          total_spent: total,
-        });
-        if (!error) saved = true;
-      }
-
-      await supabase
-        .from('leads')
-        .update({ status: 'cliente', last_interaction: new Date().toISOString() })
-        .eq('whatsapp', form.whatsapp);
+      // The order total is recalculated on the server from the catalogue prices,
+      // so only the shopper's own details and the chosen items are sent here.
+      const { error } = await supabase.rpc('record_checkout_customer', {
+        p_name: form.name,
+        p_whatsapp: form.whatsapp,
+        p_cpf: form.cpf || null,
+        p_items: items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        })),
+      });
+      if (!error) saved = true;
     } catch {
       // CRM errors won't block checkout
     }

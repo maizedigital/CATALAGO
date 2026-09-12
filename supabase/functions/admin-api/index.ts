@@ -8,6 +8,16 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey, X-Admin-Token",
 };
 
+// Resources reachable without an admin session. Everything else requires one.
+const PUBLIC_RESOURCES = new Set(["go"]);
+
+async function sha256Hex(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
@@ -26,6 +36,26 @@ Deno.serve(async (req: Request) => {
     const resource = segments[0] || "";
     const id = segments[1];
     const subResource = segments[2];
+
+    // --- Admin session gate ---
+    // This function holds the service role key, which bypasses row level security,
+    // so every non-public resource must prove it carries a live admin session.
+    let currentAdminId: string | null = null;
+    if (!PUBLIC_RESOURCES.has(resource)) {
+      const token = req.headers.get("X-Admin-Token") || "";
+      if (!token || token.length < 32) return jsonError("Nao autorizado", 401);
+
+      const { data: session } = await supabase
+        .from("admin_sessions")
+        .select("admin_id, expires_at")
+        .eq("token_hash", await sha256Hex(token))
+        .maybeSingle();
+
+      if (!session || new Date(session.expires_at).getTime() <= Date.now()) {
+        return jsonError("Nao autorizado", 401);
+      }
+      currentAdminId = session.admin_id as string;
+    }
 
     // --- Dashboard stats ---
     if (resource === "dashboard" && req.method === "GET") {
@@ -189,7 +219,7 @@ Deno.serve(async (req: Request) => {
         const { data, error } = await supabase
           .from("customer_events")
           .select("*")
-          .or(`visitor_id.eq.${id},whatsapp.eq.${id}`)
+          .or(`visitor_id.eq.${safeFilterValue(id)},whatsapp.eq.${safeFilterValue(id)}`)
           .order("created_at", { ascending: false })
           .limit(200);
         return okOrError(data, error);
@@ -205,7 +235,7 @@ Deno.serve(async (req: Request) => {
         const { data, error } = await supabase
           .from("orders")
           .select("*, order_items(*)")
-          .or(`customer_id.eq.${id},customer_whatsapp.eq.${wa}`)
+          .or(`customer_id.eq.${safeFilterValue(id)},customer_whatsapp.eq.${safeFilterValue(wa)}`)
           .order("created_at", { ascending: false });
         return okOrError(data, error);
       }
@@ -407,26 +437,40 @@ Deno.serve(async (req: Request) => {
 
     // --- Change password ---
     if (resource === "change-password" && req.method === "POST") {
-      const { username, currentPassword, newPassword } = await req.json();
+      const { currentPassword, newPassword } = await req.json();
+
+      if (typeof newPassword !== "string" || newPassword.length < 10) {
+        return jsonError("A nova senha deve ter pelo menos 10 caracteres", 400);
+      }
+
+      // The account comes from the verified session, never from the request body,
+      // and both failure branches return the same message so the endpoint cannot
+      // be used to discover which usernames exist.
       const { data: admin } = await supabase
         .from("admin_users")
         .select("id, password_hash")
-        .eq("username", username)
+        .eq("id", currentAdminId)
         .maybeSingle();
-      if (!admin) return jsonError("Usuario nao encontrado", 404);
 
-      const { data: valid } = await supabase.rpc("verify_password", {
-        p_password: currentPassword,
-        p_hash: admin.password_hash,
-      });
-      if (!valid) return jsonError("Senha atual incorreta", 401);
+      const { data: valid } = admin
+        ? await supabase.rpc("verify_password", {
+            p_password: currentPassword,
+            p_hash: admin.password_hash,
+          })
+        : { data: false };
+
+      if (!admin || !valid) return jsonError("Senha atual incorreta", 401);
 
       const { data: newHash } = await supabase.rpc("hash_password", { p_password: newPassword });
       const { error } = await supabase
         .from("admin_users")
         .update({ password_hash: newHash, updated_at: new Date().toISOString() })
         .eq("id", admin.id);
-      return okOrError({ success: true }, error);
+      if (error) return jsonError("Nao foi possivel alterar a senha", 400);
+
+      // Changing the password invalidates every existing session.
+      await supabase.from("admin_sessions").delete().eq("admin_id", admin.id);
+      return json({ success: true });
     }
 
     // --- Banners CRUD ---
@@ -591,10 +635,16 @@ Deno.serve(async (req: Request) => {
 
     return jsonError("Recurso nao encontrado", 404);
   } catch (err) {
-    return jsonError(err.message, 500);
+    console.error("admin-api error", err);
+    return jsonError("Erro interno", 500);
   }
 });
 
+// PostgREST `or` filters are parsed from a string, so a raw path segment could
+// otherwise inject extra filter terms. Quote the value and escape the quotes.
+function safeFilterValue(value: string) {
+  return `"${String(value).replace(/[\\"]/g, "")}"`;
+}
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), {
     status,

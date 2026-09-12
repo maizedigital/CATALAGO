@@ -16,10 +16,21 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   const res = await fetch(apiUrl(path), { ...options, headers });
   if (!res.ok) {
+    if (res.status === 401) handleExpiredSession();
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || `Erro ${res.status}`);
   }
   return res.json();
+}
+
+// The server now validates the admin session, so a 401 means the stored token is
+// expired or invalid. Clear it and send the user back to the login screen.
+function handleExpiredSession() {
+  localStorage.removeItem('mb_admin_token');
+  localStorage.removeItem('mb_admin_user');
+  if (!window.location.pathname.startsWith('/admin/login')) {
+    window.location.href = '/admin/login';
+  }
 }
 
 export const adminApi = {
