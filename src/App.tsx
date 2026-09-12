@@ -32,6 +32,7 @@ import Search from '@/pages/Search';
 import About from '@/pages/About';
 import Contact from '@/pages/Contact';
 import NotFound from '@/pages/NotFound';
+import Presentation from '@/pages/Presentation';
 import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminProducts from '@/pages/admin/AdminProducts';
@@ -128,6 +129,7 @@ export default function App() {
                 <Route path="/buscar" element={<PublicLayout><Search /></PublicLayout>} />
                 <Route path="/sobre" element={<PublicLayout><About /></PublicLayout>} />
                 <Route path="/contato" element={<PublicLayout><Contact /></PublicLayout>} />
+                <Route path="/apresentacao" element={<Presentation />} />
                 <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
               </Routes>
             </TrackingProvider>
