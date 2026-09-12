@@ -80,23 +80,25 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 // MB catalog routes — shared between mbmodabrasil.com.br (at root) and
 // enviey.app/mbmodabrasil (under slug prefix). The `prefix` param lets
 // the same routes work in both contexts without duplication.
-function MBCatalogRoutes({ prefix }: { prefix: string }) {
+//
+// React Router v7 requires direct children of <Routes> to be <Route> or
+// <Fragment>, so we return an array of <Route> elements instead of wrapping
+// them in a custom component.
+function mbCatalogRoutes(prefix: string) {
   const p = (path: string) => `${prefix}${path}`;
-  return (
-    <>
-      <Route path={p('/')} element={<PublicLayout><Home /></PublicLayout>} />
-      <Route path={p('/feminino')} element={<PublicLayout><Catalog gender="feminino" /></PublicLayout>} />
-      <Route path={p('/masculino')} element={<PublicLayout><Catalog gender="masculino" /></PublicLayout>} />
-      <Route path={p('/ofertas')} element={<PublicLayout><Catalog offersOnly /></PublicLayout>} />
-      <Route path={p('/categoria/:category')} element={<PublicLayout><Catalog /></PublicLayout>} />
-      <Route path={p('/produto/:slug')} element={<PublicLayout><ProductPage /></PublicLayout>} />
-      <Route path={p('/carrinho')} element={<PublicLayout><Cart /></PublicLayout>} />
-      <Route path={p('/finalizar')} element={<PublicLayout><Checkout /></PublicLayout>} />
-      <Route path={p('/buscar')} element={<PublicLayout><Search /></PublicLayout>} />
-      <Route path={p('/sobre')} element={<PublicLayout><About /></PublicLayout>} />
-      <Route path={p('/contato')} element={<PublicLayout><Contact /></PublicLayout>} />
-    </>
-  );
+  return [
+    <Route key={p('/')} path={p('/')} element={<PublicLayout><Home /></PublicLayout>} />,
+    <Route key={p('/feminino')} path={p('/feminino')} element={<PublicLayout><Catalog gender="feminino" /></PublicLayout>} />,
+    <Route key={p('/masculino')} path={p('/masculino')} element={<PublicLayout><Catalog gender="masculino" /></PublicLayout>} />,
+    <Route key={p('/ofertas')} path={p('/ofertas')} element={<PublicLayout><Catalog offersOnly /></PublicLayout>} />,
+    <Route key={p('/categoria/:category')} path={p('/categoria/:category')} element={<PublicLayout><Catalog /></PublicLayout>} />,
+    <Route key={p('/produto/:slug')} path={p('/produto/:slug')} element={<PublicLayout><ProductPage /></PublicLayout>} />,
+    <Route key={p('/carrinho')} path={p('/carrinho')} element={<PublicLayout><Cart /></PublicLayout>} />,
+    <Route key={p('/finalizar')} path={p('/finalizar')} element={<PublicLayout><Checkout /></PublicLayout>} />,
+    <Route key={p('/buscar')} path={p('/buscar')} element={<PublicLayout><Search /></PublicLayout>} />,
+    <Route key={p('/sobre')} path={p('/sobre')} element={<PublicLayout><About /></PublicLayout>} />,
+    <Route key={p('/contato')} path={p('/contato')} element={<PublicLayout><Contact /></PublicLayout>} />,
+  ];
 }
 
 export default function App() {
@@ -137,14 +139,14 @@ export default function App() {
                     {/* Legacy redirect */}
                     <Route path="/apresentacao" element={<Navigate to="/" replace />} />
                     {/* MB catalog under slug prefix */}
-                    <MBCatalogRoutes prefix={`/${MB_SLUG}`} />
+                    {mbCatalogRoutes(`/${MB_SLUG}`)}
                     {/* Fallback */}
                     <Route path="*" element={<Presentation />} />
                   </>
                 ) : (
                   <>
                     {/* MB catalog at root (mbmodabrasil.com.br or localhost) */}
-                    <MBCatalogRoutes prefix="" />
+                    {mbCatalogRoutes('')}
                     {/* Presentation page still accessible on MB domain */}
                     <Route path="/apresentacao" element={<Presentation />} />
                     {/* Fallback */}
