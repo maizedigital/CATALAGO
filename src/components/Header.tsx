@@ -136,7 +136,7 @@ export function Header() {
       </header>
 
       {/* Moving information marquee */}
-      <div className="overflow-hidden bg-black border-b border-white/10">
+      <div className="overflow-hidden border-b border-white/10" style={{ background: 'linear-gradient(90deg, #000000 0%, #111111 50%, #000000 100%)' }}>
         <div className="marquee-track flex whitespace-nowrap py-1.5">
           <span className="marquee-content text-[11px] font-medium uppercase tracking-wider text-white/70">
             {marqueeText} • {marqueeText} •

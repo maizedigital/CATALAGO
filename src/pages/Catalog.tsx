@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { SlidersHorizontal, X } from 'lucide-react';
 import { ProductGrid } from '@/components/ProductGrid';
 import { ProductFilter, type FilterState } from '@/components/ProductFilter';
@@ -15,42 +16,59 @@ const defaultFilters: FilterState = {
   sort: 'recentes',
 };
 
-export default function Catalog({ gender }: { gender: Gender }) {
+export default function Catalog({ gender, offersOnly }: { gender?: Gender; offersOnly?: boolean }) {
+  const { category: urlCategory } = useParams<{ category: string }>();
   const { products, loading } = useProducts();
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [filterOpen, setFilterOpen] = useState(false);
 
   const isFemale = gender === 'feminino';
   useSEO({
-    title: `${isFemale ? 'Feminino' : 'Masculino'} — MB`,
-    description: `Catálogo ${isFemale ? 'feminino' : 'masculino'} MB. ${isFemale ? 'Roupas femininas' : 'Roupas masculinas'} com estilo e qualidade. Filtre por categoria, tamanho, cor e preço.`,
+    title: offersOnly
+      ? 'Ofertas — MB'
+      : urlCategory
+        ? `${decodeURIComponent(urlCategory)} — MB`
+        : `${isFemale ? 'Feminino' : 'Masculino'} — MB`,
+    description: offersOnly
+      ? 'Ofertas especiais da MB. Aproveite os melhores preços.'
+      : `Catálogo ${isFemale ? 'feminino' : 'masculino'} MB. Filtre por categoria, tamanho, cor e preço.`,
   });
 
-  const genderProducts = useMemo(
-    () => products.filter((p) => p.gender === gender),
-    [products, gender]
-  );
+  const baseProducts = useMemo(() => {
+    let result = products;
+    if (gender) {
+      result = result.filter((p) => p.gender === gender);
+    }
+    if (offersOnly) {
+      result = result.filter((p) => p.on_sale || (p.promo_price !== null && p.promo_price < p.price));
+    }
+    if (urlCategory) {
+      const cat = decodeURIComponent(urlCategory).toLowerCase();
+      result = result.filter((p) => p.category.toLowerCase() === cat);
+    }
+    return result;
+  }, [products, gender, offersOnly, urlCategory]);
 
   const categories = useMemo(
-    () => [...new Set(genderProducts.map((p) => p.category))].sort(),
-    [genderProducts]
+    () => [...new Set(baseProducts.map((p) => p.category))].sort(),
+    [baseProducts]
   );
   const sizes = useMemo(
-    () => [...new Set(genderProducts.flatMap((p) => p.sizes))].sort(),
-    [genderProducts]
+    () => [...new Set(baseProducts.flatMap((p) => p.sizes))].sort(),
+    [baseProducts]
   );
   const colors = useMemo(
-    () => [...new Set(genderProducts.flatMap((p) => p.colors))].sort(),
-    [genderProducts]
+    () => [...new Set(baseProducts.flatMap((p) => p.colors))].sort(),
+    [baseProducts]
   );
   const priceRange = useMemo<[number, number]>(() => {
-    if (genderProducts.length === 0) return [0, 500];
-    const prices = genderProducts.map((p) => effectivePrice(p.price, p.promo_price));
+    if (baseProducts.length === 0) return [0, 500];
+    const prices = baseProducts.map((p) => effectivePrice(p.price, p.promo_price));
     return [Math.floor(Math.min(...prices)), Math.ceil(Math.max(...prices))];
-  }, [genderProducts]);
+  }, [baseProducts]);
 
   const filtered = useMemo(() => {
-    let result = [...genderProducts];
+    let result = [...baseProducts];
     if (filters.categories.length > 0)
       result = result.filter((p) => filters.categories.includes(p.category));
     if (filters.sizes.length > 0)
@@ -76,7 +94,7 @@ export default function Catalog({ gender }: { gender: Gender }) {
         result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     }
     return result as Product[];
-  }, [genderProducts, filters]);
+  }, [baseProducts, filters]);
 
   const activeFilterCount =
     filters.categories.length + filters.sizes.length + filters.colors.length +
@@ -88,10 +106,10 @@ export default function Catalog({ gender }: { gender: Gender }) {
       {/* Header */}
       <div className="mb-6 border-b border-neutral-200 pb-6 text-center">
         <h1 className="font-serif text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">
-          {isFemale ? 'Feminino' : 'Masculino'}
+          {offersOnly ? 'Ofertas' : urlCategory ? decodeURIComponent(urlCategory) : isFemale ? 'Feminino' : 'Masculino'}
         </h1>
         <p className="mt-2 text-sm text-neutral-500">
-          {genderProducts.length} produtos
+          {baseProducts.length} produtos
         </p>
       </div>
 

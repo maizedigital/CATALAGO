@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 const gradientBar = {
   background:
     'linear-gradient(to right, rgb(255,255,74), rgb(252,208,0), rgb(255,193,18), rgb(255,193,18), rgb(255,138,0), rgb(255,95,95), rgb(255,37,58), rgb(255,55,168), rgb(199,57,255), rgb(164,0,225), rgb(46,206,255), rgb(0,134,255), rgb(114,247,114), rgb(0,214,4))',
+  backgroundSize: '200% 100%',
 } as const;
 
 export default function Home() {
@@ -20,8 +21,15 @@ export default function Home() {
   });
 
   const categories = useMemo(() => {
-    const set = new Set(products.map((p) => p.category).filter(Boolean));
-    return [...set].sort();
+    const map = new Map<string, string>();
+    for (const p of products) {
+      if (!p.category) continue;
+      const key = p.category.toLowerCase().trim();
+      if (!map.has(key)) {
+        map.set(key, p.category);
+      }
+    }
+    return [...map.values()].sort();
   }, [products]);
 
   const ofertas = useMemo(
@@ -36,8 +44,8 @@ export default function Home() {
     <div>
       <BannerCarousel />
 
-      {/* 6px multicolor gradient bar */}
-      <div className="h-[6px] w-full" style={gradientBar} />
+      {/* 3px animated multicolor gradient bar */}
+      <div className="gradient-bar h-[3px] w-full" style={gradientBar} />
 
       {/* Category navigation */}
       <section className="border-b border-neutral-200 bg-white">

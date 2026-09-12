@@ -122,6 +122,8 @@ export default function App() {
                 <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
                 <Route path="/feminino" element={<PublicLayout><Catalog gender="feminino" /></PublicLayout>} />
                 <Route path="/masculino" element={<PublicLayout><Catalog gender="masculino" /></PublicLayout>} />
+                <Route path="/ofertas" element={<PublicLayout><Catalog offersOnly /></PublicLayout>} />
+                <Route path="/categoria/:category" element={<PublicLayout><Catalog /></PublicLayout>} />
                 <Route path="/produto/:slug" element={<PublicLayout><ProductPage /></PublicLayout>} />
                 <Route path="/carrinho" element={<PublicLayout><Cart /></PublicLayout>} />
                 <Route path="/finalizar" element={<PublicLayout><Checkout /></PublicLayout>} />
