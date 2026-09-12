@@ -15,9 +15,9 @@ const gradientBar = {
 export default function Home() {
   const { products, loading } = useProducts();
   useSEO({
-    title: `${siteConfig.name} — ${siteConfig.tagline}`,
+    title: 'MB Moda Brasil',
     description:
-      'Catálogo oficial MB. Moda feminina e masculina com estilo, qualidade e atitude. Confira lançamentos e ofertas.',
+      'Moda masculina e feminina em Coroa Vermelha, Santa Cruz Cabrália — BA. Confira lançamentos e ofertas da MB Moda Brasil.',
   });
 
 

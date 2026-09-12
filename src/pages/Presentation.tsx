@@ -1,3 +1,4 @@
+import { useSEO } from '@/hooks/useSEO';
 import { PresentationHeader } from '@/components/presentation/PresentationHeader';
 import { PresentationFooter } from '@/components/presentation/PresentationFooter';
 import { PresentationHero } from '@/components/presentation/PresentationHero';
@@ -20,6 +21,10 @@ import { PresentationFAQ } from '@/components/presentation/PresentationFAQ';
 import { PresentationFinalCTA } from '@/components/presentation/PresentationFinalCTA';
 
 export default function Presentation() {
+  useSEO({
+    title: 'Enviey.app',
+    description: 'Crie uma loja online profissional para apresentar seus produtos, receber pedidos e vender pelo Instagram, WhatsApp e outros canais.',
+  });
   return (
     <div className="min-h-screen bg-[#050505] text-white">
       <PresentationHeader />

@@ -5,8 +5,8 @@ import { MessageCircle, Truck, ShieldCheck } from 'lucide-react';
 
 export default function About() {
   useSEO({
-    title: 'Sobre a MB — MB',
-    description: 'Conheça a MB. Moda que combina com você. Qualidade, estilo e atitude em cada peça.',
+    title: 'Sobre a MB — MB Moda Brasil',
+    description: 'Conheça a MB Moda Brasil. Moda masculina e feminina em Coroa Vermelha, Santa Cruz Cabrália — BA.',
   });
 
   const img =

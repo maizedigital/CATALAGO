@@ -1,7 +1,7 @@
 // Centralized store configuration. Edit these values to update brand info across the site.
 export const siteConfig = {
-  name: 'MB',
-  tagline: 'Moda que combina com você',
+  name: 'MB Moda Brasil',
+  tagline: 'Moda masculina e feminina em Coroa Vermelha, Santa Cruz Cabrália — BA',
   whatsapp: '5573999929009',
   instagram: '@mbmodabrasil',
   instagramUrl: 'https://instagram.com/mbmodabrasil',

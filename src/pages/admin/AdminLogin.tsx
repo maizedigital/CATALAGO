@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { Lock, User, ArrowRight } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { useSEO } from '@/hooks/useSEO';
 
 export default function AdminLogin() {
+  useSEO({ title: 'Enviey · Admin' });
   const navigate = useNavigate();
   const { isAuthenticated, login } = useAdminAuth();
   const [username, setUsername] = useState('');
@@ -34,7 +36,7 @@ export default function AdminLogin() {
     <div className="flex min-h-screen items-center justify-center bg-neutral-950 px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <span className="font-serif text-4xl font-bold tracking-[0.3em] text-white">MB</span>
+          <span className="text-3xl font-extrabold tracking-tight text-white">ENVIE<span className="text-[#19E66B]">Y</span></span>
           <p className="mt-2 text-xs font-medium uppercase tracking-widest text-neutral-500">Painel Administrativo</p>
         </div>
 
