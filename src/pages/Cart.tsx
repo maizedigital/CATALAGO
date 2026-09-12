@@ -3,6 +3,7 @@ import { Minus, Plus, Trash2, ArrowRight } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { useSEO } from '@/hooks/useSEO';
 import { formatPrice, effectivePrice } from '@/lib/format';
+import { catalogPath } from '@/hooks/useCatalogPath';
 
 export default function Cart() {
   const { items, updateQuantity, removeItem, total, clearCart } = useCart();
@@ -16,7 +17,7 @@ export default function Cart() {
           Explore o catálogo MB e adicione produtos ao carrinho.
         </p>
         <Link
-          to="/"
+          to={catalogPath('/')}
           className="mt-8 inline-block bg-neutral-900 px-8 py-3.5 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-800"
         >
           Continuar comprando
@@ -37,7 +38,7 @@ export default function Cart() {
           <ul className="divide-y divide-neutral-200 border-y border-neutral-200">
             {items.map((item) => (
               <li key={item.id} className="flex gap-4 py-5">
-                <Link to={`/produto/${item.slug}`} className="shrink-0">
+                <Link to={catalogPath(`/produto/${item.slug}`)} className="shrink-0">
                   <img
                     src={item.image}
                     alt={item.name}
@@ -47,7 +48,7 @@ export default function Cart() {
                 <div className="flex flex-1 flex-col">
                   <div className="flex justify-between gap-3">
                     <Link
-                      to={`/produto/${item.slug}`}
+                      to={catalogPath(`/produto/${item.slug}`)}
                       className="text-sm font-medium text-neutral-900 hover:text-neutral-600"
                     >
                       {item.name}
@@ -96,7 +97,7 @@ export default function Cart() {
           </ul>
 
           <div className="mt-6 flex justify-between">
-            <Link to="/" className="text-sm text-neutral-600 underline hover:text-neutral-900">
+            <Link to={catalogPath('/')} className="text-sm text-neutral-600 underline hover:text-neutral-900">
               ← Continuar comprando
             </Link>
             <button
@@ -128,7 +129,7 @@ export default function Cart() {
             <span className="text-lg font-bold text-neutral-900">{formatPrice(total + 20)}</span>
           </div>
           <Link
-            to="/finalizar"
+            to={catalogPath('/finalizar')}
             className="mt-6 flex w-full items-center justify-center gap-2 bg-neutral-900 py-4 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-800"
           >
             Finalizar pedido <ArrowRight size={14} />

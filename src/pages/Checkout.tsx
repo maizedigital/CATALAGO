@@ -3,6 +3,7 @@ import { useCart } from '@/hooks/useCart';
 import { useSEO } from '@/hooks/useSEO';
 import { CheckoutForm } from '@/components/CheckoutForm';
 import { formatPrice, effectivePrice } from '@/lib/format';
+import { catalogPath } from '@/hooks/useCatalogPath';
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
@@ -18,7 +19,7 @@ export default function Checkout() {
           Adicione produtos ao carrinho para continuar.
         </p>
         <Link
-          to="/"
+          to={catalogPath('/')}
           className="mt-8 inline-block bg-neutral-900 px-8 py-3.5 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-800"
         >
           Explorar catálogo

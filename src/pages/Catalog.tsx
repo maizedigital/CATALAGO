@@ -6,6 +6,7 @@ import { ProductFilter, type FilterState } from '@/components/ProductFilter';
 import { useProducts } from '@/hooks/useProducts';
 import { useSEO } from '@/hooks/useSEO';
 import { effectivePrice } from '@/lib/format';
+import { catalogPath } from '@/hooks/useCatalogPath';
 import type { Gender, Product } from '@/types';
 
 const defaultFilters: FilterState = {
@@ -123,7 +124,7 @@ export default function Catalog({ gender, offersOnly }: { gender?: Gender; offer
           <nav className="flex items-center justify-center gap-4 overflow-x-auto scrollbar-hide md:gap-6">
             {/* Back to main departments */}
             <Link
-              to="/"
+              to={catalogPath('/')}
               className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-400 transition-colors hover:text-neutral-900"
             >
               ←
@@ -131,9 +132,7 @@ export default function Catalog({ gender, offersOnly }: { gender?: Gender; offer
             {subCategories.map((cat) => {
               const catSlug = encodeURIComponent(cat.toLowerCase());
               const isActive = urlCategory && decodeURIComponent(urlCategory).toLowerCase() === cat.toLowerCase();
-              const linkTo = gender
-                ? `/categoria/${catSlug}`
-                : `/categoria/${catSlug}`;
+              const linkTo = catalogPath(`/categoria/${catSlug}`);
               return (
                 <Link
                   key={cat}

@@ -5,7 +5,7 @@ import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useSEO } from '@/hooks/useSEO';
 
 export default function AdminLogin() {
-  useSEO({ title: 'Enviey · Admin' });
+  useSEO({ title: 'NV · Admin', noindex: true });
   const navigate = useNavigate();
   const { isAuthenticated, login } = useAdminAuth();
   const [username, setUsername] = useState('');

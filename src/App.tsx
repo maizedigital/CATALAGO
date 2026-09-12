@@ -1,20 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
-
-
-// Função que remove elementos flutuantes com estilos específicos
-const removeFloating = () => {
-  document.querySelectorAll('[style^="position: fixed"][style*="bottom: 1rem"][style*="z-index: 2147483647"]').forEach(el => el.remove());
-};
-
-// Executa a função imediatamente ao carregar
-removeFloating();
-
-// Observa mudanças no DOM e reaplica a função se novos elementos forem adicionados
-const observer = new MutationObserver(removeFloating);
-observer.observe(document.body, { childList: true, subtree: true });
-
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CartDrawer } from '@/components/CartDrawer';
@@ -33,6 +19,7 @@ import About from '@/pages/About';
 import Contact from '@/pages/Contact';
 import NotFound from '@/pages/NotFound';
 import Presentation from '@/pages/Presentation';
+import { isEnvieyDomain, MB_SLUG } from '@/lib/domain';
 import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminProducts from '@/pages/admin/AdminProducts';
@@ -45,6 +32,7 @@ import AdminAnalytics from '@/pages/admin/AdminAnalytics';
 import AdminSettings from '@/pages/admin/AdminSettings';
 import AdminBanners from '@/pages/admin/AdminBanners';
 import AdminLinks from '@/pages/admin/AdminLinks';
+import AdminTenants from '@/pages/admin/AdminTenants';
 
 function RemoveBoltBadge() {
   useEffect(() => {
@@ -89,7 +77,31 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
+// MB catalog routes — shared between mbmodabrasil.com.br (at root) and
+// enviey.app/mb-moda-brasil (under slug prefix). The `prefix` param lets
+// the same routes work in both contexts without duplication.
+function MBCatalogRoutes({ prefix }: { prefix: string }) {
+  const p = (path: string) => `${prefix}${path}`;
+  return (
+    <>
+      <Route path={p('/')} element={<PublicLayout><Home /></PublicLayout>} />
+      <Route path={p('/feminino')} element={<PublicLayout><Catalog gender="feminino" /></PublicLayout>} />
+      <Route path={p('/masculino')} element={<PublicLayout><Catalog gender="masculino" /></PublicLayout>} />
+      <Route path={p('/ofertas')} element={<PublicLayout><Catalog offersOnly /></PublicLayout>} />
+      <Route path={p('/categoria/:category')} element={<PublicLayout><Catalog /></PublicLayout>} />
+      <Route path={p('/produto/:slug')} element={<PublicLayout><ProductPage /></PublicLayout>} />
+      <Route path={p('/carrinho')} element={<PublicLayout><Cart /></PublicLayout>} />
+      <Route path={p('/finalizar')} element={<PublicLayout><Checkout /></PublicLayout>} />
+      <Route path={p('/buscar')} element={<PublicLayout><Search /></PublicLayout>} />
+      <Route path={p('/sobre')} element={<PublicLayout><About /></PublicLayout>} />
+      <Route path={p('/contato')} element={<PublicLayout><Contact /></PublicLayout>} />
+    </>
+  );
+}
+
 export default function App() {
+  const enviey = isEnvieyDomain();
+
   return (
     <ErrorBoundary>
       <RemoveBoltBadge />
@@ -116,21 +128,29 @@ export default function App() {
                 <Route path="/admin/configuracoes" element={<ProtectedRoute><AdminSettings /></ProtectedRoute>} />
                 <Route path="/admin/banners" element={<ProtectedRoute><AdminBanners /></ProtectedRoute>} />
                 <Route path="/admin/links" element={<ProtectedRoute><AdminLinks /></ProtectedRoute>} />
+                <Route path="/admin/clientes-tenant" element={<ProtectedRoute><AdminTenants /></ProtectedRoute>} />
 
-                {/* Public routes */}
-                <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
-                <Route path="/feminino" element={<PublicLayout><Catalog gender="feminino" /></PublicLayout>} />
-                <Route path="/masculino" element={<PublicLayout><Catalog gender="masculino" /></PublicLayout>} />
-                <Route path="/ofertas" element={<PublicLayout><Catalog offersOnly /></PublicLayout>} />
-                <Route path="/categoria/:category" element={<PublicLayout><Catalog /></PublicLayout>} />
-                <Route path="/produto/:slug" element={<PublicLayout><ProductPage /></PublicLayout>} />
-                <Route path="/carrinho" element={<PublicLayout><Cart /></PublicLayout>} />
-                <Route path="/finalizar" element={<PublicLayout><Checkout /></PublicLayout>} />
-                <Route path="/buscar" element={<PublicLayout><Search /></PublicLayout>} />
-                <Route path="/sobre" element={<PublicLayout><About /></PublicLayout>} />
-                <Route path="/contato" element={<PublicLayout><Contact /></PublicLayout>} />
-                <Route path="/apresentacao" element={<Presentation />} />
-                <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
+                {enviey ? (
+                  <>
+                    {/* Enviey platform — root shows the SaaS landing page */}
+                    <Route path="/" element={<Presentation />} />
+                    {/* Legacy redirect */}
+                    <Route path="/apresentacao" element={<Navigate to="/" replace />} />
+                    {/* MB catalog under slug prefix */}
+                    <MBCatalogRoutes prefix={`/${MB_SLUG}`} />
+                    {/* Fallback */}
+                    <Route path="*" element={<Presentation />} />
+                  </>
+                ) : (
+                  <>
+                    {/* MB catalog at root (mbmodabrasil.com.br or localhost) */}
+                    <MBCatalogRoutes prefix="" />
+                    {/* Presentation page still accessible on MB domain */}
+                    <Route path="/apresentacao" element={<Presentation />} />
+                    {/* Fallback */}
+                    <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
+                  </>
+                )}
               </Routes>
             </TrackingProvider>
           </CartProvider>

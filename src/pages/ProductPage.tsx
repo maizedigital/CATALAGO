@@ -11,6 +11,7 @@ import { useTracking } from '@/hooks/useTracking';
 import { formatPrice, discountPercent, effectivePrice } from '@/lib/format';
 import { whatsappLink } from '@/config/site';
 import type { Product } from '@/types';
+import { catalogPath } from '@/hooks/useCatalogPath';
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -54,7 +55,7 @@ export default function ProductPage() {
     return (
       <div className="py-24 text-center">
         <h1 className="font-serif text-2xl font-bold text-neutral-900">Produto não encontrado</h1>
-        <Link to="/" className="mt-4 inline-block text-sm text-neutral-600 underline">
+        <Link to={catalogPath('/')} className="mt-4 inline-block text-sm text-neutral-600 underline">
           Voltar para a home
         </Link>
       </div>
@@ -111,9 +112,9 @@ export default function ProductPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-10">
       <nav className="mb-6 flex items-center gap-1 text-xs text-neutral-400">
-        <Link to="/" className="hover:text-neutral-900">Home</Link>
+        <Link to={catalogPath('/')} className="hover:text-neutral-900">Home</Link>
         <ChevronRight size={12} />
-        <Link to={`/${product.gender}`} className="capitalize hover:text-neutral-900">
+        <Link to={catalogPath(`/${product.gender}`)} className="capitalize hover:text-neutral-900">
           {product.gender}
         </Link>
         <ChevronRight size={12} />

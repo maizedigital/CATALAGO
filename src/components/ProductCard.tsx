@@ -3,6 +3,7 @@ import { ShoppingBag, Eye } from 'lucide-react';
 import type { Product } from '@/types';
 import { formatPrice, effectivePrice } from '@/lib/format';
 import { useCart } from '@/hooks/useCart';
+import { catalogPath } from '@/hooks/useCatalogPath';
 
 export function ProductCard({ product }: { product: Product }) {
   const price = product.price;
@@ -18,7 +19,7 @@ export function ProductCard({ product }: { product: Product }) {
   };
 
   return (
-    <Link to={`/produto/${product.slug}`} className="group block overflow-hidden rounded-lg border border-neutral-200 transition-colors hover:border-neutral-400">
+    <Link to={catalogPath(`/produto/${product.slug}`)} className="group block overflow-hidden rounded-lg border border-neutral-200 transition-colors hover:border-neutral-400">
       <div className="relative aspect-[3/4] overflow-hidden bg-neutral-100">
         {/* OFERTAS badge — only when product is on sale */}
         {hasDiscount && (

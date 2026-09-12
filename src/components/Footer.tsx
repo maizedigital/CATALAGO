@@ -3,6 +3,7 @@ import { Instagram, MessageCircle, MapPin, Clock, Globe } from 'lucide-react';
 import { siteConfig, whatsappLink } from '@/config/site';
 import { Logo } from '@/components/Logo';
 import { NewsletterSignup } from '@/components/NewsletterSignup';
+import { catalogPath } from '@/hooks/useCatalogPath';
 
 export function Footer() {
   return (
@@ -61,10 +62,10 @@ export function Footer() {
               Compre
             </h3>
             <ul className="space-y-2.5 text-sm text-white/50">
-              <li><Link to="/feminino" className="transition-colors hover:text-white">Feminino</Link></li>
-              <li><Link to="/masculino" className="transition-colors hover:text-white">Masculino</Link></li>
-              <li><Link to="/categoria/geral" className="transition-colors hover:text-white">Geral</Link></li>
-              <li><Link to="/ofertas" className="transition-colors hover:text-white">Promoção</Link></li>
+              <li><Link to={catalogPath('/feminino')} className="transition-colors hover:text-white">Feminino</Link></li>
+              <li><Link to={catalogPath('/masculino')} className="transition-colors hover:text-white">Masculino</Link></li>
+              <li><Link to={catalogPath('/categoria/geral')} className="transition-colors hover:text-white">Geral</Link></li>
+              <li><Link to={catalogPath('/ofertas')} className="transition-colors hover:text-white">Promoção</Link></li>
             </ul>
           </div>
 
@@ -78,8 +79,8 @@ export function Footer() {
                   <MessageCircle size={15} /> WhatsApp
                 </a>
               </li>
-              <li><Link to="/contato" className="transition-colors hover:text-white">Contato</Link></li>
-              <li><Link to="/sobre" className="transition-colors hover:text-white">Sobre a MB</Link></li>
+              <li><Link to={catalogPath('/contato')} className="transition-colors hover:text-white">Contato</Link></li>
+              <li><Link to={catalogPath('/sobre')} className="transition-colors hover:text-white">Sobre a MB</Link></li>
             </ul>
           </div>
 
@@ -104,7 +105,7 @@ export function Footer() {
         {/* Payment */}
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 md:flex-row">
           <p className="text-xs text-white/40">
-            MB — Moda que combina com você
+            MB Moda Brasil
           </p>
           <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-white/40">
             <span className="rounded border border-white/20 px-2 py-1">PIX</span>

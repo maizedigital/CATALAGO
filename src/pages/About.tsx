@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useSEO } from '@/hooks/useSEO';
 import { siteConfig, whatsappLink } from '@/config/site';
 import { MessageCircle, Truck, ShieldCheck } from 'lucide-react';
+import { catalogPath } from '@/hooks/useCatalogPath';
 
 export default function About() {
   useSEO({
@@ -79,7 +80,7 @@ export default function About() {
             <MessageCircle size={16} /> Falar no WhatsApp
           </a>
           <div className="mt-4">
-            <Link to="/contato" className="text-sm text-neutral-600 underline hover:text-neutral-900">
+            <Link to={catalogPath('/contato')} className="text-sm text-neutral-600 underline hover:text-neutral-900">
               Ver todas as formas de contato
             </Link>
           </div>

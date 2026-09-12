@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Allow: /mb-moda-brasil
+Disallow: /admin
+Disallow: /admin/
+
+Sitemap: https://enviey.app/sitemap.xml

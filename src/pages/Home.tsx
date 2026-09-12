@@ -5,6 +5,7 @@ import { ProductGrid } from '@/components/ProductGrid';
 import { useProducts } from '@/hooks/useProducts';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
+import { catalogPath } from '@/hooks/useCatalogPath';
 
 const gradientBar = {
   background:
@@ -42,25 +43,25 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 py-4 md:px-6">
           <nav className="flex items-center justify-center gap-6 md:gap-10">
             <Link
-              to="/feminino"
+              to={catalogPath('/feminino')}
               className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900 md:text-sm"
             >
               Feminino
             </Link>
             <Link
-              to="/masculino"
+              to={catalogPath('/masculino')}
               className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900 md:text-sm"
             >
               Masculino
             </Link>
             <Link
-              to="/categoria/geral"
+              to={catalogPath('/categoria/geral')}
               className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900 md:text-sm"
             >
               Geral
             </Link>
             <Link
-              to="/ofertas"
+              to={catalogPath('/ofertas')}
               className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900 md:text-sm"
             >
               Promoção

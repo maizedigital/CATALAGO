@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { X, Minus, Plus, Trash2, ShoppingBag, Truck } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { formatPrice, effectivePrice } from '@/lib/format';
+import { catalogPath } from '@/hooks/useCatalogPath';
 
 const FIXED_SHIPPING = 20;
 
@@ -70,7 +71,7 @@ export function CartDrawer() {
             </div>
             <p className="text-sm text-primary-400">Seu carrinho est&aacute; vazio.</p>
             <Link
-              to="/"
+              to={catalogPath('/')}
               onClick={closeCart}
               className="border border-primary-900 px-6 py-3 text-xs font-bold uppercase tracking-widest text-primary-900 transition-colors hover:bg-primary-900 hover:text-white"
             >
@@ -83,12 +84,12 @@ export function CartDrawer() {
               <ul className="space-y-4">
                 {items.map((item) => (
                   <li key={item.id} className="flex gap-4 animate-fade-in">
-                    <Link to={`/produto/${item.slug}`} onClick={closeCart} className="shrink-0">
+                    <Link to={catalogPath(`/produto/${item.slug}`)} onClick={closeCart} className="shrink-0">
                       <img src={item.image} alt={item.name} className="h-24 w-20 object-cover bg-primary-100" />
                     </Link>
                     <div className="flex flex-1 flex-col">
                       <div className="flex justify-between gap-2">
-                        <Link to={`/produto/${item.slug}`} onClick={closeCart} className="text-sm font-medium text-primary-900">
+                        <Link to={catalogPath(`/produto/${item.slug}`)} onClick={closeCart} className="text-sm font-medium text-primary-900">
                           {item.name}
                         </Link>
                         <button onClick={() => removeItem(item.id)} aria-label="Remover item" className="text-primary-400 transition-colors hover:text-error-600">
@@ -128,10 +129,10 @@ export function CartDrawer() {
                 <span className="text-primary-500">Subtotal</span>
                 <span className="font-semibold text-primary-900">{formatPrice(total)}</span>
               </div>
-              <Link to="/carrinho" onClick={closeCart} className="mb-2 block border border-primary-900 py-3 text-center text-xs font-bold uppercase tracking-widest text-primary-900 transition-colors hover:bg-primary-50">
+              <Link to={catalogPath('/carrinho')} onClick={closeCart} className="mb-2 block border border-primary-900 py-3 text-center text-xs font-bold uppercase tracking-widest text-primary-900 transition-colors hover:bg-primary-50">
                 Ver carrinho
               </Link>
-              <Link to="/finalizar" onClick={closeCart} className="block bg-primary-950 py-3 text-center text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-primary-800">
+              <Link to={catalogPath('/finalizar')} onClick={closeCart} className="block bg-primary-950 py-3 text-center text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-primary-800">
                 Finalizar pedido
               </Link>
             </div>

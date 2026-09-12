@@ -22,8 +22,9 @@ import { PresentationFinalCTA } from '@/components/presentation/PresentationFina
 
 export default function Presentation() {
   useSEO({
-    title: 'Enviey.app',
-    description: 'Crie uma loja online profissional para apresentar seus produtos, receber pedidos e vender pelo Instagram, WhatsApp e outros canais.',
+    title: 'Enviey — Catálogo online com WhatsApp',
+    description: 'Crie seu catálogo online, personalize sua loja e conecte suas vendas ao WhatsApp com a Enviey.',
+    canonical: 'https://enviey.app',
   });
   return (
     <div className="min-h-screen bg-[#050505] text-white">

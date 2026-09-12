@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { MB_CATALOG_ID } from '@/lib/domain';
 
 function formatWhatsApp(input: string): string {
   const digits = input.replace(/\D/g, '').slice(0, 11);
@@ -47,6 +48,7 @@ export function NewsletterSignup() {
             origin: 'newsletter',
             status: 'novo',
             last_interaction: 'Inscrição novidades',
+            catalog_id: MB_CATALOG_ID,
             updated_at: new Date().toISOString(),
           },
           { onConflict: 'whatsapp' }

@@ -31,7 +31,7 @@ export function PresentationHeader() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:h-20 md:px-6">
-        <a href="/apresentacao" className="text-xl font-extrabold tracking-tight text-white md:text-2xl">
+        <a href="/" className="text-xl font-extrabold tracking-tight text-white md:text-2xl">
           ENVIE<span className="text-[#19E66B]">Y</span>
         </a>
 

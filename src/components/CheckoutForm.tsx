@@ -19,22 +19,41 @@ interface FormData {
 
 const empty: FormData = { name: '', whatsapp: '', cpf: '' };
 
+function formatWhatsApp(input: string): string {
+  const digits = input.replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+function validateWhatsApp(input: string): boolean {
+  const digits = input.replace(/\D/g, '');
+  return digits.length === 10 || digits.length === 11;
+}
+
 export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
   const [form, setForm] = useState<FormData>(empty);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const { trackEvent, setWhatsappId } = useTracking();
 
   const update = (key: keyof FormData, value: string) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
+    const processed = key === 'whatsapp' ? formatWhatsApp(value) : value;
+    setForm((prev) => ({ ...prev, [key]: processed }));
     setErrors((prev) => ({ ...prev, [key]: undefined }));
   };
 
   const validate = (): boolean => {
     const next: Partial<Record<keyof FormData, string>> = {};
     if (!form.name.trim()) next.name = 'Informe seu nome';
-    if (!form.whatsapp.trim()) next.whatsapp = 'Informe seu WhatsApp';
+    if (!form.whatsapp.trim()) {
+      next.whatsapp = 'Informe seu WhatsApp';
+    } else if (!validateWhatsApp(form.whatsapp)) {
+      next.whatsapp = 'WhatsApp inválido. Use DDD + número (ex: 73 99992-9009)';
+    }
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -42,7 +61,10 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    setSubmitting(true);
     setSubmitError(null);
+
+    const rawDigits = form.whatsapp.replace(/\D/g, '');
 
     const orderLines = items
       .map(
@@ -59,35 +81,33 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
       form.cpf ? `\nCPF: ${form.cpf}` : ''
     }\n\nForma de pagamento: PIX`;
 
-    let saved = false;
+    // Try to register the customer in the database. This must not block
+    // checkout — the WhatsApp order still goes through even if the CRM
+    // insert fails, so the shopper is never stuck.
     try {
-      // The order total is recalculated on the server from the catalogue prices,
-      // so only the shopper's own details and the chosen items are sent here.
       const { error } = await supabase.rpc('record_checkout_customer', {
         p_name: form.name,
-        p_whatsapp: form.whatsapp,
+        p_whatsapp: rawDigits,
         p_cpf: form.cpf || null,
         p_items: items.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
         })),
       });
-      if (!error) saved = true;
-    } catch {
-      // CRM errors won't block checkout
-    }
-
-    if (!saved) {
-      setSubmitError('Nao foi possivel registrar seus dados. Tente novamente.');
-      return;
+      if (error) {
+        console.warn('CRM register failed:', error.message);
+      }
+    } catch (err) {
+      console.warn('CRM register error:', err);
     }
 
     window.open(whatsappLink(message), '_blank');
     setSubmitted(true);
+    setSubmitting(false);
     onClear();
 
     trackEvent('order_placed', { total, items: items.length }, items[0]?.name);
-    setWhatsappId(form.whatsapp);
+    setWhatsappId(rawDigits);
   };
 
   if (submitted) {
@@ -131,7 +151,7 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
           value={form.whatsapp}
           onChange={(e) => update('whatsapp', e.target.value)}
           className={inputClass('whatsapp')}
-          placeholder="(11) 99999-9999"
+          placeholder="(73) 99992-9009"
         />
         {errors.whatsapp && <p className="mt-1 text-xs text-red-500">{errors.whatsapp}</p>}
       </div>
@@ -163,9 +183,10 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
 
       <button
         type="submit"
-        className="mt-2 w-full bg-neutral-900 py-4 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-800"
+        disabled={submitting}
+        className="mt-2 w-full bg-neutral-900 py-4 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Finalizar via WhatsApp
+        {submitting ? 'Enviando...' : 'Finalizar via WhatsApp'}
       </button>
       <p className="text-center text-xs text-neutral-400">
         Seus dados são enviados apenas para a MB via WhatsApp.

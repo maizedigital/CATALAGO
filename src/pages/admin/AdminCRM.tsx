@@ -102,6 +102,7 @@ export default function AdminCRM() {
           cpf: null,
           origin: 'manual',
           status: 'novo',
+          catalog_id: '37c86a47-b2c1-4563-8e30-a5fff68ef918',
         });
       }
       closeModals();

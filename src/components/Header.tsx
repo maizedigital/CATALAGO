@@ -3,13 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Menu, Search, ShoppingBag, X } from 'lucide-react';
 import { Logo } from './Logo';
 import { useCart } from '@/hooks/useCart';
+import { catalogPath } from '@/hooks/useCatalogPath';
 
 const navLinks = [
-  { label: 'Início', to: '/' },
-  { label: 'Feminino', to: '/feminino' },
-  { label: 'Masculino', to: '/masculino' },
-  { label: 'Geral', to: '/categoria/geral' },
-  { label: 'Promoção', to: '/ofertas' },
+  { label: 'Início', to: catalogPath('/') },
+  { label: 'Feminino', to: catalogPath('/feminino') },
+  { label: 'Masculino', to: catalogPath('/masculino') },
+  { label: 'Geral', to: catalogPath('/categoria/geral') },
+  { label: 'Promoção', to: catalogPath('/ofertas') },
 ];
 
 const marqueeItems = [
@@ -33,7 +34,7 @@ export function Header() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      navigate(`/buscar?q=${encodeURIComponent(query.trim())}`);
+      navigate(`${catalogPath('/buscar')}?q=${encodeURIComponent(query.trim())}`);
       setSearchOpen(false);
       setMobileOpen(false);
       setQuery('');

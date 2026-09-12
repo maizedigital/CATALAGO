@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useTracking } from '@/hooks/useTracking';
+import { MB_CATALOG_ID } from '@/lib/domain';
 
 const REGISTERED_KEY = 'mb_lead_submitted';
 const FIRST_VISIT_KEY = 'mb_first_visit';
@@ -100,6 +101,7 @@ export function LeadCaptureModal() {
           origin,
           status: 'novo',
           last_interaction: 'Cadastro no catálogo',
+          catalog_id: MB_CATALOG_ID,
           updated_at: new Date().toISOString(),
         },
         { onConflict: 'whatsapp' }

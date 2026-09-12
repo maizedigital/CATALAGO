@@ -13,8 +13,10 @@ import {
   X,
   ExternalLink,
   Link as LinkIcon,
+  Building2,
 } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { useSEO } from '@/hooks/useSEO';
 import { Logo } from '@/components/Logo';
 
 interface NavItem {
@@ -25,6 +27,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/admin/clientes-tenant', label: 'Clientes', icon: Building2 },
   { to: '/admin/produtos', label: 'Produtos', icon: Package },
   { to: '/admin/pedidos', label: 'Pedidos', icon: ShoppingCart },
   { to: '/admin/crm', label: 'CRM', icon: Users },
@@ -39,6 +42,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { username, logout } = useAdminAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  useSEO({ title: 'NV · Admin', noindex: true });
 
   const handleLogout = () => {
     logout();
