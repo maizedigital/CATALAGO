@@ -1,7 +1,7 @@
 import { isEnvieyDomain, MB_SLUG } from '@/lib/domain';
 
 // Returns the path prefix for the current catalog context.
-// On enviey.app, catalog routes are under /mb-moda-brasil.
+// On enviey.app, catalog routes are under /mbmodabrasil.
 // On mbmodabrasil.com.br or localhost, routes are at root (empty prefix).
 export function useCatalogPrefix(): string {
   return isEnvieyDomain() ? `/${MB_SLUG}` : '';

@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
-Allow: /mb-moda-brasil
+Allow: /mbmodabrasil
 Disallow: /admin
 Disallow: /admin/
 

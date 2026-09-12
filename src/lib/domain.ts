@@ -11,8 +11,8 @@ export function isEnvieyDomain(): boolean {
 
 // Known tenant slugs. In the future this can be loaded from the database.
 // For now MB is the only tenant and its catalog routes need to work both
-// from mbmodabrasil.com.br (root paths) and enviey.app/mb-moda-brasil/*.
-export const MB_SLUG = 'mb-moda-brasil';
+// from mbmodabrasil.com.br (root paths) and enviey.app/mbmodabrasil/*.
+export const MB_SLUG = 'mbmodabrasil';
 
 // The MB catalog's UUID in the catalogs table. Used to associate leads,
 // customers, and orders with the correct tenant.
@@ -32,7 +32,7 @@ export function extractCatalogSlug(pathname: string): string | null {
 }
 
 // Strip the catalog slug prefix from a pathname, returning the catalog-relative
-// path. e.g. "/mb-moda-brasil/feminino" -> "/feminino"
+// path. e.g. "/mbmodabrasil/feminino" -> "/feminino"
 // If no slug prefix is present, returns the original pathname.
 export function stripCatalogSlug(pathname: string): string {
   const slug = extractCatalogSlug(pathname);

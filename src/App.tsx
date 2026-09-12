@@ -78,7 +78,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 }
 
 // MB catalog routes — shared between mbmodabrasil.com.br (at root) and
-// enviey.app/mb-moda-brasil (under slug prefix). The `prefix` param lets
+// enviey.app/mbmodabrasil (under slug prefix). The `prefix` param lets
 // the same routes work in both contexts without duplication.
 function MBCatalogRoutes({ prefix }: { prefix: string }) {
   const p = (path: string) => `${prefix}${path}`;
