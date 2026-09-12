@@ -20,17 +20,7 @@ export default function Home() {
       'Catálogo oficial MB. Moda feminina e masculina com estilo, qualidade e atitude. Confira lançamentos e ofertas.',
   });
 
-  const categories = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const p of products) {
-      if (!p.category) continue;
-      const key = p.category.toLowerCase().trim();
-      if (!map.has(key)) {
-        map.set(key, p.category);
-      }
-    }
-    return [...map.values()].sort();
-  }, [products]);
+
 
   const ofertas = useMemo(
     () =>
@@ -47,38 +37,35 @@ export default function Home() {
       {/* 3px animated multicolor gradient bar */}
       <div className="gradient-bar h-[3px] w-full" style={gradientBar} />
 
-      {/* Category navigation */}
+      {/* Primary category navigation */}
       <section className="border-b border-neutral-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-4 md:px-6">
-          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
+          <nav className="flex items-center justify-center gap-6 md:gap-10">
             <Link
               to="/feminino"
-              className="shrink-0 px-4 py-2 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900"
+              className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900 md:text-sm"
             >
               Feminino
             </Link>
             <Link
               to="/masculino"
-              className="shrink-0 px-4 py-2 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900"
+              className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900 md:text-sm"
             >
               Masculino
             </Link>
-            {categories.map((cat) => (
-              <Link
-                key={cat}
-                to={`/categoria/${encodeURIComponent(cat.toLowerCase())}`}
-                className="shrink-0 px-4 py-2 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900"
-              >
-                {cat}
-              </Link>
-            ))}
+            <Link
+              to="/categoria/geral"
+              className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900 md:text-sm"
+            >
+              Geral
+            </Link>
             <Link
               to="/ofertas"
-              className="shrink-0 px-4 py-2 text-xs font-bold uppercase tracking-wider text-neutral-900 underline underline-offset-4"
+              className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900 md:text-sm"
             >
-              Ofertas
+              Promoção
             </Link>
-          </div>
+          </nav>
         </div>
       </section>
 
@@ -101,7 +88,7 @@ export default function Home() {
           <div className="mx-auto max-w-7xl">
             <div className="mb-10 text-center">
               <h2 className="font-serif text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">
-                Ofertas
+                Promoção
               </h2>
             </div>
             {loading ? <SkeletonGrid /> : <ProductGrid products={ofertas} />}

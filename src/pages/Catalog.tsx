@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { SlidersHorizontal, X } from 'lucide-react';
 import { ProductGrid } from '@/components/ProductGrid';
 import { ProductFilter, type FilterState } from '@/components/ProductFilter';
@@ -25,10 +25,12 @@ export default function Catalog({ gender, offersOnly }: { gender?: Gender; offer
   const isFemale = gender === 'feminino';
   useSEO({
     title: offersOnly
-      ? 'Ofertas — MB'
-      : urlCategory
-        ? `${decodeURIComponent(urlCategory)} — MB`
-        : `${isFemale ? 'Feminino' : 'Masculino'} — MB`,
+      ? 'Promoção — MB'
+      : urlCategory && urlCategory.toLowerCase() === 'geral'
+        ? 'Geral — MB'
+        : urlCategory
+          ? `${decodeURIComponent(urlCategory)} — MB`
+          : `${isFemale ? 'Feminino' : 'Masculino'} — MB',
     description: offersOnly
       ? 'Ofertas especiais da MB. Aproveite os melhores preços.'
       : `Catálogo ${isFemale ? 'feminino' : 'masculino'} MB. Filtre por categoria, tamanho, cor e preço.`,
@@ -42,12 +44,24 @@ export default function Catalog({ gender, offersOnly }: { gender?: Gender; offer
     if (offersOnly) {
       result = result.filter((p) => p.on_sale || (p.promo_price !== null && p.promo_price < p.price));
     }
-    if (urlCategory) {
+    if (urlCategory && urlCategory.toLowerCase() !== 'geral') {
       const cat = decodeURIComponent(urlCategory).toLowerCase();
       result = result.filter((p) => p.category.toLowerCase() === cat);
     }
     return result;
   }, [products, gender, offersOnly, urlCategory]);
+
+  const subCategories = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of baseProducts) {
+      if (!p.category) continue;
+      const key = p.category.toLowerCase().trim();
+      if (!map.has(key)) {
+        map.set(key, p.category);
+      }
+    }
+    return [...map.values()].sort();
+  }, [baseProducts]);
 
   const categories = useMemo(
     () => [...new Set(baseProducts.map((p) => p.category))].sort(),
@@ -102,11 +116,45 @@ export default function Catalog({ gender, offersOnly }: { gender?: Gender; offer
     (filters.sort !== 'recentes' ? 1 : 0);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12">
+    <div>
+      {/* Contextual subcategory navigation */}
+      <section className="border-b border-neutral-200 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-3 md:px-6">
+          <nav className="flex items-center justify-center gap-4 overflow-x-auto scrollbar-hide md:gap-6">
+            {/* Back to main departments */}
+            <Link
+              to="/"
+              className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-400 transition-colors hover:text-neutral-900"
+            >
+              ←
+            </Link>
+            {subCategories.map((cat) => {
+              const catSlug = encodeURIComponent(cat.toLowerCase());
+              const isActive = urlCategory && decodeURIComponent(urlCategory).toLowerCase() === cat.toLowerCase();
+              const linkTo = gender
+                ? `/categoria/${catSlug}`
+                : `/categoria/${catSlug}`;
+              return (
+                <Link
+                  key={cat}
+                  to={linkTo}
+                  className={`shrink-0 text-xs font-bold uppercase tracking-wider transition-colors ${
+                    isActive ? 'text-neutral-900 underline underline-offset-4' : 'text-neutral-600 hover:text-neutral-900'
+                  }`}
+                >
+                  {cat}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12">
       {/* Header */}
       <div className="mb-6 border-b border-neutral-200 pb-6 text-center">
-        <h1 className="font-serif text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">
-          {offersOnly ? 'Ofertas' : urlCategory ? decodeURIComponent(urlCategory) : isFemale ? 'Feminino' : 'Masculino'}
+        <h1 className="font-serif text-3xl font-bold tracking-tight text-neutral-900 uppercase md:text-4xl">
+          {offersOnly ? 'Promoção' : urlCategory && urlCategory.toLowerCase() === 'geral' ? 'Geral' : urlCategory ? decodeURIComponent(urlCategory) : isFemale ? 'Feminino' : 'Masculino'}
         </h1>
         <p className="mt-2 text-sm text-neutral-500">
           {baseProducts.length} produtos
@@ -172,6 +220,7 @@ export default function Catalog({ gender, offersOnly }: { gender?: Gender; offer
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

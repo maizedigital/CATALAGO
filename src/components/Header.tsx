@@ -8,7 +8,8 @@ const navLinks = [
   { label: 'Início', to: '/' },
   { label: 'Feminino', to: '/feminino' },
   { label: 'Masculino', to: '/masculino' },
-  { label: 'Ofertas', to: '/ofertas' },
+  { label: 'Geral', to: '/categoria/geral' },
+  { label: 'Promoção', to: '/ofertas' },
 ];
 
 const marqueeItems = [
@@ -58,7 +59,7 @@ export function Header() {
               <Menu size={22} />
             </button>
             <nav className="hidden items-center gap-6 md:flex">
-              {navLinks.slice(0, 2).map((link) => (
+              {navLinks.slice(0, 3).map((link) => (
                 <Link
                   key={link.label}
                   to={link.to}
@@ -79,7 +80,7 @@ export function Header() {
           {/* Right: nav + actions */}
           <div className="flex flex-1 items-center justify-end gap-4">
             <nav className="hidden items-center gap-6 md:flex">
-              {navLinks.slice(2).map((link) => (
+              {navLinks.slice(3).map((link) => (
                 <Link
                   key={link.label}
                   to={link.to}
