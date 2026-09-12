@@ -5,15 +5,15 @@ export function Logo({ className = '', dark = false }: { className?: string; dar
     <Link
       to="/"
       className={`group inline-flex items-center select-none ${className}`}
-      aria-label="MB — Página inicial"
+      aria-label="Enviey — Página inicial"
     >
-      <span
-        className={`relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full shadow-md transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12 ${
-          dark ? 'bg-white' : 'bg-white'
+      <img
+        src="/IMG_7011.jpg"
+        alt="Enviey"
+        className={`h-10 w-auto rounded-lg transition-transform duration-300 group-hover:scale-105 md:h-12 ${
+          dark ? '' : ''
         }`}
-      >
-        <img src="/assets/IMG_3937.jpg" alt="MB" className="h-full w-full object-cover" />
-      </span>
+      />
     </Link>
   );
 }

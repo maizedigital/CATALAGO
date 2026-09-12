@@ -31,8 +31,8 @@ export function PresentationHeader() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:h-20 md:px-6">
-        <a href="/" className="text-xl font-extrabold tracking-tight text-white md:text-2xl">
-          ENVIE<span className="text-[#19E66B]">Y</span>
+        <a href="/" className="inline-flex items-center">
+          <img src="/IMG_7011.jpg" alt="Enviey" className="h-10 w-auto rounded-lg md:h-12" />
         </a>
 
         <nav className="hidden items-center gap-8 lg:flex">
@@ -55,7 +55,7 @@ export function PresentationHeader() {
             Entrar
           </Link>
           <Link
-            to="/admin/login"
+            to="/admin/cadastro"
             className="rounded-lg bg-[#19E66B] px-5 py-2.5 text-sm font-bold text-black transition-all hover:bg-[#15c259] hover:shadow-[0_0_24px_rgba(25,230,107,0.35)]"
           >
             Criar minha loja
@@ -89,7 +89,7 @@ export function PresentationHeader() {
                 Entrar
               </Link>
               <Link
-                to="/admin/login"
+                to="/admin/cadastro"
                 onClick={closeMenu}
                 className="rounded-lg bg-[#19E66B] px-5 py-3 text-center text-sm font-bold text-black"
               >

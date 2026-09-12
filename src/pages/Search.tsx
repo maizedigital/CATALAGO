@@ -1,12 +1,14 @@
 import { useSearchParams } from 'react-router-dom';
 import { ProductGrid } from '@/components/ProductGrid';
 import { useSearch } from '@/hooks/useProducts';
+import { useCatalog } from '@/hooks/useCatalogContext';
 import { useSEO } from '@/hooks/useSEO';
 
 export default function Search() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') ?? '';
-  const { results, loading } = useSearch(query);
+  const catalog = useCatalog();
+  const { results, loading } = useSearch(query, catalog.id);
   useSEO({ title: `Buscar: ${query} — MB`, description: `Resultados de busca para "${query}" na MB.` });
 
   return (

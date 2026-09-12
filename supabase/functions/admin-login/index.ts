@@ -38,7 +38,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: admin, error } = await supabase
       .from("admin_users")
-      .select("id, username, password_hash")
+      .select("id, username, password_hash, catalog_id")
       .eq("username", username)
       .maybeSingle();
 
@@ -90,7 +90,7 @@ Deno.serve(async (req: Request) => {
     await supabase.from("admin_sessions").delete().lt("expires_at", new Date().toISOString());
 
     return new Response(
-      JSON.stringify({ token, username: admin.username, id: admin.id }),
+      JSON.stringify({ token, username: admin.username, id: admin.id, catalog_id: admin.catalog_id }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {

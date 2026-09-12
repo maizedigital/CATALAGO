@@ -5,6 +5,7 @@ import { ProductGallery } from '@/components/ProductGallery';
 import { ProductSelector } from '@/components/ProductSelector';
 import { ProductDescription } from '@/components/ProductDescription';
 import { useProduct } from '@/hooks/useProducts';
+import { useCatalog } from '@/hooks/useCatalogContext';
 import { useCart } from '@/hooks/useCart';
 import { useSEO } from '@/hooks/useSEO';
 import { useTracking } from '@/hooks/useTracking';
@@ -15,7 +16,8 @@ import { catalogPath } from '@/hooks/useCatalogPath';
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
-  const { product, loading } = useProduct(slug);
+  const catalog = useCatalog();
+  const { product, loading } = useProduct(slug, catalog.id);
   const { addItem } = useCart();
   const { trackEvent } = useTracking();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);

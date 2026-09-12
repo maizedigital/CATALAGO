@@ -3,6 +3,7 @@ import { siteConfig } from '@/config/site';
 import { BannerCarousel } from '@/components/BannerCarousel';
 import { ProductGrid } from '@/components/ProductGrid';
 import { useProducts } from '@/hooks/useProducts';
+import { useCatalog } from '@/hooks/useCatalogContext';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
 import { catalogPath } from '@/hooks/useCatalogPath';
@@ -14,7 +15,8 @@ const gradientBar = {
 } as const;
 
 export default function Home() {
-  const { products, loading } = useProducts();
+  const catalog = useCatalog();
+  const { products, loading } = useProducts(catalog.id);
   useSEO({
     title: 'MB Moda Brasil',
     description:

@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, useLocation, Navigate, useParams } from 'react-router-dom';
 
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -9,6 +9,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { CartProvider } from '@/hooks/useCart';
 import { TrackingProvider } from '@/hooks/useTracking';
 import { AdminAuthProvider } from '@/hooks/useAdminAuth';
+import { CatalogProvider, useCatalogBySlug, type CatalogInfo } from '@/hooks/useCatalogContext';
 import Home from '@/pages/Home';
 import Catalog from '@/pages/Catalog';
 import ProductPage from '@/pages/ProductPage';
@@ -21,6 +22,7 @@ import NotFound from '@/pages/NotFound';
 import Presentation from '@/pages/Presentation';
 import { isEnvieyDomain, MB_SLUG } from '@/lib/domain';
 import AdminLogin from '@/pages/admin/AdminLogin';
+import AdminSignup from '@/pages/admin/AdminSignup';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import AdminProducts from '@/pages/admin/AdminProducts';
 import AdminProductForm from '@/pages/admin/AdminProductForm';
@@ -77,27 +79,55 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-// MB catalog routes — shared between mbmodabrasil.com.br (at root) and
-// enviey.app/mbmodabrasil (under slug prefix). The `prefix` param lets
-// the same routes work in both contexts without duplication.
-//
-// React Router v7 requires direct children of <Routes> to be <Route> or
-// <Fragment>, so we return an array of <Route> elements instead of wrapping
-// them in a custom component.
-function mbCatalogRoutes(prefix: string) {
-  const p = (path: string) => `${prefix}${path}`;
+// Wrapper that resolves the tenant slug from the URL, loads catalog info,
+// and provides it via context to all catalog pages.
+function TenantCatalogLayout({ children }: { children: React.ReactNode }) {
+  const { slug } = useParams<{ slug: string }>();
+  const { catalog, loading, error } = useCatalogBySlug(slug);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="animate-pulse text-sm text-neutral-400">Carregando loja...</div>
+      </div>
+    );
+  }
+
+  if (error || !catalog) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4 text-center">
+        <h1 className="text-2xl font-bold text-neutral-900">Loja não encontrada</h1>
+        <p className="mt-2 text-sm text-neutral-500">Esta loja não existe ou não está disponível.</p>
+        <a href="/" className="mt-6 rounded-lg bg-neutral-900 px-6 py-3 text-sm font-bold text-white">Voltar para Enviey</a>
+      </div>
+    );
+  }
+
+  return (
+    <CatalogProvider catalog={catalog}>
+      <PublicLayout>{children}</PublicLayout>
+    </CatalogProvider>
+  );
+}
+
+// Catalog routes for a specific tenant slug. On the Enviey domain, each
+// tenant gets routes under /:slug/*.
+function tenantCatalogRoutes(slug: string) {
+  const p = (path: string) => `/${slug}${path}`;
   return [
-    <Route key={p('/')} path={p('/')} element={<PublicLayout><Home /></PublicLayout>} />,
-    <Route key={p('/feminino')} path={p('/feminino')} element={<PublicLayout><Catalog gender="feminino" /></PublicLayout>} />,
-    <Route key={p('/masculino')} path={p('/masculino')} element={<PublicLayout><Catalog gender="masculino" /></PublicLayout>} />,
-    <Route key={p('/ofertas')} path={p('/ofertas')} element={<PublicLayout><Catalog offersOnly /></PublicLayout>} />,
-    <Route key={p('/categoria/:category')} path={p('/categoria/:category')} element={<PublicLayout><Catalog /></PublicLayout>} />,
-    <Route key={p('/produto/:slug')} path={p('/produto/:slug')} element={<PublicLayout><ProductPage /></PublicLayout>} />,
-    <Route key={p('/carrinho')} path={p('/carrinho')} element={<PublicLayout><Cart /></PublicLayout>} />,
-    <Route key={p('/finalizar')} path={p('/finalizar')} element={<PublicLayout><Checkout /></PublicLayout>} />,
-    <Route key={p('/buscar')} path={p('/buscar')} element={<PublicLayout><Search /></PublicLayout>} />,
-    <Route key={p('/sobre')} path={p('/sobre')} element={<PublicLayout><About /></PublicLayout>} />,
-    <Route key={p('/contato')} path={p('/contato')} element={<PublicLayout><Contact /></PublicLayout>} />,
+    <Route key={p('/')} path={p('/')} element={<TenantCatalogLayout><Home /></TenantCatalogLayout>} />,
+    <Route key={p('/feminino')} path={p('/feminino')} element={<TenantCatalogLayout><Catalog gender="feminino" /></TenantCatalogLayout>} />,
+    <Route key={p('/masculino')} path={p('/masculino')} element={<TenantCatalogLayout><Catalog gender="masculino" /></TenantCatalogLayout>} />,
+    <Route key={p('/geral')} path={p('/geral')} element={<TenantCatalogLayout><Catalog /></TenantCatalogLayout>} />,
+    <Route key={p('/promocao')} path={p('/promocao')} element={<TenantCatalogLayout><Catalog offersOnly /></TenantCatalogLayout>} />,
+    <Route key={p('/ofertas')} path={p('/ofertas')} element={<TenantCatalogLayout><Catalog offersOnly /></TenantCatalogLayout>} />,
+    <Route key={p('/categoria/:category')} path={p('/categoria/:category')} element={<TenantCatalogLayout><Catalog /></TenantCatalogLayout>} />,
+    <Route key={p('/produto/:slug')} path={p('/produto/:slug')} element={<TenantCatalogLayout><ProductPage /></TenantCatalogLayout>} />,
+    <Route key={p('/carrinho')} path={p('/carrinho')} element={<TenantCatalogLayout><Cart /></TenantCatalogLayout>} />,
+    <Route key={p('/finalizar')} path={p('/finalizar')} element={<TenantCatalogLayout><Checkout /></TenantCatalogLayout>} />,
+    <Route key={p('/buscar')} path={p('/buscar')} element={<TenantCatalogLayout><Search /></TenantCatalogLayout>} />,
+    <Route key={p('/sobre')} path={p('/sobre')} element={<TenantCatalogLayout><About /></TenantCatalogLayout>} />,
+    <Route key={p('/contato')} path={p('/contato')} element={<TenantCatalogLayout><Contact /></TenantCatalogLayout>} />,
   ];
 }
 
@@ -115,6 +145,7 @@ export default function App() {
               <Routes>
                 {/* Admin login — public */}
                 <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin/cadastro" element={<AdminSignup />} />
 
                 {/* Admin protected routes */}
                 <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
@@ -136,20 +167,19 @@ export default function App() {
                   <>
                     {/* Enviey platform — root shows the SaaS landing page */}
                     <Route path="/" element={<Presentation />} />
-                    {/* Legacy redirect */}
                     <Route path="/apresentacao" element={<Navigate to="/" replace />} />
-                    {/* MB catalog under slug prefix */}
-                    {mbCatalogRoutes(`/${MB_SLUG}`)}
+                    {/* MB catalog under known slug */}
+                    {tenantCatalogRoutes(MB_SLUG)}
+                    {/* Dynamic tenant routes — any /:slug/* that isn't the MB slug */}
+                    {tenantCatalogRoutes(':slug')}
                     {/* Fallback */}
                     <Route path="*" element={<Presentation />} />
                   </>
                 ) : (
                   <>
-                    {/* MB catalog at root (mbmodabrasil.com.br or localhost) */}
-                    {mbCatalogRoutes('')}
-                    {/* Presentation page still accessible on MB domain */}
+                    {/* MB catalog at root (localhost dev) */}
+                    {tenantCatalogRoutes(MB_SLUG)}
                     <Route path="/apresentacao" element={<Presentation />} />
-                    {/* Fallback */}
                     <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
                   </>
                 )}

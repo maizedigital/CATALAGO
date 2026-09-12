@@ -18,6 +18,7 @@ import {
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useSEO } from '@/hooks/useSEO';
 import { Logo } from '@/components/Logo';
+import { isEnvieyDomain } from '@/lib/domain';
 
 interface NavItem {
   to: string;
@@ -40,9 +41,9 @@ const navItems: NavItem[] = [
 export function AdminLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { username, logout } = useAdminAuth();
+  const { username, catalogId, logout } = useAdminAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  useSEO({ title: 'NV · Admin', noindex: true });
+  useSEO({ title: 'Enviey · Painel', noindex: true });
 
   const handleLogout = () => {
     logout();
@@ -51,6 +52,12 @@ export function AdminLayout({ children }: { children: ReactNode }) {
 
   const isActive = (path: string) =>
     path === '/admin' ? location.pathname === '/admin' : location.pathname.startsWith(path);
+
+  // For tenant users (catalogId set), the store URL is /{slug}.
+  // For global admins (catalogId null), there's no single store — link to home.
+  const storeUrl = catalogId && username ? `/${username}` : '/';
+  const enviey = isEnvieyDomain();
+  const fullStoreUrl = enviey ? `https://enviey.app${storeUrl}` : storeUrl;
 
   return (
     <div className="flex min-h-screen bg-neutral-950">
@@ -75,6 +82,25 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             <X size={20} />
           </button>
         </div>
+
+        {catalogId && (
+          <div className="px-4 py-3">
+            <a
+              href={storeUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="block rounded-lg border border-neutral-800 bg-neutral-800/50 px-3 py-2.5 transition-colors hover:bg-neutral-800"
+            >
+              <div className="flex items-center gap-2 text-xs font-medium text-neutral-400">
+                <ExternalLink size={14} />
+                Sua loja
+              </div>
+              <div className="mt-1 truncate text-sm font-semibold text-[#19E66B]">
+                {fullStoreUrl.replace(/^https?:\/\//, '')}
+              </div>
+            </a>
+          </div>
+        )}
 
         <div className="px-4 py-2">
           <span className="px-3 text-xs font-medium uppercase tracking-wider text-neutral-600">

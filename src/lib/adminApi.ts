@@ -1,3 +1,5 @@
+import { supabase } from '@/lib/supabase';
+
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
@@ -127,5 +129,51 @@ export async function adminLogin(username: string, password: string) {
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || 'Credenciais inválidas');
   }
-  return res.json() as Promise<{ token: string; username: string; id: string }>;
+  return res.json() as Promise<{ token: string; username: string; id: string; catalog_id: string | null }>;
+}
+
+export async function tenantSignup(params: {
+  storeName: string;
+  slug: string;
+  email: string;
+  password: string;
+  templateSlug?: string;
+}) {
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/tenant-signup`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'X-Client-Info': 'mb-admin',
+      'Apikey': SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({
+      store_name: params.storeName,
+      slug: params.slug,
+      email: params.email,
+      password: params.password,
+      template_slug: params.templateSlug || 'mbmodabrasil',
+    }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Não foi possível criar a conta.');
+  }
+  return res.json() as Promise<{
+    token: string;
+    username: string;
+    id: string;
+    catalog_id: string;
+    catalog_slug: string;
+  }>;
+}
+
+export async function checkSlugAvailability(slug: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('catalogs')
+    .select('id')
+    .eq('slug', slug)
+    .maybeSingle();
+  if (error) return false;
+  return !data;
 }

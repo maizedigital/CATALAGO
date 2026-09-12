@@ -42,7 +42,7 @@ export function PresentationFinalCTA() {
 
         <Reveal delay={300}>
           <Link
-            to="/admin/login"
+            to="/admin/cadastro"
             className="group mt-10 inline-flex items-center justify-center gap-2 rounded-xl bg-[#19E66B] px-8 py-5 text-lg font-bold text-black transition-all hover:bg-[#15c259] hover:shadow-[0_0_40px_rgba(25,230,107,0.5)]"
           >
             Criar minha loja grátis

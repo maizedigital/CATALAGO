@@ -1,5 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-// MB Admin API v2
+// Enviey Admin API — multi-tenant scoped
 import { createClient } from "npm:@supabase/supabase-js@2.57.4";
 
 const corsHeaders = {
@@ -8,7 +8,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey, X-Admin-Token",
 };
 
-// Resources reachable without an admin session. Everything else requires one.
 const PUBLIC_RESOURCES = new Set(["go"]);
 
 async function sha256Hex(value: string): Promise<string> {
@@ -38,9 +37,8 @@ Deno.serve(async (req: Request) => {
     const subResource = segments[2];
 
     // --- Admin session gate ---
-    // This function holds the service role key, which bypasses row level security,
-    // so every non-public resource must prove it carries a live admin session.
     let currentAdminId: string | null = null;
+    let currentCatalogId: string | null = null; // null = global admin (sees all)
     if (!PUBLIC_RESOURCES.has(resource)) {
       const token = req.headers.get("X-Admin-Token") || "";
       if (!token || token.length < 32) return jsonError("Nao autorizado", 401);
@@ -55,17 +53,38 @@ Deno.serve(async (req: Request) => {
         return jsonError("Nao autorizado", 401);
       }
       currentAdminId = session.admin_id as string;
+
+      // Resolve the caller's catalog_id. null means global admin.
+      const { data: adminUser } = await supabase
+        .from("admin_users")
+        .select("catalog_id")
+        .eq("id", currentAdminId)
+        .maybeSingle();
+      currentCatalogId = (adminUser?.catalog_id as string) || null;
     }
+
+    // Helper: apply catalog scope to a query builder
+    // For tenant-scoped admins, filters by catalog_id. Global admins see everything.
+    const scopeCatalog = (query: any) =>
+      currentCatalogId ? query.eq("catalog_id", currentCatalogId) : query;
+
+    // Helper: force catalog_id on insert bodies for tenant-scoped admins
+    const scopeBody = (body: Record<string, unknown>): Record<string, unknown> => {
+      if (currentCatalogId) {
+        return { ...body, catalog_id: currentCatalogId };
+      }
+      return body;
+    };
 
     // --- Dashboard stats ---
     if (resource === "dashboard" && req.method === "GET") {
       const [products, orders, customers, leads, visitors, events] = await Promise.all([
-        supabase.from("products").select("id, active"),
-        supabase.from("orders").select("id, total"),
-        supabase.from("customers").select("id"),
-        supabase.from("leads").select("id"),
-        supabase.from("visitors").select("id"),
-        supabase.from("customer_events").select("id, event_type"),
+        scopeCatalog(supabase.from("products").select("id, active, catalog_id")),
+        scopeCatalog(supabase.from("orders").select("id, total, catalog_id")),
+        scopeCatalog(supabase.from("customers").select("id, catalog_id")),
+        scopeCatalog(supabase.from("leads").select("id, catalog_id")),
+        scopeCatalog(supabase.from("visitors").select("id, catalog_id")),
+        scopeCatalog(supabase.from("customer_events").select("id, event_type, catalog_id")),
       ]);
 
       const totalSales = (orders.data || []).reduce((s: number, o: Record<string, unknown>) => s + Number(o.total || 0), 0);
@@ -165,21 +184,32 @@ Deno.serve(async (req: Request) => {
     // --- Products CRUD ---
     if (resource === "products") {
       if (req.method === "GET") {
-        const { data, error } = await supabase.from("products").select("*").order("created_at", { ascending: false });
+        const { data, error } = await scopeCatalog(
+          supabase.from("products").select("*").order("created_at", { ascending: false })
+        );
         return okOrError(data, error);
       }
       if (req.method === "POST") {
         const body = await req.json();
-        const { data, error } = await supabase.from("products").insert(body).select().single();
+        const { data, error } = await supabase.from("products").insert(scopeBody(body)).select().single();
         return okOrError(data, error);
       }
       if (req.method === "PUT" && id) {
         const body = await req.json();
-        const { data, error } = await supabase.from("products").update(body).eq("id", id).select().single();
+        // Prevent tenant admins from moving products to another catalog
+        if (currentCatalogId) delete body.catalog_id;
+        const query = supabase.from("products").update(body).eq("id", id);
+        const { data, error } = await (currentCatalogId
+          ? query.eq("catalog_id", currentCatalogId)
+          : query
+        ).select().single();
         return okOrError(data, error);
       }
       if (req.method === "DELETE" && id) {
-        const { error } = await supabase.from("products").delete().eq("id", id);
+        const query = supabase.from("products").delete().eq("id", id);
+        const { error } = currentCatalogId
+          ? await query.eq("catalog_id", currentCatalogId)
+          : await query;
         return okOrError({ success: true }, error);
       }
     }
@@ -187,28 +217,31 @@ Deno.serve(async (req: Request) => {
     // --- Orders ---
     if (resource === "orders") {
       if (req.method === "GET" && id) {
-        const { data, error } = await supabase
-          .from("orders")
-          .select("*, order_items(*)")
-          .eq("id", id)
-          .single();
+        const query = supabase.from("orders").select("*, order_items(*)").eq("id", id);
+        const { data, error } = currentCatalogId
+          ? await query.eq("catalog_id", currentCatalogId).maybeSingle()
+          : await query.maybeSingle();
         return okOrError(data, error);
       }
       if (req.method === "GET") {
-        const { data, error } = await supabase
-          .from("orders")
-          .select("*, order_items(*)")
-          .order("created_at", { ascending: false });
+        const { data, error } = await scopeCatalog(
+          supabase.from("orders").select("*, order_items(*)").order("created_at", { ascending: false })
+        );
         return okOrError(data, error);
       }
       if (req.method === "PUT" && id) {
         const body = await req.json();
-        const { data, error } = await supabase.from("orders").update(body).eq("id", id).select().single();
+        if (currentCatalogId) delete body.catalog_id;
+        const query = supabase.from("orders").update(body).eq("id", id);
+        const { data, error } = await (currentCatalogId
+          ? query.eq("catalog_id", currentCatalogId)
+          : query
+        ).select().single();
         return okOrError(data, error);
       }
       if (req.method === "POST") {
         const body = await req.json();
-        const { data, error } = await supabase.from("orders").insert(body).select().single();
+        const { data, error } = await supabase.from("orders").insert(scopeBody(body)).select().single();
         return okOrError(data, error);
       }
     }
@@ -216,54 +249,54 @@ Deno.serve(async (req: Request) => {
     // --- Customers ---
     if (resource === "customers") {
       if (req.method === "GET" && id && subResource === "events") {
-        const { data, error } = await supabase
-          .from("customer_events")
-          .select("*")
-          .or(`visitor_id.eq.${safeFilterValue(id)},whatsapp.eq.${safeFilterValue(id)}`)
-          .order("created_at", { ascending: false })
-          .limit(200);
+        const { data, error } = await scopeCatalog(
+          supabase.from("customer_events")
+            .select("*")
+            .or(`visitor_id.eq.${safeFilterValue(id)},whatsapp.eq.${safeFilterValue(id)}`)
+            .order("created_at", { ascending: false })
+            .limit(200)
+        );
         return okOrError(data, error);
       }
       if (req.method === "GET" && id && subResource === "orders") {
-        const { data: customer } = await supabase
-          .from("customers")
-          .select("whatsapp")
-          .eq("id", id)
-          .single();
+        const custQuery = supabase.from("customers").select("whatsapp").eq("id", id);
+        const { data: customer } = currentCatalogId
+          ? await custQuery.eq("catalog_id", currentCatalogId).maybeSingle()
+          : await custQuery.maybeSingle();
         const wa = customer?.whatsapp;
         if (!wa) return okOrError([], null);
-        const { data, error } = await supabase
-          .from("orders")
-          .select("*, order_items(*)")
-          .or(`customer_id.eq.${safeFilterValue(id)},customer_whatsapp.eq.${safeFilterValue(wa)}`)
-          .order("created_at", { ascending: false });
+        const { data, error } = await scopeCatalog(
+          supabase.from("orders")
+            .select("*, order_items(*)")
+            .or(`customer_id.eq.${safeFilterValue(id)},customer_whatsapp.eq.${safeFilterValue(wa)}`)
+            .order("created_at", { ascending: false })
+        );
         return okOrError(data, error);
       }
       if (req.method === "GET" && id) {
-        const { data, error } = await supabase
-          .from("customers")
-          .select("*")
-          .eq("id", id)
-          .single();
+        const query = supabase.from("customers").select("*").eq("id", id);
+        const { data, error } = currentCatalogId
+          ? await query.eq("catalog_id", currentCatalogId).maybeSingle()
+          : await query.maybeSingle();
         return okOrError(data, error);
       }
       if (req.method === "GET") {
-        const { data, error } = await supabase.from("customers").select("*").order("created_at", { ascending: false });
+        const { data, error } = await scopeCatalog(
+          supabase.from("customers").select("*").order("created_at", { ascending: false })
+        );
         return okOrError(data, error);
       }
       if (req.method === "POST") {
         const body = await req.json();
         const phone = (body.whatsapp || "").replace(/\D/g, "");
         if (phone) {
-          const { data: existing } = await supabase
-            .from("customers")
-            .select("id, name")
-            .eq("whatsapp", phone)
-            .maybeSingle();
+          const { data: existing } = await scopeCatalog(
+            supabase.from("customers").select("id, name").eq("whatsapp", phone).maybeSingle()
+          );
           if (existing) {
             const { data, error } = await supabase
               .from("customers")
-              .update({ name: body.name || existing.name, ...body, whatsapp: phone })
+              .update({ name: body.name || existing.name, ...body, whatsapp: phone, ...(currentCatalogId ? { catalog_id: currentCatalogId } : {}) })
               .eq("id", existing.id)
               .select()
               .single();
@@ -271,16 +304,24 @@ Deno.serve(async (req: Request) => {
           }
           body.whatsapp = phone;
         }
-        const { data, error } = await supabase.from("customers").insert(body).select().single();
+        const { data, error } = await supabase.from("customers").insert(scopeBody(body)).select().single();
         return okOrError(data, error);
       }
       if (req.method === "PUT" && id) {
         const body = await req.json();
-        const { data, error } = await supabase.from("customers").update(body).eq("id", id).select().single();
+        if (currentCatalogId) delete body.catalog_id;
+        const query = supabase.from("customers").update(body).eq("id", id);
+        const { data, error } = await (currentCatalogId
+          ? query.eq("catalog_id", currentCatalogId)
+          : query
+        ).select().single();
         return okOrError(data, error);
       }
       if (req.method === "DELETE" && id) {
-        const { error } = await supabase.from("customers").delete().eq("id", id);
+        const query = supabase.from("customers").delete().eq("id", id);
+        const { error } = currentCatalogId
+          ? await query.eq("catalog_id", currentCatalogId)
+          : await query;
         return okOrError({ success: true }, error);
       }
     }
@@ -288,51 +329,53 @@ Deno.serve(async (req: Request) => {
     // --- Leads ---
     if (resource === "leads") {
       if (req.method === "GET") {
-        const { data, error } = await supabase.from("leads").select("*").order("created_at", { ascending: false });
+        const { data, error } = await scopeCatalog(
+          supabase.from("leads").select("*").order("created_at", { ascending: false })
+        );
         return okOrError(data, error);
       }
       if (req.method === "PUT" && id) {
         const body = await req.json();
-        const { data, error } = await supabase.from("leads").update(body).eq("id", id).select().single();
+        if (currentCatalogId) delete body.catalog_id;
+        const query = supabase.from("leads").update(body).eq("id", id);
+        const { data, error } = await (currentCatalogId
+          ? query.eq("catalog_id", currentCatalogId)
+          : query
+        ).select().single();
         return okOrError(data, error);
       }
       if (req.method === "DELETE" && id) {
-        const { error } = await supabase.from("leads").delete().eq("id", id);
+        const query = supabase.from("leads").delete().eq("id", id);
+        const { error } = currentCatalogId
+          ? await query.eq("catalog_id", currentCatalogId)
+          : await query;
         return okOrError({ success: true }, error);
       }
     }
 
     // --- Customer events ---
-    if (resource === "events") {
-      if (req.method === "GET") {
-        const { data, error } = await supabase
-          .from("customer_events")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(500);
-        return okOrError(data, error);
-      }
+    if (resource === "events" && req.method === "GET") {
+      const { data, error } = await scopeCatalog(
+        supabase.from("customer_events").select("*").order("created_at", { ascending: false }).limit(500)
+      );
+      return okOrError(data, error);
     }
 
     // --- Visitors ---
-    if (resource === "visitors") {
-      if (req.method === "GET") {
-        const { data, error } = await supabase
-          .from("visitors")
-          .select("*")
-          .order("last_visit", { ascending: false })
-          .limit(500);
-        return okOrError(data, error);
-      }
+    if (resource === "visitors" && req.method === "GET") {
+      const { data, error } = await scopeCatalog(
+        supabase.from("visitors").select("*").order("last_visit", { ascending: false }).limit(500)
+      );
+      return okOrError(data, error);
     }
 
     // --- CRM dashboard ---
     if (resource === "crm-dashboard" && req.method === "GET") {
       const [customers, leads, orders, events] = await Promise.all([
-        supabase.from("customers").select("id, status, total_spent, orders_count"),
-        supabase.from("leads").select("id, status, created_at"),
-        supabase.from("orders").select("id, total, created_at"),
-        supabase.from("customer_events").select("id, event_type"),
+        scopeCatalog(supabase.from("customers").select("id, status, total_spent, orders_count")),
+        scopeCatalog(supabase.from("leads").select("id, status, created_at")),
+        scopeCatalog(supabase.from("orders").select("id, total, created_at")),
+        scopeCatalog(supabase.from("customer_events").select("id, event_type")),
       ]);
 
       const allCustomers = customers.data || [];
@@ -359,15 +402,18 @@ Deno.serve(async (req: Request) => {
 
     // --- Product rankings ---
     if (resource === "rankings" && req.method === "GET") {
-      const { data: events } = await supabase
-        .from("customer_events")
-        .select("event_type, product_name, product_id")
-        .order("created_at", { ascending: false })
-        .limit(5000);
-
+      const { data: events } = await scopeCatalog(
+        supabase.from("customer_events")
+          .select("event_type, product_name, product_id")
+          .order("created_at", { ascending: false })
+          .limit(5000)
+      );
       const { data: orderItems } = await supabase
         .from("order_items")
         .select("product_name, quantity")
+        .in("order_id",
+          (await scopeCatalog(supabase.from("orders").select("id"))).data?.map((o: Record<string, unknown>) => o.id) || []
+        )
         .limit(5000);
 
       const countByProduct = (items: Record<string, unknown>[], field: string, filterType?: string) => {
@@ -399,11 +445,11 @@ Deno.serve(async (req: Request) => {
       const since = new Date(Date.now() - days * 86400000).toISOString();
 
       const [visitors, leads, customers, events, orders] = await Promise.all([
-        supabase.from("visitors").select("id, created_at").gte("created_at", since),
-        supabase.from("leads").select("id, created_at").gte("created_at", since),
-        supabase.from("customers").select("id, created_at").gte("created_at", since),
-        supabase.from("customer_events").select("id, event_type, created_at").gte("created_at", since),
-        supabase.from("orders").select("id, created_at, total").gte("created_at", since),
+        scopeCatalog(supabase.from("visitors").select("id, created_at").gte("created_at", since)),
+        scopeCatalog(supabase.from("leads").select("id, created_at").gte("created_at", since)),
+        scopeCatalog(supabase.from("customers").select("id, created_at").gte("created_at", since)),
+        scopeCatalog(supabase.from("customer_events").select("id, event_type, created_at").gte("created_at", since)),
+        scopeCatalog(supabase.from("orders").select("id, created_at, total").gte("created_at", since)),
       ]);
 
       const eventCounts: Record<string, number> = {};
@@ -424,13 +470,23 @@ Deno.serve(async (req: Request) => {
     // --- Settings ---
     if (resource === "settings") {
       if (req.method === "GET") {
-        const { data, error } = await supabase.from("settings").select("*");
+        const { data, error } = await scopeCatalog(supabase.from("settings").select("*"));
         return okOrError(data, error);
       }
       if (req.method === "PUT") {
         const body = await req.json();
         const { key, value } = body;
-        const { data, error } = await supabase.from("settings").upsert({ key, value }).select().single();
+        const payload = currentCatalogId
+          ? { key, value, catalog_id: currentCatalogId }
+          : { key, value };
+        const conflictTarget = currentCatalogId
+          ? "key,catalog_id"
+          : "key";
+        const { data, error } = await supabase
+          .from("settings")
+          .upsert(payload, { onConflict: conflictTarget })
+          .select()
+          .single();
         return okOrError(data, error);
       }
     }
@@ -443,9 +499,6 @@ Deno.serve(async (req: Request) => {
         return jsonError("A nova senha deve ter pelo menos 10 caracteres", 400);
       }
 
-      // The account comes from the verified session, never from the request body,
-      // and both failure branches return the same message so the endpoint cannot
-      // be used to discover which usernames exist.
       const { data: admin } = await supabase
         .from("admin_users")
         .select("id, password_hash")
@@ -468,7 +521,6 @@ Deno.serve(async (req: Request) => {
         .eq("id", admin.id);
       if (error) return jsonError("Nao foi possivel alterar a senha", 400);
 
-      // Changing the password invalidates every existing session.
       await supabase.from("admin_sessions").delete().eq("admin_id", admin.id);
       return json({ success: true });
     }
@@ -476,26 +528,39 @@ Deno.serve(async (req: Request) => {
     // --- Banners CRUD ---
     if (resource === "banners") {
       if (req.method === "GET") {
-        const { data, error } = await supabase.from("banners").select("*").order("sort_order", { ascending: true });
+        const { data, error } = await scopeCatalog(
+          supabase.from("banners").select("*").order("sort_order", { ascending: true })
+        );
         return okOrError(data, error);
       }
       if (req.method === "POST") {
         const body = await req.json();
-        const { data, error } = await supabase.from("banners").insert(body).select().single();
+        const { data, error } = await supabase.from("banners").insert(scopeBody(body)).select().single();
         return okOrError(data, error);
       }
       if (req.method === "PUT" && id) {
         const body = await req.json();
-        const { data, error } = await supabase.from("banners").update({ ...body, updated_at: new Date().toISOString() }).eq("id", id).select().single();
+        if (currentCatalogId) delete body.catalog_id;
+        const query = supabase.from("banners").update({ ...body, updated_at: new Date().toISOString() }).eq("id", id);
+        const { data, error } = await (currentCatalogId
+          ? query.eq("catalog_id", currentCatalogId)
+          : query
+        ).select().single();
         return okOrError(data, error);
       }
       if (req.method === "DELETE" && id) {
-        const { data: banner } = await supabase.from("banners").select("video_url").eq("id", id).maybeSingle();
+        const query = supabase.from("banners").select("video_url").eq("id", id);
+        const { data: banner } = currentCatalogId
+          ? await query.eq("catalog_id", currentCatalogId).maybeSingle()
+          : await query.maybeSingle();
         if (banner?.video_url) {
           const videoPath = banner.video_url.split("/product-images/")[1];
           if (videoPath) await supabase.storage.from("product-images").remove([videoPath]);
         }
-        const { error } = await supabase.from("banners").delete().eq("id", id);
+        const delQuery = supabase.from("banners").delete().eq("id", id);
+        const { error } = currentCatalogId
+          ? await delQuery.eq("catalog_id", currentCatalogId)
+          : await delQuery;
         return okOrError({ success: true }, error);
       }
     }
@@ -505,7 +570,9 @@ Deno.serve(async (req: Request) => {
       const body = await req.json();
       const items: { id: string; sort_order: number }[] = body.items || [];
       for (const item of items) {
-        await supabase.from("banners").update({ sort_order: item.sort_order, updated_at: new Date().toISOString() }).eq("id", item.id);
+        const query = supabase.from("banners").update({ sort_order: item.sort_order, updated_at: new Date().toISOString() }).eq("id", item.id);
+        if (currentCatalogId) await query.eq("catalog_id", currentCatalogId);
+        else await query;
       }
       return json({ success: true });
     }
@@ -550,16 +617,20 @@ Deno.serve(async (req: Request) => {
         });
       }
       if (req.method === "GET") {
-        const { data, error } = await supabase.from("short_links").select("*").order("created_at", { ascending: false });
+        const { data, error } = await scopeCatalog(
+          supabase.from("short_links").select("*").order("created_at", { ascending: false })
+        );
         return okOrError(data, error);
       }
       if (req.method === "POST") {
         const body = await req.json();
         const slug = (body.slug || body.name || "").toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
         if (!slug) return jsonError("Slug inválido", 400);
-        const { data: existing } = await supabase.from("short_links").select("id").eq("slug", slug).maybeSingle();
+        const { data: existing } = await scopeCatalog(
+          supabase.from("short_links").select("id").eq("slug", slug).maybeSingle()
+        );
         if (existing) return jsonError("Este slug já está em uso", 400);
-        const { data, error } = await supabase.from("short_links").insert({ ...body, slug }).select().single();
+        const { data, error } = await supabase.from("short_links").insert(scopeBody({ ...body, slug })).select().single();
         return okOrError(data, error);
       }
       if (req.method === "PUT" && id) {
@@ -567,11 +638,19 @@ Deno.serve(async (req: Request) => {
         if (body.slug) {
           body.slug = body.slug.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
         }
-        const { data, error } = await supabase.from("short_links").update({ ...body, updated_at: new Date().toISOString() }).eq("id", id).select().single();
+        if (currentCatalogId) delete body.catalog_id;
+        const query = supabase.from("short_links").update({ ...body, updated_at: new Date().toISOString() }).eq("id", id);
+        const { data, error } = await (currentCatalogId
+          ? query.eq("catalog_id", currentCatalogId)
+          : query
+        ).select().single();
         return okOrError(data, error);
       }
       if (req.method === "DELETE" && id) {
-        const { error } = await supabase.from("short_links").delete().eq("id", id);
+        const query = supabase.from("short_links").delete().eq("id", id);
+        const { error } = currentCatalogId
+          ? await query.eq("catalog_id", currentCatalogId)
+          : await query;
         return okOrError({ success: true }, error);
       }
     }
@@ -588,7 +667,6 @@ Deno.serve(async (req: Request) => {
       const deviceType = /mobile|android|iphone/i.test(ua) ? "mobile" : /tablet|ipad/i.test(ua) ? "tablet" : "desktop";
       const country = (req.headers.get("x-vercel-ip-country") || req.headers.get("cf-ipcountry") || req.headers.get("x-superb-country") || "") as string;
 
-      // Generate an anonymous fingerprint from IP + UA prefix for unique visitor counting
       const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown";
       const fingerprint = `${ip}_${ua.slice(0, 60)}_${acceptLang.slice(0, 10)}`;
 
@@ -607,15 +685,15 @@ Deno.serve(async (req: Request) => {
     // --- Live visitors ---
     if (resource === "live-visitors" && req.method === "GET") {
       const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
-      const { data, error } = await supabase
-        .from("customer_events")
-        .select("visitor_id, event_data, created_at")
-        .gte("created_at", twoMinAgo)
-        .order("created_at", { ascending: false })
-        .limit(200);
+      const { data, error } = await scopeCatalog(
+        supabase.from("customer_events")
+          .select("visitor_id, event_data, created_at")
+          .gte("created_at", twoMinAgo)
+          .order("created_at", { ascending: false })
+          .limit(200)
+      );
       if (error) return jsonError(error.message, 400);
       const events = (data || []) as Record<string, unknown>[];
-      // Exclude admin paths and deduplicate by visitor_id
       const visitorLastSeen: Record<string, string> = {};
       const paths: Record<string, number> = {};
       for (const e of events) {
@@ -633,6 +711,52 @@ Deno.serve(async (req: Request) => {
       return json({ active: activeCount, last_activity: lastActivity, top_paths: topPaths });
     }
 
+    // --- Catalogs (for AdminTenants — global admins only) ---
+    if (resource === "catalogs") {
+      if (currentCatalogId) {
+        // Tenant admins can only see their own catalog
+        if (req.method === "GET") {
+          const { data, error } = await supabase.from("catalogs").select("*").eq("id", currentCatalogId).maybeSingle();
+          return okOrError(data ? [data] : [], error);
+        }
+        return jsonError("Acesso negado", 403);
+      }
+      if (req.method === "GET") {
+        const { data, error } = await supabase.from("catalogs").select("*").order("created_at", { ascending: false });
+        return okOrError(data, error);
+      }
+    }
+
+    // --- Tenant profile ---
+    if (resource === "profile" && req.method === "GET") {
+      const { data, error } = await supabase
+        .from("tenant_profiles")
+        .select("*")
+        .eq("id", currentAdminId)
+        .maybeSingle();
+      return okOrError(data, error);
+    }
+    if (resource === "profile" && req.method === "PUT") {
+      const body = await req.json();
+      const { data, error } = await supabase
+        .from("tenant_profiles")
+        .update({ display_name: body.display_name, avatar_url: body.avatar_url, updated_at: new Date().toISOString() })
+        .eq("id", currentAdminId)
+        .select()
+        .single();
+      return okOrError(data, error);
+    }
+
+    // --- Templates (public list of available templates) ---
+    if (resource === "templates" && req.method === "GET") {
+      const { data, error } = await supabase
+        .from("catalogs")
+        .select("id, name, slug, template_name, settings")
+        .eq("is_template", true)
+        .eq("status", "active");
+      return okOrError(data, error);
+    }
+
     return jsonError("Recurso nao encontrado", 404);
   } catch (err) {
     console.error("admin-api error", err);
@@ -640,8 +764,6 @@ Deno.serve(async (req: Request) => {
   }
 });
 
-// PostgREST `or` filters are parsed from a string, so a raw path segment could
-// otherwise inject extra filter terms. Quote the value and escape the quotes.
 function safeFilterValue(value: string) {
   return `"${String(value).replace(/[\\"]/g, "")}"`;
 }
