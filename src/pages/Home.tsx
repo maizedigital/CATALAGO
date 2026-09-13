@@ -7,10 +7,11 @@ import { siteConfig } from '@/config/site';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
 import { catalogPath } from '@/hooks/useCatalogPath';
+import { AlertCircle } from 'lucide-react';
 
 export default function Home() {
   const catalog = useCatalog();
-  const { products, loading } = useProducts(catalog.id);
+  const { products, loading, error } = useProducts(catalog.id);
   const storeName = siteConfig.name;
   useSEO({
     title: storeName,
@@ -45,7 +46,12 @@ export default function Home() {
           <h2 className="font-serif text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">{storeName}</h2>
           <p className="mt-2 text-sm text-neutral-500">{loading ? '' : `${products.length} produtos disponíveis`}</p>
         </div>
-        {loading ? <SkeletonGrid /> : <ProductGrid products={products} />}
+        {loading ? <SkeletonGrid /> : error ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <AlertCircle size={32} className="text-neutral-300" />
+            <p className="mt-3 text-sm text-neutral-500">{error}</p>
+          </div>
+        ) : <ProductGrid products={products} />}
       </section>
 
       {ofertas.length > 0 && (
