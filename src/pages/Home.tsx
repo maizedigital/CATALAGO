@@ -3,15 +3,15 @@ import { BannerCarousel } from '@/components/BannerCarousel';
 import { ProductGrid } from '@/components/ProductGrid';
 import { useProducts } from '@/hooks/useProducts';
 import { useCatalog } from '@/hooks/useCatalogContext';
+import { siteConfig } from '@/config/site';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
 import { catalogPath } from '@/hooks/useCatalogPath';
 
 export default function Home() {
   const catalog = useCatalog();
-  const catalogId = catalog?.id ?? '';
-  const { products, loading } = useProducts(catalogId);
-  const storeName = catalog?.name ?? 'Loja';
+  const { products, loading } = useProducts(catalog.id);
+  const storeName = siteConfig.name;
   useSEO({
     title: storeName,
     description: `Catálogo de produtos da ${storeName}.`,

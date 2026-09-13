@@ -25,13 +25,11 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return res.json();
 }
 
-// The server now validates the admin session, so a 401 means the stored token is
-// expired or invalid. Clear it and send the user back to the login screen.
 function handleExpiredSession() {
   localStorage.removeItem('mb_admin_token');
   localStorage.removeItem('mb_admin_user');
-  if (!window.location.pathname.startsWith('/admin/login')) {
-    window.location.href = '/admin/login';
+  if (!window.location.pathname.includes('/login')) {
+    window.location.href = '/painel-mb-7X4K9/login';
   }
 }
 
@@ -129,51 +127,5 @@ export async function adminLogin(username: string, password: string) {
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || 'Credenciais inválidas');
   }
-  return res.json() as Promise<{ token: string; username: string; id: string; catalog_id: string | null }>;
-}
-
-export async function tenantSignup(params: {
-  storeName: string;
-  slug: string;
-  email: string;
-  password: string;
-  templateSlug?: string;
-}) {
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/tenant-signup`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-      'X-Client-Info': 'mb-admin',
-      'Apikey': SUPABASE_ANON_KEY,
-    },
-    body: JSON.stringify({
-      store_name: params.storeName,
-      slug: params.slug,
-      email: params.email,
-      password: params.password,
-      template_slug: params.templateSlug || undefined,
-    }),
-  });
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(data.error || 'Não foi possível criar a conta.');
-  }
-  return res.json() as Promise<{
-    token: string;
-    username: string;
-    id: string;
-    catalog_id: string;
-    catalog_slug: string;
-  }>;
-}
-
-export async function checkSlugAvailability(slug: string): Promise<boolean> {
-  const { data, error } = await supabase
-    .from('catalogs')
-    .select('id')
-    .eq('slug', slug)
-    .maybeSingle();
-  if (error) return false;
-  return !data;
+  return res.json() as Promise<{ token: string; username: string; id: string; must_change_password?: boolean }>;
 }

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save } from 'lucide-react';
 import { adminApi } from '@/lib/adminApi';
 import { AdminLayout } from '@/components/AdminLayout';
+import { ADMIN_BASE } from '@/config/site';
 import { formatPrice } from '@/lib/format';
 
 interface OrderItem {
@@ -94,7 +95,7 @@ export default function AdminOrderDetail() {
       <AdminLayout>
         <div className="flex flex-col items-center justify-center rounded-xl border border-neutral-800 bg-neutral-900 p-12 text-center">
           <p className="text-sm font-medium text-red-400">{error || 'Pedido nao encontrado'}</p>
-          <button onClick={() => navigate('/admin/pedidos')} className="mt-6 rounded-lg bg-neutral-100 px-6 py-3 text-xs font-bold uppercase tracking-widest text-neutral-900 transition-colors hover:bg-white">
+          <button onClick={() => navigate(`${ADMIN_BASE}/pedidos`)} className="mt-6 rounded-lg bg-neutral-100 px-6 py-3 text-xs font-bold uppercase tracking-widest text-neutral-900 transition-colors hover:bg-white">
             Voltar para pedidos
           </button>
         </div>
@@ -107,7 +108,7 @@ export default function AdminOrderDetail() {
   return (
     <AdminLayout>
       <div className="mb-6 flex items-center gap-4">
-        <button onClick={() => navigate('/admin/pedidos')} className="rounded-lg border border-neutral-700 bg-neutral-800 p-2 text-neutral-300 transition-colors hover:bg-neutral-700">
+        <button onClick={() => navigate(`${ADMIN_BASE}/pedidos`)} className="rounded-lg border border-neutral-700 bg-neutral-800 p-2 text-neutral-300 transition-colors hover:bg-neutral-700">
           <ArrowLeft size={18} />
         </button>
         <h1 className="font-serif text-2xl font-bold text-white">Pedido</h1>

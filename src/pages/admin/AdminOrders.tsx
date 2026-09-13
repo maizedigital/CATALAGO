@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { adminApi } from '@/lib/adminApi';
 import { AdminLayout } from '@/components/AdminLayout';
+import { ADMIN_BASE } from '@/config/site';
 import { formatPrice } from '@/lib/format';
 
 interface OrderItem {
@@ -126,7 +127,7 @@ export default function AdminOrders() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Link to={`/admin/pedidos/${order.id}`} className="text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-white">
+                    <Link to={`${ADMIN_BASE}/pedidos/${order.id}`} className="text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-white">
                       Ver
                     </Link>
                   </td>

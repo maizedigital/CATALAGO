@@ -62,7 +62,7 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!visitorIdRef.current) return;
     const path = location.pathname;
-    if (path.startsWith('/admin')) return;
+    if (path.startsWith('/painel-mb')) return;
 
     trackEvent('page_view', { path });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -73,7 +73,7 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     if (!visitorIdRef.current) return;
     const interval = setInterval(() => {
       const path = window.location.pathname;
-      if (path.startsWith('/admin')) return;
+      if (path.startsWith('/painel-mb')) return;
       supabase.from('customer_events').insert({
         visitor_id: visitorIdRef.current,
         event_type: 'heartbeat',

@@ -1,15 +1,14 @@
 import { useSearchParams } from 'react-router-dom';
 import { ProductGrid } from '@/components/ProductGrid';
 import { useSearch } from '@/hooks/useProducts';
-import { useCatalog } from '@/hooks/useCatalogContext';
 import { useSEO } from '@/hooks/useSEO';
+import { siteConfig } from '@/config/site';
 
 export default function Search() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') ?? '';
-  const catalog = useCatalog();
-  const storeName = catalog?.name ?? 'Loja';
-  const { results, loading } = useSearch(query, catalog?.id ?? '');
+  const storeName = siteConfig.name;
+  const { results, loading } = useSearch(query, '37c86a47-b2c1-4563-8e30-a5fff68ef918');
   useSEO({ title: `Buscar: ${query} — ${storeName}`, description: `Resultados de busca para "${query}" na ${storeName}.` });
 
   return (

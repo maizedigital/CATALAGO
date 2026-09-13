@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, Plus, X, MessageCircle, Pencil, Loader2 } from 'lucide-react';
 import { adminApi } from '@/lib/adminApi';
 import { AdminLayout } from '@/components/AdminLayout';
+import { ADMIN_BASE } from '@/config/site';
 
 interface Customer {
   id: string;
@@ -172,7 +173,7 @@ export default function AdminCRM() {
               {filtered.map((c) => (
                 <tr key={c.id} className="border-b border-neutral-800/60 last:border-0 transition-colors hover:bg-neutral-800/40">
                   <td className="px-4 py-3">
-                    <Link to={`/admin/clientes/${c.id}`} className="font-medium text-white hover:underline">
+                    <Link to={`${ADMIN_BASE}/clientes/${c.id}`} className="font-medium text-white hover:underline">
                       {c.name}
                     </Link>
                   </td>

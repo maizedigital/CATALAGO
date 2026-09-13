@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, Download } from 'lucide-react';
 import { adminApi } from '@/lib/adminApi';
 import { AdminLayout } from '@/components/AdminLayout';
+import { ADMIN_BASE } from '@/config/site';
 import { formatPrice } from '@/lib/format';
 
 interface Customer {
@@ -156,7 +157,7 @@ export default function AdminCustomers() {
               {filtered.map((c) => (
                 <tr key={c.id} className="border-b border-neutral-100 last:border-0 hover:bg-neutral-50">
                   <td className="px-4 py-3">
-                    <Link to={`/admin/clientes/${c.id}`} className="font-medium text-neutral-900 hover:underline">
+                    <Link to={`${ADMIN_BASE}/clientes/${c.id}`} className="font-medium text-neutral-900 hover:underline">
                       {c.name}
                     </Link>
                   </td>

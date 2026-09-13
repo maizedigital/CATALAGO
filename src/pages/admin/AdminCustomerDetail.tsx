@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MessageCircle, ShoppingCart, Eye, Package } from 'lucide-react';
 import { adminApi } from '@/lib/adminApi';
 import { AdminLayout } from '@/components/AdminLayout';
+import { ADMIN_BASE } from '@/config/site';
 import { formatPrice } from '@/lib/format';
 
 interface Customer {
@@ -99,7 +100,7 @@ export default function AdminCustomerDetail() {
         <div className="flex flex-col items-center justify-center rounded-lg bg-neutral-900 border border-neutral-800 p-12 text-center">
           <p className="text-sm font-medium text-red-400">{error || 'Cliente nao encontrado'}</p>
           <button
-            onClick={() => navigate('/admin/crm')}
+            onClick={() => navigate(`${ADMIN_BASE}/crm`)}
             className="mt-6 bg-neutral-800 border border-neutral-700 px-6 py-3 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-700"
           >
             Voltar para CRM
@@ -136,7 +137,7 @@ export default function AdminCustomerDetail() {
     <AdminLayout>
       <div className="mb-6 flex items-center gap-4">
         <button
-          onClick={() => navigate('/admin/crm')}
+          onClick={() => navigate(`${ADMIN_BASE}/crm`)}
           className="rounded-lg border border-neutral-700 bg-neutral-800 p-2 text-neutral-300 transition-colors hover:bg-neutral-700"
         >
           <ArrowLeft size={18} />
@@ -275,7 +276,7 @@ export default function AdminCustomerDetail() {
                 {orders.map((order) => (
                   <Link
                     key={order.id}
-                    to={`/admin/pedidos/${order.id}`}
+                    to={`${ADMIN_BASE}/pedidos/${order.id}`}
                     className="block rounded-lg border border-neutral-800 bg-neutral-850 p-4 transition-colors hover:border-neutral-700 hover:bg-neutral-800"
                     style={{ background: 'rgb(28,28,28)' }}
                   >

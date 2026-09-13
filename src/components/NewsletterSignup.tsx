@@ -17,7 +17,7 @@ function validateWhatsApp(input: string): boolean {
 
 export function NewsletterSignup() {
   const catalog = useCatalog();
-  const catalogId = catalog?.id ?? '';
+  const catalogId = catalog.id;
   const [name, setName] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [error, setError] = useState('');

@@ -4,8 +4,8 @@ import { SlidersHorizontal, X } from 'lucide-react';
 import { ProductGrid } from '@/components/ProductGrid';
 import { ProductFilter, type FilterState } from '@/components/ProductFilter';
 import { useProducts } from '@/hooks/useProducts';
-import { useCatalog } from '@/hooks/useCatalogContext';
 import { useSEO } from '@/hooks/useSEO';
+import { siteConfig } from '@/config/site';
 import { effectivePrice } from '@/lib/format';
 import { catalogPath } from '@/hooks/useCatalogPath';
 import type { Gender, Product } from '@/types';
@@ -20,9 +20,8 @@ const defaultFilters: FilterState = {
 
 export default function Catalog({ gender, offersOnly }: { gender?: Gender; offersOnly?: boolean }) {
   const { category: urlCategory } = useParams<{ category: string }>();
-  const catalog = useCatalog();
-  const catalogId = catalog?.id ?? '';
-  const storeName = catalog?.name ?? 'Loja';
+  const catalogId = '37c86a47-b2c1-4563-8e30-a5fff68ef918';
+  const storeName = siteConfig.name;
   const { products, loading } = useProducts(catalogId);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [filterOpen, setFilterOpen] = useState(false);

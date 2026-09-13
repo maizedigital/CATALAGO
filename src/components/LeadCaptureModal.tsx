@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useTracking } from '@/hooks/useTracking';
 import { useCatalog } from '@/hooks/useCatalogContext';
+import { siteConfig } from '@/config/site';
 
 const REGISTERED_KEY = 'lead_submitted';
 const FIRST_VISIT_KEY = 'first_visit';
@@ -40,8 +41,8 @@ const GRACE_PERIOD_MS = 15000;
 
 export function LeadCaptureModal() {
   const catalog = useCatalog();
-  const catalogId = catalog?.id ?? '';
-  const storeName = catalog?.name ?? 'a loja';
+  const catalogId = catalog.id;
+  const storeName = siteConfig.name;
   const [open, setOpen] = useState(false);
   const [mandatory, setMandatory] = useState(false);
   const [name, setName] = useState('');

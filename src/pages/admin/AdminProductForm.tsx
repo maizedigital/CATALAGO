@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Upload, X, Image as ImageIcon, Loader2, Barcode } from 'lucide-react';
 import { adminApi, uploadProductImage } from '@/lib/adminApi';
 import { AdminLayout } from '@/components/AdminLayout';
+import { ADMIN_BASE } from '@/config/site';
 import { Logo } from '@/components/Logo';
 import type { Product, Gender, ProductType } from '@/types';
 import { CLOTHING_SIZES, FOOTWEAR_SIZES } from '@/types';
@@ -123,7 +124,7 @@ export default function AdminProductForm() {
     try {
       if (isEdit) await adminApi.put(`/products/${id}`, payload);
       else await adminApi.post('/products', payload);
-      navigate('/admin/produtos');
+      navigate(`${ADMIN_BASE}/produtos`);
     } catch (err) { setError(err instanceof Error ? err.message : 'Erro ao salvar'); }
     finally { setSaving(false); }
   };
@@ -141,7 +142,7 @@ export default function AdminProductForm() {
   return (
     <AdminLayout>
       <div className="mb-6 flex items-center gap-4">
-        <button onClick={() => navigate('/admin/produtos')} className="rounded-lg border border-neutral-700 bg-neutral-800 p-2 text-neutral-300 transition-colors hover:bg-neutral-700">
+        <button onClick={() => navigate(`${ADMIN_BASE}/produtos`)} className="rounded-lg border border-neutral-700 bg-neutral-800 p-2 text-neutral-300 transition-colors hover:bg-neutral-700">
           <ArrowLeft size={18} />
         </button>
         <div className="flex items-center gap-3">
@@ -265,7 +266,7 @@ export default function AdminProductForm() {
           <button type="submit" disabled={saving || uploading} className="inline-flex items-center gap-2 rounded-lg bg-neutral-100 px-6 py-3.5 text-xs font-bold uppercase tracking-widest text-neutral-900 transition-colors hover:bg-white disabled:opacity-50">
             {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} {saving ? 'Salvando...' : 'Salvar produto'}
           </button>
-          <button type="button" onClick={() => navigate('/admin/produtos')} className="rounded-lg border border-neutral-700 px-6 py-3.5 text-xs font-bold uppercase tracking-widest text-neutral-300 transition-colors hover:bg-neutral-800">Cancelar</button>
+          <button type="button" onClick={() => navigate(`${ADMIN_BASE}/produtos`)} className="rounded-lg border border-neutral-700 px-6 py-3.5 text-xs font-bold uppercase tracking-widest text-neutral-300 transition-colors hover:bg-neutral-800">Cancelar</button>
         </div>
       </form>
     </AdminLayout>

@@ -13,11 +13,11 @@ import {
   X,
   ExternalLink,
   Link as LinkIcon,
-  Building2,
 } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useSEO } from '@/hooks/useSEO';
 import { Logo } from '@/components/Logo';
+import { ADMIN_BASE } from '@/config/site';
 
 interface NavItem {
   to: string;
@@ -26,35 +26,30 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/admin/clientes-tenant', label: 'Clientes', icon: Building2 },
-  { to: '/admin/produtos', label: 'Produtos', icon: Package },
-  { to: '/admin/pedidos', label: 'Pedidos', icon: ShoppingCart },
-  { to: '/admin/crm', label: 'CRM', icon: Users },
-  { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
-  { to: '/admin/banners', label: 'Banners', icon: ImageIcon },
-  { to: '/admin/links', label: 'Links', icon: LinkIcon },
-  { to: '/admin/configuracoes', label: 'Configurações', icon: Settings },
+  { to: ADMIN_BASE, label: 'Dashboard', icon: LayoutDashboard },
+  { to: `${ADMIN_BASE}/produtos`, label: 'Produtos', icon: Package },
+  { to: `${ADMIN_BASE}/pedidos`, label: 'Pedidos', icon: ShoppingCart },
+  { to: `${ADMIN_BASE}/crm`, label: 'CRM', icon: Users },
+  { to: `${ADMIN_BASE}/analytics`, label: 'Analytics', icon: BarChart3 },
+  { to: `${ADMIN_BASE}/banners`, label: 'Banners', icon: ImageIcon },
+  { to: `${ADMIN_BASE}/links`, label: 'Links', icon: LinkIcon },
+  { to: `${ADMIN_BASE}/configuracoes`, label: 'Configurações', icon: Settings },
 ];
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { username, catalogId, logout } = useAdminAuth();
+  const { username, logout } = useAdminAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  useSEO({ title: 'Enviey · Painel', noindex: true });
+  useSEO({ title: 'MB Moda Brasil · Painel', noindex: true });
 
   const handleLogout = () => {
     logout();
-    navigate('/admin/login');
+    navigate(`${ADMIN_BASE}/login`);
   };
 
   const isActive = (path: string) =>
-    path === '/admin' ? location.pathname === '/admin' : location.pathname.startsWith(path);
-
-  // For tenant users (catalogId set), the store URL is /{slug}.
-  // For global admins (catalogId null), there's no single store — link to home.
-  const storeUrl = catalogId && username ? `/${username}` : '/';
+    path === ADMIN_BASE ? location.pathname === ADMIN_BASE : location.pathname.startsWith(path);
 
   return (
     <div className="flex min-h-screen bg-neutral-950">
@@ -80,24 +75,22 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           </button>
         </div>
 
-        {catalogId && (
-          <div className="px-4 py-3">
-            <a
-              href={storeUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="block rounded-lg border border-neutral-800 bg-neutral-800/50 px-3 py-2.5 transition-colors hover:bg-neutral-800"
-            >
-              <div className="flex items-center gap-2 text-xs font-medium text-neutral-400">
-                <ExternalLink size={14} />
-                Sua loja
-              </div>
-              <div className="mt-1 truncate text-sm font-semibold text-[#19E66B]">
-                enviey.app{storeUrl}
-              </div>
-            </a>
-          </div>
-        )}
+        <div className="px-4 py-3">
+          <a
+            href="/"
+            target="_blank"
+            rel="noreferrer"
+            className="block rounded-lg border border-neutral-800 bg-neutral-800/50 px-3 py-2.5 transition-colors hover:bg-neutral-800"
+          >
+            <div className="flex items-center gap-2 text-xs font-medium text-neutral-400">
+              <ExternalLink size={14} />
+              Ver loja
+            </div>
+            <div className="mt-1 truncate text-sm font-semibold text-[#19E66B]">
+              mbmodabrasil.com.br
+            </div>
+          </a>
+        </div>
 
         <div className="px-4 py-2">
           <span className="px-3 text-xs font-medium uppercase tracking-wider text-neutral-600">
@@ -128,15 +121,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="border-t border-neutral-800 px-4 py-4">
-          <a
-            href="/"
-            target="_blank"
-            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-400 transition-colors hover:bg-neutral-800/50 hover:text-white"
-          >
-            <ExternalLink size={18} />
-            Ver site
-          </a>
-          <div className="mt-3 flex items-center justify-between rounded-lg bg-neutral-800/50 px-3 py-2.5">
+          <div className="flex items-center justify-between rounded-lg bg-neutral-800/50 px-3 py-2.5">
             <span className="text-sm text-neutral-300">{username}</span>
             <button
               onClick={handleLogout}
@@ -158,7 +143,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           >
             <Menu size={22} />
           </button>
-          <div className="flex items-center gap-2"><Logo dark /><span className="text-xs font-bold uppercase tracking-wider text-neutral-500">Admin</span></div>
+          <div className="flex items-center gap-2"><Logo dark /><span className="text-xs font-bold uppercase tracking-wider text-neutral-500">Painel</span></div>
         </header>
 
         <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>

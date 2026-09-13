@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { ADMIN_BASE } from '@/config/site';
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, loading } = useAdminAuth();
@@ -14,7 +15,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to={`${ADMIN_BASE}/login`} replace />;
   }
 
   return <>{children}</>;

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Plus, Search, Pencil, Copy, Trash2, Power } from 'lucide-react';
 import { adminApi } from '@/lib/adminApi';
 import { AdminLayout } from '@/components/AdminLayout';
+import { ADMIN_BASE } from '@/config/site';
 import { formatPrice } from '@/lib/format';
 import type { Product } from '@/types';
 
@@ -85,7 +86,7 @@ export default function AdminProducts() {
           <p className="mt-1 text-sm text-neutral-400">{products.length} produtos cadastrados</p>
         </div>
         <Link
-          to="/admin/produtos/novo"
+          to={`${ADMIN_BASE}/produtos/novo`}
           className="inline-flex items-center gap-2 rounded-lg bg-neutral-100 px-5 py-3 text-xs font-bold uppercase tracking-widest text-neutral-900 transition-colors hover:bg-white"
         >
           <Plus size={16} /> Novo produto
@@ -152,7 +153,7 @@ export default function AdminProducts() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
-                      <Link to={`/admin/produtos/${product.id}`} className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-neutral-200" title="Editar">
+                      <Link to={`${ADMIN_BASE}/produtos/${product.id}`} className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-neutral-200" title="Editar">
                         <Pencil size={16} />
                       </Link>
                       <button onClick={() => handleDuplicate(product)} className="rounded-lg p-2 text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-neutral-200" title="Duplicar">

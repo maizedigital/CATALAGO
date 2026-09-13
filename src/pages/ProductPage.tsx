@@ -5,28 +5,18 @@ import { ProductGallery } from '@/components/ProductGallery';
 import { ProductSelector } from '@/components/ProductSelector';
 import { ProductDescription } from '@/components/ProductDescription';
 import { useProduct } from '@/hooks/useProducts';
-import { useCatalog } from '@/hooks/useCatalogContext';
-import { useCart } from '@/hooks/useCart';
 import { useSEO } from '@/hooks/useSEO';
 import { useTracking } from '@/hooks/useTracking';
 import { formatPrice, discountPercent, effectivePrice } from '@/lib/format';
-import { whatsappLink } from '@/config/site';
+import { siteConfig, whatsappLink } from '@/config/site';
 import type { Product } from '@/types';
 import { catalogPath } from '@/hooks/useCatalogPath';
 
-type StoreSettings = { name?: string; whatsapp?: string };
-function getStoreSettings(catalog: ReturnType<typeof useCatalog>): StoreSettings {
-  if (!catalog?.settings) return {};
-  const s = catalog.settings as Record<string, unknown>;
-  return (s.store ?? s) as StoreSettings;
-}
-
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
-  const catalog = useCatalog();
-  const catalogId = catalog?.id ?? '';
-  const storeName = catalog?.name ?? 'a loja';
-  const storeWa = getStoreSettings(catalog).whatsapp ?? '';
+  const catalogId = '37c86a47-b2c1-4563-8e30-a5fff68ef918';
+  const storeName = siteConfig.name;
+  const storeWa = siteConfig.whatsapp;
   const { product, loading } = useProduct(slug, catalogId);
   const { addItem } = useCart();
   const { trackEvent } = useTracking();

@@ -3,9 +3,10 @@ import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { Lock, User, ArrowRight } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useSEO } from '@/hooks/useSEO';
+import { ADMIN_BASE } from '@/config/site';
 
 export default function AdminLogin() {
-  useSEO({ title: 'NV · Admin', noindex: true });
+  useSEO({ title: 'MB Moda Brasil · Painel', noindex: true });
   const navigate = useNavigate();
   const { isAuthenticated, login } = useAdminAuth();
   const [username, setUsername] = useState('');
@@ -13,7 +14,7 @@ export default function AdminLogin() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  if (isAuthenticated) return <Navigate to="/admin" replace />;
+  if (isAuthenticated) return <Navigate to={ADMIN_BASE} replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +23,7 @@ export default function AdminLogin() {
     setLoading(true);
     try {
       await login(username.trim(), password);
-      navigate('/admin');
+      navigate(ADMIN_BASE);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao fazer login');
     } finally {
@@ -37,9 +38,9 @@ export default function AdminLogin() {
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <Link to="/">
-            <img src="/IMG_7011.jpg" alt="Enviey" className="mx-auto h-14 w-auto rounded-lg" />
+            <img src="/assets/IMG_3937.jpg" alt="MB Moda Brasil" className="mx-auto h-14 w-auto rounded-lg" />
           </Link>
-          <p className="mt-4 text-xs font-medium uppercase tracking-widest text-neutral-500">Painel da Loja</p>
+          <p className="mt-4 text-xs font-medium uppercase tracking-widest text-neutral-500">Painel Administrativo</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5 rounded-xl border border-neutral-800 bg-neutral-900 p-8 shadow-2xl">
@@ -70,13 +71,6 @@ export default function AdminLogin() {
             {!loading && <ArrowRight size={16} />}
           </button>
         </form>
-
-        <p className="mt-6 text-center text-sm text-neutral-500">
-          Não tem uma conta?{' '}
-          <Link to="/admin/cadastro" className="font-semibold text-[#19E66B] hover:underline">
-            Criar minha loja grátis
-          </Link>
-        </p>
       </div>
     </div>
   );
