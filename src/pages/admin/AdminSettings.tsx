@@ -21,9 +21,8 @@ const labelClass = 'mb-1.5 block text-xs font-bold uppercase tracking-wider text
 export default function AdminSettings() {
   const { username } = useAdminAuth();
   const [store, setStore] = useState<StoreSettings>({
-    name: 'MB', tagline: 'Moda que combina com você', whatsapp: '5573999929009', instagram: '@mbmodabrasil',
-    address: 'BR-367, km 77 — Coroa Vermelha, Santa Cruz Cabrália — BA, 45810-000',
-    hoursStore: 'Segunda a sábado: 08:30 às 18:30', hoursSite: 'Disponível 24 horas por dia, 7 dias por semana',
+    name: '', tagline: '', whatsapp: '', instagram: '',
+    address: '', hoursStore: '', hoursSite: '',
   });
   const [loading, setLoading] = useState(true);
   const [savingStore, setSavingStore] = useState(false);
@@ -94,7 +93,7 @@ export default function AdminSettings() {
             <div><label className={labelClass}>Nome da loja</label><input type="text" value={store.name} onChange={(e) => setStore({ ...store, name: e.target.value })} className={inputClass} /></div>
             <div><label className={labelClass}>Slogan</label><input type="text" value={store.tagline} onChange={(e) => setStore({ ...store, tagline: e.target.value })} className={inputClass} /></div>
             <div><label className={labelClass}>WhatsApp (com DDI)</label><input type="text" value={store.whatsapp} onChange={(e) => setStore({ ...store, whatsapp: e.target.value })} className={inputClass} placeholder="5573999929009" /></div>
-            <div><label className={labelClass}>Instagram</label><input type="text" value={store.instagram} onChange={(e) => setStore({ ...store, instagram: e.target.value })} className={inputClass} placeholder="@mbmodabrasil" /></div>
+            <div><label className={labelClass}>Instagram</label><input type="text" value={store.instagram} onChange={(e) => setStore({ ...store, instagram: e.target.value })} className={inputClass} placeholder="@sualoja" /></div>
             <div><label className={labelClass}>Endereço da loja física</label><input type="text" value={store.address} onChange={(e) => setStore({ ...store, address: e.target.value })} className={inputClass} /></div>
             <div><label className={labelClass}>Horário da loja física</label><input type="text" value={store.hoursStore} onChange={(e) => setStore({ ...store, hoursStore: e.target.value })} className={inputClass} /></div>
             <div className="md:col-span-2"><label className={labelClass}>Horário do site</label><input type="text" value={store.hoursSite} onChange={(e) => setStore({ ...store, hoursSite: e.target.value })} className={inputClass} /></div>

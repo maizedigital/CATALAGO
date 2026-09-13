@@ -152,7 +152,7 @@ export async function tenantSignup(params: {
       slug: params.slug,
       email: params.email,
       password: params.password,
-      template_slug: params.templateSlug || 'mbmodabrasil',
+      template_slug: params.templateSlug || undefined,
     }),
   });
   if (!res.ok) {

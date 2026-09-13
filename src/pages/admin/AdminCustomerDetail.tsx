@@ -4,7 +4,6 @@ import { ArrowLeft, MessageCircle, ShoppingCart, Eye, Package } from 'lucide-rea
 import { adminApi } from '@/lib/adminApi';
 import { AdminLayout } from '@/components/AdminLayout';
 import { formatPrice } from '@/lib/format';
-import { siteConfig } from '@/config/site';
 
 interface Customer {
   id: string;
@@ -127,9 +126,9 @@ export default function AdminCustomerDetail() {
     }
   }
 
-  const whatsappLink = customer.whatsapp
-    ? `https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(`Olá ${customer.name}!`)}`
-    : `https://wa.me/${siteConfig.whatsapp}`;
+  const waLink = customer.whatsapp
+    ? `https://wa.me/${customer.whatsapp}?text=${encodeURIComponent(`Olá ${customer.name}!`)}`
+    : null;
 
   const cardClass = "rounded-lg border border-neutral-800 bg-neutral-900 p-6";
 
@@ -213,14 +212,16 @@ export default function AdminCustomerDetail() {
             </dl>
           </div>
 
-          <a
-            href={whatsappLink}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center justify-center gap-2 border border-green-700 bg-green-950/30 py-3.5 text-xs font-bold uppercase tracking-widest text-green-400 transition-colors hover:bg-green-950/50"
-          >
-            <MessageCircle size={16} /> Abrir WhatsApp
-          </a>
+          {waLink && (
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-center gap-2 border border-green-700 bg-green-950/30 py-3.5 text-xs font-bold uppercase tracking-widest text-green-400 transition-colors hover:bg-green-950/50"
+            >
+              <MessageCircle size={16} /> Abrir WhatsApp
+            </a>
+          )}
         </div>
 
         <div className="space-y-6 lg:col-span-2">

@@ -8,8 +8,9 @@ export default function Search() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') ?? '';
   const catalog = useCatalog();
-  const { results, loading } = useSearch(query, catalog.id);
-  useSEO({ title: `Buscar: ${query} — MB`, description: `Resultados de busca para "${query}" na MB.` });
+  const storeName = catalog?.name ?? 'Loja';
+  const { results, loading } = useSearch(query, catalog?.id ?? '');
+  useSEO({ title: `Buscar: ${query} — ${storeName}`, description: `Resultados de busca para "${query}" na ${storeName}.` });
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12">

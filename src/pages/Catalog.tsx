@@ -21,22 +21,24 @@ const defaultFilters: FilterState = {
 export default function Catalog({ gender, offersOnly }: { gender?: Gender; offersOnly?: boolean }) {
   const { category: urlCategory } = useParams<{ category: string }>();
   const catalog = useCatalog();
-  const { products, loading } = useProducts(catalog.id);
+  const catalogId = catalog?.id ?? '';
+  const storeName = catalog?.name ?? 'Loja';
+  const { products, loading } = useProducts(catalogId);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [filterOpen, setFilterOpen] = useState(false);
 
   const isFemale = gender === 'feminino';
   useSEO({
     title: offersOnly
-      ? 'Promoção — MB'
+      ? `Promoção — ${storeName}`
       : urlCategory && urlCategory.toLowerCase() === 'geral'
-        ? 'Geral — MB'
+        ? `Geral — ${storeName}`
         : urlCategory
-          ? `${decodeURIComponent(urlCategory)} — MB`
-          : `${isFemale ? 'Feminino' : 'Masculino'} — MB`,
+          ? `${decodeURIComponent(urlCategory)} — ${storeName}`
+          : `${isFemale ? 'Feminino' : 'Masculino'} — ${storeName}`,
     description: offersOnly
-      ? 'Ofertas especiais da MB. Aproveite os melhores preços.'
-      : `Catálogo ${isFemale ? 'feminino' : 'masculino'} MB. Filtre por categoria, tamanho, cor e preço.`,
+      ? `Ofertas especiais da ${storeName}. Aproveite os melhores preços.`
+      : `Catálogo ${isFemale ? 'feminino' : 'masculino'} da ${storeName}. Filtre por categoria, tamanho, cor e preço.`,
   });
 
   const baseProducts = useMemo(() => {

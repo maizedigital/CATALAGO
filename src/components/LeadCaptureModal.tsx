@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useTracking } from '@/hooks/useTracking';
-import { MB_CATALOG_ID } from '@/lib/domain';
+import { useCatalog } from '@/hooks/useCatalogContext';
 
-const REGISTERED_KEY = 'mb_lead_submitted';
-const FIRST_VISIT_KEY = 'mb_first_visit';
+const REGISTERED_KEY = 'lead_submitted';
+const FIRST_VISIT_KEY = 'first_visit';
 
 function formatWhatsApp(input: string): string {
   const digits = input.replace(/\D/g, '').slice(0, 11);
@@ -39,6 +39,9 @@ function detectOrigin(): string {
 const GRACE_PERIOD_MS = 15000;
 
 export function LeadCaptureModal() {
+  const catalog = useCatalog();
+  const catalogId = catalog?.id ?? '';
+  const storeName = catalog?.name ?? 'a loja';
   const [open, setOpen] = useState(false);
   const [mandatory, setMandatory] = useState(false);
   const [name, setName] = useState('');
@@ -49,6 +52,7 @@ export function LeadCaptureModal() {
   const { setWhatsappId, trackEvent } = useTracking();
 
   useEffect(() => {
+    if (!catalogId) return;
     const registered = localStorage.getItem(REGISTERED_KEY);
     if (registered) return;
 
@@ -68,16 +72,11 @@ export function LeadCaptureModal() {
       clearTimeout(showTimer);
       clearTimeout(mandatoryTimer);
     };
-  }, []);
+  }, [catalogId]);
 
   const dismiss = () => {
     if (mandatory) return;
     setOpen(false);
-  };
-
-  const handleWhatsappChange = (value: string) => {
-    setWhatsapp(formatWhatsApp(value));
-    setWhatsappError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -101,7 +100,7 @@ export function LeadCaptureModal() {
           origin,
           status: 'novo',
           last_interaction: 'Cadastro no catálogo',
-          catalog_id: MB_CATALOG_ID,
+          catalog_id: catalogId,
           updated_at: new Date().toISOString(),
         },
         { onConflict: 'whatsapp' }
@@ -128,11 +127,7 @@ export function LeadCaptureModal() {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div className="relative z-10 w-full max-w-md bg-white p-8 shadow-2xl">
         {!mandatory && (
-          <button
-            onClick={dismiss}
-            className="absolute right-4 top-4 text-neutral-400 hover:text-neutral-900"
-            aria-label="Fechar"
-          >
+          <button onClick={dismiss} className="absolute right-4 top-4 text-neutral-400 hover:text-neutral-900" aria-label="Fechar">
             <X size={20} />
           </button>
         )}
@@ -143,67 +138,35 @@ export function LeadCaptureModal() {
               <span className="text-xl text-green-600">✓</span>
             </div>
             <h3 className="font-serif text-xl font-bold text-neutral-900">Bem-vindo!</h3>
-            <p className="mt-2 text-sm text-neutral-500">
-              Cadastro realizado. Aproveite o catálogo MB.
-            </p>
+            <p className="mt-2 text-sm text-neutral-500">Cadastro realizado.</p>
           </div>
         ) : (
           <>
             <h2 className="font-serif text-2xl font-bold text-neutral-900">
-              {mandatory ? 'Cadastre-se para continuar' : 'Quer receber novidades da MB?'}
+              {mandatory ? 'Cadastre-se para continuar' : `Quer receber novidades da ${storeName}?`}
             </h2>
             <p className="mt-2 text-sm text-neutral-500">
               {mandatory
-                ? 'Para continuar navegando no catálogo, precisamos do seu nome e WhatsApp.'
-                : 'Deixe seu nome e WhatsApp para continuar navegando e receber lançamentos em primeira mão.'}
+                ? 'Para continuar navegando, precisamos do seu nome e WhatsApp.'
+                : 'Deixe seu nome e WhatsApp para continuar navegando e receber lançamentos.'}
             </p>
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div>
                 <label className="mb-1 block text-xs font-medium text-neutral-700">Nome *</label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-neutral-900"
-                  placeholder="Seu nome"
-                />
+                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="w-full border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-neutral-900" placeholder="Seu nome" />
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-neutral-700">WhatsApp *</label>
-                <input
-                  type="tel"
-                  required
-                  value={whatsapp}
-                  onChange={(e) => handleWhatsappChange(e.target.value)}
-                  className={`w-full border px-3 py-2.5 text-sm outline-none transition-colors ${
-                    whatsappError ? 'border-red-400 focus:border-red-500' : 'border-neutral-200 focus:border-neutral-900'
-                  }`}
-                  placeholder="(XX) XXXXX-XXXX"
-                />
+                <input type="tel" required value={whatsapp} onChange={(e) => setWhatsapp(formatWhatsApp(e.target.value))} className={`w-full border px-3 py-2.5 text-sm outline-none transition-colors ${whatsappError ? 'border-red-400 focus:border-red-500' : 'border-neutral-200 focus:border-neutral-900'}`} placeholder="(XX) XXXXX-XXXX" />
                 {whatsappError && <p className="mt-1 text-xs text-red-500">{whatsappError}</p>}
               </div>
-
-              <p className="text-xs text-neutral-400">
-                Seus dados são tratados conforme a LGPD e não serão compartilhados com terceiros.
-              </p>
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full bg-neutral-900 py-3.5 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-800 disabled:opacity-50"
-              >
+              <p className="text-xs text-neutral-400">Seus dados são tratados conforme a LGPD e não serão compartilhados com terceiros.</p>
+              <button type="submit" disabled={submitting} className="w-full bg-neutral-900 py-3.5 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-neutral-800 disabled:opacity-50">
                 {submitting ? 'Enviando...' : mandatory ? 'Cadastrar e continuar' : 'Continuar'}
               </button>
               {!mandatory && (
-                <button
-                  type="button"
-                  onClick={dismiss}
-                  className="w-full text-center text-xs text-neutral-400 hover:text-neutral-900"
-                >
-                  Depois eu cadastro
-                </button>
+                <button type="button" onClick={dismiss} className="w-full text-center text-xs text-neutral-400 hover:text-neutral-900">Depois eu cadastro</button>
               )}
             </form>
           </>

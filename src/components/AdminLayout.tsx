@@ -18,7 +18,6 @@ import {
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useSEO } from '@/hooks/useSEO';
 import { Logo } from '@/components/Logo';
-import { isEnvieyDomain } from '@/lib/domain';
 
 interface NavItem {
   to: string;
@@ -56,8 +55,6 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   // For tenant users (catalogId set), the store URL is /{slug}.
   // For global admins (catalogId null), there's no single store — link to home.
   const storeUrl = catalogId && username ? `/${username}` : '/';
-  const enviey = isEnvieyDomain();
-  const fullStoreUrl = enviey ? `https://enviey.app${storeUrl}` : storeUrl;
 
   return (
     <div className="flex min-h-screen bg-neutral-950">
@@ -96,7 +93,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                 Sua loja
               </div>
               <div className="mt-1 truncate text-sm font-semibold text-[#19E66B]">
-                {fullStoreUrl.replace(/^https?:\/\//, '')}
+                enviey.app{storeUrl}
               </div>
             </a>
           </div>

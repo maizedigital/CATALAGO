@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { MB_CATALOG_ID } from '@/lib/domain';
+import { useCatalog } from '@/hooks/useCatalogContext';
 
 function formatWhatsApp(input: string): string {
   const digits = input.replace(/\D/g, '').slice(0, 11);
@@ -16,6 +16,8 @@ function validateWhatsApp(input: string): boolean {
 }
 
 export function NewsletterSignup() {
+  const catalog = useCatalog();
+  const catalogId = catalog?.id ?? '';
   const [name, setName] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [error, setError] = useState('');
@@ -24,14 +26,9 @@ export function NewsletterSignup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
-      setError('Informe seu nome');
-      return;
-    }
-    if (!validateWhatsApp(whatsapp)) {
-      setError('Informe um WhatsApp válido com DDD');
-      return;
-    }
+    if (!name.trim()) { setError('Informe seu nome'); return; }
+    if (!validateWhatsApp(whatsapp)) { setError('Informe um WhatsApp válido com DDD'); return; }
+    if (!catalogId) { setError('Loja não identificada'); return; }
 
     setSubmitting(true);
     setError('');
@@ -48,16 +45,13 @@ export function NewsletterSignup() {
             origin: 'newsletter',
             status: 'novo',
             last_interaction: 'Inscrição novidades',
-            catalog_id: MB_CATALOG_ID,
+            catalog_id: catalogId,
             updated_at: new Date().toISOString(),
           },
           { onConflict: 'whatsapp' }
         );
 
-      if (upsertError) {
-        setError('Erro ao cadastrar. Tente novamente.');
-        return;
-      }
+      if (upsertError) { setError('Erro ao cadastrar. Tente novamente.'); return; }
 
       setSuccess(true);
       setName('');
@@ -72,35 +66,17 @@ export function NewsletterSignup() {
   if (success) {
     return (
       <div className="mx-auto max-w-md text-center">
-        <p className="text-sm font-medium text-white">
-          Cadastro realizado com sucesso. Você receberá nossas novidades.
-        </p>
+        <p className="text-sm font-medium text-white">Cadastro realizado com sucesso. Você receberá nossas novidades.</p>
       </div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit} className="mx-auto flex max-w-md flex-col gap-3">
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Nome"
-        className="w-full border-b border-white/30 bg-transparent py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/40 focus:border-white"
-      />
-      <input
-        type="tel"
-        value={whatsapp}
-        onChange={(e) => setWhatsapp(formatWhatsApp(e.target.value))}
-        placeholder="WhatsApp"
-        className="w-full border-b border-white/30 bg-transparent py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/40 focus:border-white"
-      />
+      <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nome" className="w-full border-b border-white/30 bg-transparent py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/40 focus:border-white" />
+      <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(formatWhatsApp(e.target.value))} placeholder="WhatsApp" className="w-full border-b border-white/30 bg-transparent py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/40 focus:border-white" />
       {error && <p className="text-xs text-red-400">{error}</p>}
-      <button
-        type="submit"
-        disabled={submitting}
-        className="mt-2 self-center border border-white px-8 py-3 text-[11px] font-bold uppercase tracking-widest text-white transition-colors hover:bg-white hover:text-black disabled:opacity-50"
-      >
+      <button type="submit" disabled={submitting} className="mt-2 self-center border border-white px-8 py-3 text-[11px] font-bold uppercase tracking-widest text-white transition-colors hover:bg-white hover:text-black disabled:opacity-50">
         {submitting ? 'Enviando...' : 'Quero receber novidades'}
       </button>
     </form>

@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
-import { MB_CATALOG_ID } from '@/lib/domain';
 
 export interface CatalogInfo {
   id: string;
@@ -15,9 +14,8 @@ export function CatalogProvider({ catalog, children }: { catalog: CatalogInfo; c
   return <CatalogContext.Provider value={catalog}>{children}</CatalogContext.Provider>;
 }
 
-export function useCatalog(): CatalogInfo {
-  const catalog = useContext(CatalogContext);
-  return catalog ?? { id: MB_CATALOG_ID, name: 'MB Moda Brasil', slug: 'mbmodabrasil', settings: {} };
+export function useCatalog(): CatalogInfo | null {
+  return useContext(CatalogContext);
 }
 
 export function useCatalogBySlug(slug: string | undefined) {

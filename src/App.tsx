@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate, useParams } from 'react-router-dom';
 
 import { Header } from '@/components/Header';
@@ -20,7 +20,6 @@ import About from '@/pages/About';
 import Contact from '@/pages/Contact';
 import NotFound from '@/pages/NotFound';
 import Presentation from '@/pages/Presentation';
-import { isEnvieyDomain, MB_SLUG } from '@/lib/domain';
 import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminSignup from '@/pages/admin/AdminSignup';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
@@ -79,8 +78,6 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Wrapper that resolves the tenant slug from the URL, loads catalog info,
-// and provides it via context to all catalog pages.
 function TenantCatalogLayout({ children }: { children: React.ReactNode }) {
   const { slug } = useParams<{ slug: string }>();
   const { catalog, loading, error } = useCatalogBySlug(slug);
@@ -110,8 +107,7 @@ function TenantCatalogLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Catalog routes for a specific tenant slug. On the Enviey domain, each
-// tenant gets routes under /:slug/*.
+// Dynamic tenant catalog routes — any /:slug/* resolves to a tenant catalog.
 function tenantCatalogRoutes(slug: string) {
   const p = (path: string) => `/${slug}${path}`;
   return [
@@ -132,8 +128,6 @@ function tenantCatalogRoutes(slug: string) {
 }
 
 export default function App() {
-  const enviey = isEnvieyDomain();
-
   return (
     <ErrorBoundary>
       <RemoveBoltBadge />
@@ -143,7 +137,11 @@ export default function App() {
             <TrackingProvider>
               <ScrollToTop />
               <Routes>
-                {/* Admin login — public */}
+                {/* Enviey landing page */}
+                <Route path="/" element={<Presentation />} />
+                <Route path="/apresentacao" element={<Navigate to="/" replace />} />
+
+                {/* Admin auth — public */}
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/admin/cadastro" element={<AdminSignup />} />
 
@@ -163,26 +161,11 @@ export default function App() {
                 <Route path="/admin/links" element={<ProtectedRoute><AdminLinks /></ProtectedRoute>} />
                 <Route path="/admin/clientes-tenant" element={<ProtectedRoute><AdminTenants /></ProtectedRoute>} />
 
-                {enviey ? (
-                  <>
-                    {/* Enviey platform — root shows the SaaS landing page */}
-                    <Route path="/" element={<Presentation />} />
-                    <Route path="/apresentacao" element={<Navigate to="/" replace />} />
-                    {/* MB catalog under known slug */}
-                    {tenantCatalogRoutes(MB_SLUG)}
-                    {/* Dynamic tenant routes — any /:slug/* that isn't the MB slug */}
-                    {tenantCatalogRoutes(':slug')}
-                    {/* Fallback */}
-                    <Route path="*" element={<Presentation />} />
-                  </>
-                ) : (
-                  <>
-                    {/* MB catalog at root (localhost dev) */}
-                    {tenantCatalogRoutes(MB_SLUG)}
-                    <Route path="/apresentacao" element={<Presentation />} />
-                    <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
-                  </>
-                )}
+                {/* Dynamic tenant catalog routes — /:slug/* */}
+                {tenantCatalogRoutes(':slug')}
+
+                {/* Fallback */}
+                <Route path="*" element={<Presentation />} />
               </Routes>
             </TrackingProvider>
           </CartProvider>

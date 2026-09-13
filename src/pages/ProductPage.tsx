@@ -14,10 +14,20 @@ import { whatsappLink } from '@/config/site';
 import type { Product } from '@/types';
 import { catalogPath } from '@/hooks/useCatalogPath';
 
+type StoreSettings = { name?: string; whatsapp?: string };
+function getStoreSettings(catalog: ReturnType<typeof useCatalog>): StoreSettings {
+  if (!catalog?.settings) return {};
+  const s = catalog.settings as Record<string, unknown>;
+  return (s.store ?? s) as StoreSettings;
+}
+
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
   const catalog = useCatalog();
-  const { product, loading } = useProduct(slug, catalog.id);
+  const catalogId = catalog?.id ?? '';
+  const storeName = catalog?.name ?? 'a loja';
+  const storeWa = getStoreSettings(catalog).whatsapp ?? '';
+  const { product, loading } = useProduct(slug, catalogId);
   const { addItem } = useCart();
   const { trackEvent } = useTracking();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -29,7 +39,7 @@ export default function ProductPage() {
   const [unitSizes, setUnitSizes] = useState<string[]>([]);
 
   useSEO({
-    title: product ? `${product.name} — MB` : 'MB',
+    title: product ? `${product.name} — ${storeName}` : storeName,
     description: product?.description ?? undefined,
     image: product?.images[0],
   });
@@ -109,7 +119,7 @@ export default function ProductPage() {
     setShowSizeModal(false);
   };
 
-  const whatsappMessage = `Olá, MB! Tenho interesse no produto ${product.name}, tamanho ${selectedSize ?? '-'}, cor ${selectedColor ?? '-'}, quantidade ${quantity}. Preço: ${formatPrice(final)}.`;
+  const whatsappMessage = `Olá, ${storeName}! Tenho interesse no produto ${product.name}, tamanho ${selectedSize ?? '-'}, cor ${selectedColor ?? '-'}, quantidade ${quantity}. Preço: ${formatPrice(final)}.`;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-10">
@@ -212,7 +222,7 @@ export default function ProductPage() {
               )}
             </button>
             <a
-              href={whatsappLink(whatsappMessage)}
+              href={storeWa ? whatsappLink(storeWa, whatsappMessage) : '#'}
               target="_blank"
               rel="noreferrer"
               onClick={() => trackEvent('whatsapp_click', { source: 'product_page', product: product.slug }, product.name)}

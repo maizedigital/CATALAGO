@@ -1,0 +1,22 @@
+[
+  {
+    "id": "584d023c-5047-40ea-a740-44d4055a8fa2",
+    "title": "FRETE 25,00",
+    "image_url": "https://jgefnvexxvokbdcmugez.supabase.co/storage/v1/object/public/product-images/banners/1788710723044-p7sjwi.png",
+    "active": false,
+    "sort_order": 0,
+    "media_type": "image",
+    "display_mode": "mobile_only",
+    "catalog_id": "37c86a47-b2c1-4563-8e30-a5fff68ef918"
+  },
+  {
+    "id": "b11c84d1-7756-49d0-8b18-c39ed9926e8d",
+    "title": "BOAS VINDAS",
+    "image_url": "https://jgefnvexxvokbdcmugez.supabase.co/storage/v1/object/public/product-images/banners/1788710653129-9iweb3.png",
+    "active": true,
+    "sort_order": 1,
+    "media_type": "image",
+    "display_mode": "mobile_only",
+    "catalog_id": "37c86a47-b2c1-4563-8e30-a5fff68ef918"
+  }
+]

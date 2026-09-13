@@ -1,0 +1,16 @@
+[
+  {
+    "key": "store",
+    "value": {
+      "name": "MB",
+      "email": "contato@mbmoda.com.br",
+      "hours": "Seg a Sex, 9h às 18h",
+      "address": "",
+      "tagline": "VISTA-SE COM ESTILO",
+      "whatsapp": "5573999929009",
+      "instagram": "@mbmodabrasil",
+      "hoursStore": "8:30 AS 18:10"
+    },
+    "catalog_id": "37c86a47-b2c1-4563-8e30-a5fff68ef918"
+  }
+]
