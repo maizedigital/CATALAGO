@@ -172,30 +172,27 @@ body,
   min-height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #000000;
+  background: #000000 !important;
 }
 
 html {
-  background: #000000;
+  background-color: #000000 !important;
+  color-scheme: dark;
 }
 
 body {
-  background: #000000;
+  background-color: #000000 !important;
   color: #ffffff;
   overflow-x: hidden;
+  overscroll-behavior: none;
 }
 
 #root {
   min-height: 100vh;
-  background: #000000;
+  min-height: 100dvh;
+  background-color: #000000 !important;
 }
 
-/* Remove espaços padrão que podem criar faixas brancas */
 * {
   box-sizing: border-box;
-}
-
-body::before,
-body::after {
-  background: #000000;
 }
