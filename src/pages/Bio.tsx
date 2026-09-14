@@ -1,5 +1,6 @@
 import { useSEO } from '@/hooks/useSEO';
 import { MessageCircle, Users, Instagram, MapPin, ShoppingBag } from 'lucide-react';
+import { siteConfig } from '@/config/site';
 
 const links = [
   { label: 'Compre Online', href: 'https://mbmodabrasil.com.br', icon: ShoppingBag },
@@ -17,33 +18,49 @@ export default function Bio() {
   });
 
   return (
-    <main className="bio-page flex h-[100dvh] flex-col items-center justify-center overflow-hidden bg-black px-4 text-white">
-      <div className="flex h-full w-full max-w-[300px] flex-col items-center justify-between py-[env(safe-area-inset-top,0)] pb-[max(1.5rem,env(safe-area-inset-bottom,0))]">
-        <div className="flex flex-1 flex-col items-center justify-center">
-          <img
-            src="/assets/IMG_3937.jpg"
-            alt="MB Moda Brasil"
-            className="h-20 w-20 rounded-full object-cover opacity-90 sm:h-24 sm:w-24"
-          />
-          <div className="mt-4 h-px w-10 bg-white/25" />
-        </div>
+    <main className="bio-page flex h-[100dvh] flex-col items-center justify-between overflow-y-auto bg-black px-6 pt-[max(2.5rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))] text-white">
+      {/* Top — logo + tagline */}
+      <div className="flex flex-col items-center">
+        <img
+          src="/assets/IMG_3937.jpg"
+          alt="MB Moda Brasil"
+          className="h-16 w-16 rounded-full object-cover opacity-90 sm:h-20 sm:w-20"
+        />
+        <div className="mt-5 h-px w-8 bg-white/20" />
+        <p className="font-serif mt-4 text-lg italic tracking-wide text-white/50 sm:text-xl">
+          Vista-se com estilo.
+        </p>
+      </div>
 
-        <nav className="flex w-full flex-col gap-2.5 sm:gap-3">
-          {links.map(({ label, href, icon: Icon }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noreferrer"
-              className="group flex items-center justify-center gap-2.5 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 text-center text-[20px] font-medium tracking-[0.14em] text-white/80 transition-colors duration-200 hover:border-[#19e66b] hover:bg-[#19e66b] hover:text-black sm:py-3.5"
-            >
-              <Icon size={14} strokeWidth={1.5} className="shrink-0 transition-colors duration-200 group-hover:text-black" />
-              {label}
-            </a>
-          ))}
-        </nav>
+      {/* Middle — link buttons */}
+      <nav className="flex w-full max-w-[340px] flex-col gap-3 py-8">
+        {links.map(({ label, href, icon: Icon }) => (
+          <a
+            key={label}
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            className="group flex items-center justify-center gap-3 rounded-md border border-white/[0.08] bg-white/[0.02] px-5 py-4 text-center text-[15px] font-medium tracking-[0.06em] text-white/85 transition-colors duration-300 hover:border-[#19e66b]/70 hover:bg-[#19e66b]/[0.04] active:border-[#19e66b] active:bg-[#19e66b]/[0.07] sm:py-5 sm:text-base"
+          >
+            <Icon
+              size={16}
+              strokeWidth={1.5}
+              className="shrink-0 text-white/45 transition-colors duration-300 group-hover:text-[#19e66b] group-active:text-[#19e66b]"
+            />
+            {label}
+          </a>
+        ))}
+      </nav>
 
-        <div className="flex-1" />
+      {/* Bottom — location + hours */}
+      <div className="flex flex-col items-center">
+        <div className="h-px w-8 bg-white/20" />
+        <p className="mt-4 text-[10px] font-medium uppercase tracking-[0.35em] text-white/35">
+          Coroa Vermelha • BA
+        </p>
+        <p className="mt-2 text-[10px] tracking-wide text-white/25">
+          {siteConfig.hoursStore}
+        </p>
       </div>
     </main>
   );
