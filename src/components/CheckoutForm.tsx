@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { CartItem } from '@/types';
 import { formatPrice, effectivePrice } from '@/lib/format';
-import { whatsappLink } from '@/config/site';
+import { whatsappLink, siteConfig } from '@/config/site';
 import { useTracking } from '@/hooks/useTracking';
 import { supabase } from '@/lib/supabase';
 
@@ -81,33 +81,36 @@ export function CheckoutForm({ items, total, onClear }: CheckoutFormProps) {
       form.cpf ? `\nCPF: ${form.cpf}` : ''
     }\n\nForma de pagamento: PIX`;
 
-    // Try to register the customer in the database. This must not block
-    // checkout — the WhatsApp order still goes through even if the CRM
-    // insert fails, so the shopper is never stuck.
     try {
-      const { error } = await supabase.rpc('record_checkout_customer', {
+      const { data: orderId, error: orderError } = await supabase.rpc('create_checkout_order', {
         p_name: form.name,
         p_whatsapp: rawDigits,
         p_cpf: form.cpf || null,
         p_items: items.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
+          size: item.size,
+          color: item.color,
         })),
+        p_payment_method: 'pix',
       });
-      if (error) {
-        console.warn('CRM register failed:', error.message);
+      if (orderError) {
+        console.warn('Order creation failed:', orderError.message);
+        setSubmitError('Não foi possível registrar seu pedido agora. Tente novamente ou finalize pelo WhatsApp.');
+        setSubmitting(false);
+        return;
       }
+      window.open(whatsappLink(siteConfig.whatsapp, message), '_blank');
+      setSubmitted(true);
+      setSubmitting(false);
+      onClear();
+      trackEvent('order_placed', { total, items: items.length, orderId }, items[0]?.name);
+      setWhatsappId(rawDigits);
     } catch (err) {
-      console.warn('CRM register error:', err);
+      console.warn('Order creation error:', err);
+      setSubmitError('Erro ao finalizar pedido. Tente novamente.');
+      setSubmitting(false);
     }
-
-    window.open(whatsappLink(message), '_blank');
-    setSubmitted(true);
-    setSubmitting(false);
-    onClear();
-
-    trackEvent('order_placed', { total, items: items.length }, items[0]?.name);
-    setWhatsappId(rawDigits);
   };
 
   if (submitted) {

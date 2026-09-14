@@ -17,11 +17,6 @@ export default function Search() {
         <h1 className="font-serif text-2xl font-bold tracking-tight text-neutral-900 md:text-3xl">
           {query ? `Resultados para "${query}"` : 'Buscar produtos'}
         </h1>
-        {!loading && query && (
-          <p className="mt-2 text-sm text-neutral-500">
-            {results.length} {results.length === 1 ? 'produto encontrado' : 'produtos encontrados'}
-          </p>
-        )}
       </div>
 
       {loading ? (

@@ -1,4 +1,5 @@
-import { supabase } from '@/lib/supabase';
+
+import { ADMIN_BASE } from '@/config/site';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
@@ -29,7 +30,7 @@ function handleExpiredSession() {
   localStorage.removeItem('mb_admin_token');
   localStorage.removeItem('mb_admin_user');
   if (!window.location.pathname.includes('/login')) {
-    window.location.href = '/painel-mb-7X4K9/login';
+    window.location.href = `${ADMIN_BASE}/login`;
   }
 }
 

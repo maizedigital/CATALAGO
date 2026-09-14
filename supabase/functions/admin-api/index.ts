@@ -1,5 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-// Enviey Admin API — multi-tenant scoped
+// MB Moda Brasil Admin API — catalog scoped
 import { createClient } from "npm:@supabase/supabase-js@2.57.4";
 
 const corsHeaders = {
@@ -249,10 +249,16 @@ Deno.serve(async (req: Request) => {
     // --- Customers ---
     if (resource === "customers") {
       if (req.method === "GET" && id && subResource === "events") {
+        const custQuery = supabase.from("customers").select("whatsapp").eq("id", id);
+        const { data: customer } = currentCatalogId
+          ? await custQuery.eq("catalog_id", currentCatalogId).maybeSingle()
+          : await custQuery.maybeSingle();
+        const wa = customer?.whatsapp;
+        if (!wa) return okOrError([], null);
         const { data, error } = await scopeCatalog(
           supabase.from("customer_events")
             .select("*")
-            .or(`visitor_id.eq.${safeFilterValue(id)},whatsapp.eq.${safeFilterValue(id)}`)
+            .eq("whatsapp", wa)
             .order("created_at", { ascending: false })
             .limit(200)
         );
@@ -797,3 +803,4 @@ function groupByDay(visitors: Record<string, unknown>[], leads: Record<string, u
   }
   return result;
 }
+

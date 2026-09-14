@@ -15,6 +15,10 @@
     color: #0a0a0a;
     overflow-x: hidden;
   }
+  .bio-page {
+    background: #000;
+    min-height: 100vh;
+  }
   .font-serif {
     font-family: 'Cormorant Garamond', Georgia, serif;
   }

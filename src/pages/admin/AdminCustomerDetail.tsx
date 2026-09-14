@@ -127,8 +127,12 @@ export default function AdminCustomerDetail() {
     }
   }
 
+  const normalizePhone = (phone: string) => {
+    const digits = phone.replace(/\D/g, '');
+    return digits.startsWith('55') ? digits : `55${digits}`;
+  };
   const waLink = customer.whatsapp
-    ? `https://wa.me/${customer.whatsapp}?text=${encodeURIComponent(`Olá ${customer.name}!`)}`
+    ? `https://wa.me/${normalizePhone(customer.whatsapp)}?text=${encodeURIComponent(`Olá ${customer.name}!`)}`
     : null;
 
   const cardClass = "rounded-lg border border-neutral-800 bg-neutral-900 p-6";

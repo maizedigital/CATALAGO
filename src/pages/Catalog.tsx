@@ -158,9 +158,6 @@ export default function Catalog({ gender, offersOnly }: { gender?: Gender; offer
         <h1 className="font-serif text-3xl font-bold tracking-tight text-neutral-900 uppercase md:text-4xl">
           {offersOnly ? 'Promoção' : urlCategory && urlCategory.toLowerCase() === 'geral' ? 'Geral' : urlCategory ? decodeURIComponent(urlCategory) : isFemale ? 'Feminino' : 'Masculino'}
         </h1>
-        <p className="mt-2 text-sm text-neutral-500">
-          {baseProducts.length} produtos
-        </p>
       </div>
 
       {/* Filter bar */}
@@ -176,7 +173,6 @@ export default function Catalog({ gender, offersOnly }: { gender?: Gender; offer
             </span>
           )}
         </button>
-        <p className="text-xs text-neutral-400">{filtered.length} resultados</p>
       </div>
 
       {/* Products — full width */}

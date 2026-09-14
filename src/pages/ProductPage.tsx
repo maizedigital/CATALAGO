@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Minus, Plus, MessageCircle, ShoppingBag, Check, ChevronRight, X } from 'lucide-react';
 import { ProductGallery } from '@/components/ProductGallery';
@@ -7,6 +7,7 @@ import { ProductDescription } from '@/components/ProductDescription';
 import { useProduct } from '@/hooks/useProducts';
 import { useSEO } from '@/hooks/useSEO';
 import { useTracking } from '@/hooks/useTracking';
+import { useCart } from '@/hooks/useCart';
 import { formatPrice, discountPercent, effectivePrice } from '@/lib/format';
 import { siteConfig, whatsappLink } from '@/config/site';
 import type { Product } from '@/types';
@@ -34,6 +35,12 @@ export default function ProductPage() {
     image: product?.images[0],
   });
 
+  useEffect(() => {
+    if (product) {
+      trackEvent('product_view', { slug: product.slug, category: product.category, gender: product.gender }, product.name);
+    }
+  }, [product]);
+
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 md:px-6">
@@ -47,10 +54,6 @@ export default function ProductPage() {
         </div>
       </div>
     );
-  }
-
-  if (product) {
-    trackEvent('product_view', { slug: product.slug, category: product.category, gender: product.gender }, product.name);
   }
 
   if (!product) {
@@ -132,11 +135,6 @@ export default function ProductPage() {
           </p>
           <h1 className="main-product-name mt-2 font-serif text-2xl font-bold text-neutral-900 md:text-3xl">
             {product.name}
-            <img
-              src="https://download.host2b.net/imagem/selo-veri.svg"
-              alt=""
-              className="ml-1 inline-block h-5 w-5 align-top"
-            />
           </h1>
 
           <div className="main-product-prices mt-4 flex items-baseline gap-3">
