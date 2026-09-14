@@ -105,6 +105,8 @@ export default function App() {
                   <Route path="/sobre" element={<PublicLayout><About /></PublicLayout>} />
                   <Route path="/contato" element={<PublicLayout><Contact /></PublicLayout>} />
                   <Route path="/bio" element={<Bio />} />
+                  <Route path="/bill" element={<Bio />} />
+                  <Route path="/admin" element={<Navigate to={ADMIN_BASE} replace />} />
 
                   {/* Admin login — public */}
                   <Route path={`${ADMIN_BASE}/login`} element={<AdminLogin />} />

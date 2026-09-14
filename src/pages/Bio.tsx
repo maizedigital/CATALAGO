@@ -53,7 +53,7 @@ export default function Bio() {
               href={href}
               target="_blank"
               rel="noreferrer"
-              className={`group flex w-full items-center justify-start gap-4 rounded-lg border border-transparent bg-gradient-to-b from-white/[0.14] to-white/[0.04] py-5 px-5 text-[13px] font-normal tracking-wide text-white backdrop-blur-sm transition-all duration-300 hover:border-[#19e66b] hover:glow-green active:border-[#19e66b] focus-visible:border-[#19e66b] ${
+              className={`group flex w-full items-center justify-center gap-4 rounded-lg border border-transparent bg-gradient-to-b from-white/[0.14] to-white/[0.04] py-5 px-5 text-center text-[13px] font-normal tracking-wide text-white backdrop-blur-sm transition-all duration-300 hover:border-[#19e66b] hover:glow-green active:border-[#19e66b] focus-visible:border-[#19e66b] ${
                 highlight ? 'shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]' : ''
               }`}
             >

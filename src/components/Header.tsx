@@ -146,6 +146,12 @@ export function Header() {
         </div>
       </div>
 
+      {/* Animated gradient bar */}
+      <div
+        className="gradient-bar h-0.5 w-full"
+        style={{ background: 'linear-gradient(90deg, #19e66b 0%, #ffffff 25%, #19e66b 50%, #ffffff 75%, #19e66b 100%)', backgroundSize: '200% 100%' }}
+      />
+
       {/* Mobile menu overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
