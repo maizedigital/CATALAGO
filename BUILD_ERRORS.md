@@ -57,3 +57,5 @@ A Edge Function `admin-api` é código Deno que manipula resultados do Supabase 
 | Build (`npm run build`) | OK |
 | TypeScript (`tsc --noEmit`) | OK |
 | Lint (`npm run lint`) | 17 erros `no-explicit-any` (não bloqueantes) + 4 warnings |
+
+
