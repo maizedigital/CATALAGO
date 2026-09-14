@@ -77,6 +77,9 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+  .glow-green {
+    box-shadow: 0 0 18px -4px hsl(120 100% 45% / 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
 }
 
 @keyframes marquee {
