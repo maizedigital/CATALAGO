@@ -5,19 +5,42 @@
 @tailwind utilities;
 
 @layer base {
+  html,
+  body,
+  #root {
+    width: 100%;
+    min-width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #000000 !important;
+  }
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
+    background-color: #000000 !important;
+    color-scheme: dark;
   }
   body {
     font-family: 'Manrope', system-ui, sans-serif;
-    color: #0a0a0a;
+    background-color: #000000 !important;
+    color: #ffffff;
     overflow-x: hidden;
+    overscroll-behavior: none;
+  }
+  #root {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: #000000 !important;
+  }
+  * {
+    box-sizing: border-box;
   }
   .bio-page {
     background: #000;
     min-height: 100vh;
+    min-height: 100dvh;
   }
   .font-serif {
     font-family: 'Cormorant Garamond', Georgia, serif;

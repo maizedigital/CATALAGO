@@ -18,7 +18,7 @@ export default function Bio() {
   });
 
   return (
-    <main className="bio-page relative flex min-h-screen flex-col items-center justify-between overflow-hidden px-6 py-12">
+    <main className="bio-page relative flex min-h-[100dvh] flex-col items-center justify-between overflow-hidden bg-black px-6 py-12">
       {/* Blurred background image */}
       <div
         aria-hidden
