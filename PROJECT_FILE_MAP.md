@@ -162,3 +162,40 @@
 | `dist/assets/IMG_3937.jpg` | Logo copiada do public |
 | `dist/_redirects` | Redirect SPA copiado do public |
 | `dist/favicon.svg` | Favicon copiado do public |
+
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #000000;
+}
+
+html {
+  background: #000000;
+}
+
+body {
+  background: #000000;
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  background: #000000;
+}
+
+/* Remove espaços padrão que podem criar faixas brancas */
+* {
+  box-sizing: border-box;
+}
+
+body::before,
+body::after {
+  background: #000000;
+}
