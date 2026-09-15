@@ -21,6 +21,7 @@ import Search from '@/pages/Search';
 import About from '@/pages/About';
 import Contact from '@/pages/Contact';
 import Bio from '@/pages/Bio';
+import Privacy from '@/pages/Privacy';
 import NotFound from '@/pages/NotFound';
 import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
@@ -104,6 +105,7 @@ export default function App() {
                   <Route path="/buscar" element={<PublicLayout><Search /></PublicLayout>} />
                   <Route path="/sobre" element={<PublicLayout><About /></PublicLayout>} />
                   <Route path="/contato" element={<PublicLayout><Contact /></PublicLayout>} />
+                  <Route path="/privacidade" element={<PublicLayout><Privacy /></PublicLayout>} />
                   <Route path="/bio" element={<Bio />} />
                   <Route path="/bill" element={<Bio />} />
                   <Route path="/admin" element={<Navigate to={ADMIN_BASE} replace />} />

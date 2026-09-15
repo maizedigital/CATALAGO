@@ -37,9 +37,6 @@ export default function Bio() {
             className="h-32 w-32 rounded-full object-cover drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
           />
           <div className="mx-auto mt-2 h-px w-12 bg-white/30" />
-          <p className="font-serif mt-6 text-xl font-light italic tracking-wide text-white/60">
-            Vista-se com estilo.
-          </p>
         </header>
 
         {/* Link buttons */}

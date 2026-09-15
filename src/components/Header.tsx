@@ -19,7 +19,7 @@ const marqueeItems = [
   'PIX E CARTÃO',
   'MODA MASCULINA E FEMININA',
   'RETIRE NA LOJA',
-  'ENVIO PARA TODA A BAHIA',
+  'ENVIO PARA TODO O BRASIL',
 ];
 
 const marqueeText = marqueeItems.join(' • ');

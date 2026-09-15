@@ -23,10 +23,8 @@ export function CartDrawer() {
 
   if (!mounted) return null;
 
-
-
   return (
-    <div className="fixed inset-0 z-50">
+    <div className={`fixed inset-0 z-50 ${isOpen ? '' : 'pointer-events-none'}`}>
       {/* Backdrop */}
       <div
         className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${

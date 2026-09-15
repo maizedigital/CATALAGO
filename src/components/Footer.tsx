@@ -57,6 +57,7 @@ export function Footer() {
               </li>
               <li><Link to={catalogPath('/contato')} className="transition-colors hover:text-white">Contato</Link></li>
               <li><Link to={catalogPath('/sobre')} className="transition-colors hover:text-white">Sobre</Link></li>
+              <li><Link to={catalogPath('/privacidade')} className="transition-colors hover:text-white">Política de Privacidade</Link></li>
             </ul>
           </div>
 
