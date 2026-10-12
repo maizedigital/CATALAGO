@@ -21,7 +21,7 @@ export function PromoBanner() {
           Fale com a MB pelo WhatsApp — atendimento rápido e personalizado.
         </p>
         <a
-          href={whatsappLink('Olá, MB! Tenho uma dúvida sobre um produto.')}
+          href={whatsappLink('5573999929009', 'Olá, MB! Tenho uma dúvida sobre um produto.')}
           target="_blank"
           rel="noreferrer"
           className="mt-8 inline-flex items-center gap-2 bg-white px-8 py-4 text-xs font-bold uppercase tracking-widest text-primary-950 transition-all duration-300 hover:bg-accent-400 hover:shadow-xl hover:shadow-accent-400/20"

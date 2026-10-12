@@ -1,7 +1,7 @@
-// MB Moda Brasil — site configuration (single catalog, not SaaS)
+// MB MARCA BRASILEIRA — site configuration (single catalog, not SaaS)
 
 export const siteConfig = {
-  name: 'MB Moda Brasil',
+  name: 'MB MARCA BRASILEIRA',
   shortName: 'MB',
   tagline: 'Vista-se com estilo',
   domain: 'mbmodabrasil.com.br',

@@ -41,7 +41,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const { username, logout } = useAdminAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  useSEO({ title: 'MB Moda Brasil · Painel', noindex: true });
+  useSEO({ title: 'MB MARCA BRASILEIRA · Painel', noindex: true });
 
   const handleLogout = () => {
     logout();

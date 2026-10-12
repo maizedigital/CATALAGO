@@ -9,6 +9,7 @@ const corsHeaders = {
 };
 
 const PUBLIC_RESOURCES = new Set(["go"]);
+const DEFAULT_CATALOG_ID = "37c86a47-b2c1-4563-8e30-a5fff68ef918";
 
 async function sha256Hex(value: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
@@ -191,7 +192,8 @@ Deno.serve(async (req: Request) => {
       }
       if (req.method === "POST") {
         const body = await req.json();
-        const { data, error } = await supabase.from("products").insert(scopeBody(body)).select().single();
+        const productBody = { ...body, catalog_id: body.catalog_id || DEFAULT_CATALOG_ID };
+        const { data, error } = await supabase.from("products").insert(scopeBody(productBody)).select().single();
         return okOrError(data, error);
       }
       if (req.method === "PUT" && id) {

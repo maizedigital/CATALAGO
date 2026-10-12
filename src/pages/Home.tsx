@@ -54,7 +54,7 @@ export default function Home() {
 
       <section className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
         <div className="mb-10 text-center">
-          <h2 className="font-serif text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">MB MODA BRASIL</h2>
+          <h2 className="font-serif text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl">MB MARCA BRASILEIRA</h2>
         </div>
         {loading ? <SkeletonGrid /> : error ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">

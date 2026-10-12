@@ -7,6 +7,7 @@ import { CartDrawer } from '@/components/CartDrawer';
 import { FloatingWhatsApp } from '@/components/FloatingWhatsApp';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { PublicAccessGate } from '@/components/PublicAccessGate';
 import { CartProvider } from '@/hooks/useCart';
 import { TrackingProvider } from '@/hooks/useTracking';
 import { AdminAuthProvider } from '@/hooks/useAdminAuth';
@@ -70,13 +71,15 @@ function ScrollToTop() {
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <Header />
-      <main className="flex-1">{children}</main>
-      <Footer />
-      <CartDrawer />
-      <FloatingWhatsApp />
-    </div>
+    <PublicAccessGate>
+      <div className="flex min-h-screen flex-col bg-white">
+        <Header />
+        <main className="flex-1">{children}</main>
+        <Footer />
+        <CartDrawer />
+        <FloatingWhatsApp />
+      </div>
+    </PublicAccessGate>
   );
 }
 
@@ -91,7 +94,7 @@ export default function App() {
               <CatalogProvider>
                 <ScrollToTop />
                 <Routes>
-                  {/* Public catalog routes — MB Moda Brasil at root */}
+                  {/* Public catalog routes at root */}
                   <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
                   <Route path="/masculino" element={<PublicLayout><Catalog gender="masculino" /></PublicLayout>} />
                   <Route path="/geral" element={<PublicLayout><Catalog /></PublicLayout>} />

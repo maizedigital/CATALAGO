@@ -8,7 +8,7 @@ interface SEOProps {
   noindex?: boolean;
 }
 
-const DEFAULT_TITLE = 'MB Moda Brasil';
+const DEFAULT_TITLE = 'MB MARCA BRASILEIRA';
 
 export function useSEO({ title, description, image, canonical, noindex }: SEOProps) {
   useEffect(() => {

@@ -7,7 +7,7 @@ import { catalogPath } from '@/hooks/useCatalogPath';
 export default function Privacy() {
   useSEO({
     title: `Política de Privacidade — ${siteConfig.name}`,
-    description: 'Política de Privacidade e Proteção de Dados Pessoais da MB Moda Brasil conforme a LGPD.',
+    description: 'Política de Privacidade e Proteção de Dados Pessoais da MB MARCA BRASILEIRA conforme a LGPD.',
     canonical: 'https://mbmodabrasil.com.br/privacidade',
   });
 

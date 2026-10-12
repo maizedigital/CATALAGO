@@ -4,16 +4,16 @@ import { siteConfig } from '@/config/site';
 
 const links = [
   { label: 'Compre Online', href: 'https://mbmodabrasil.com.br', icon: ShoppingBag, highlight: true },
-  { label: 'Whatsapp', href: 'https://wa.me/5573999929009', icon: MessageCircle },
-  { label: 'Grupo Vip', href: 'https://chat.whatsapp.com/CkDGPDbvHm126M6oJPeP6s', icon: Users },
-  { label: 'Instagram', href: 'https://www.instagram.com/mbmodabrasil', icon: Instagram },
-  { label: 'Localização', href: 'https://maps.app.goo.gl/4rzDt8WC8tBagiyA7?g_st=ipc', icon: MapPin },
+  { label: 'Whatsapp', href: 'https://wa.me/5573999929009', icon: MessageCircle, highlight: false },
+  { label: 'Grupo Vip', href: 'https://chat.whatsapp.com/CkDGPDbvHm126M6oJPeP6s', icon: Users, highlight: false },
+  { label: 'Instagram', href: 'https://www.instagram.com/mbmodabrasil', icon: Instagram, highlight: false },
+  { label: 'Localização', href: 'https://maps.app.goo.gl/4rzDt8WC8tBagiyA7?g_st=ipc', icon: MapPin, highlight: false },
 ] as const;
 
 export default function Bio() {
   useSEO({
-    title: 'MB Moda Brasil | Links',
-    description: 'Acesse os links oficiais da MB Moda Brasil.',
+    title: 'MB MARCA BRASILEIRA | Links',
+    description: 'Acesse os links oficiais da MB MARCA BRASILEIRA.',
     canonical: 'https://mbmodabrasil.com.br/bio',
   });
 
@@ -33,7 +33,7 @@ export default function Bio() {
         <header className="flex flex-col items-center pt-10 pb-6 text-center">
           <img
             src="/assets/IMG_3937.jpg"
-            alt="MB Moda Brasil"
+            alt="MB MARCA BRASILEIRA"
             className="h-32 w-32 rounded-full object-cover drop-shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
           />
           <div className="mx-auto mt-2 h-px w-12 bg-white/30" />

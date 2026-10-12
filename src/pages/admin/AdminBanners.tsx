@@ -510,7 +510,7 @@ export default function AdminBanners() {
                       <button type="button" onClick={() => fileInputRef.current?.click()} className="text-xs font-semibold text-neutral-400 underline hover:text-white">Trocar imagem</button>
                     </div>
                   )}
-                  <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => { if (e.target.files?.[0]) handleImageFile(e.target.files[0]); e.target.value = ''; }} />
+                  <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => { if (e.target.files?.[0]) handleImageFile(e.target.files[0], 'image_url'); e.target.value = ''; }} />
                 </div>
               </>
             ) : (
@@ -544,7 +544,7 @@ export default function AdminBanners() {
                       <button type="button" onClick={() => fileInputRef.current?.click()} className="block w-full text-center text-xs font-semibold text-neutral-400 underline hover:text-white">Trocar vídeo</button>
                     </div>
                   )}
-                  <input ref={fileInputRef} type="file" accept="video/mp4,video/webm,video/ogg" className="hidden" onChange={(e) => { if (e.target.files?.[0]) handleVideoFile(e.target.files[0]); e.target.value = ''; }} />
+                  <input ref={fileInputRef} type="file" accept="video/mp4,video/webm,video/ogg" className="hidden" onChange={(e) => { if (e.target.files?.[0]) handleVideoFile(e.target.files[0], 'video_url'); e.target.value = ''; }} />
                   {videoError && <p className="mt-2 text-xs text-red-400">{videoError}</p>}
                 </div>
 

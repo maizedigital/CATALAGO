@@ -6,7 +6,7 @@ import { useSEO } from '@/hooks/useSEO';
 import { ADMIN_BASE } from '@/config/site';
 
 export default function AdminLogin() {
-  useSEO({ title: 'MB Moda Brasil · Painel', noindex: true });
+  useSEO({ title: 'MB MARCA BRASILEIRA · Painel', noindex: true });
   const navigate = useNavigate();
   const { isAuthenticated, login } = useAdminAuth();
   const [username, setUsername] = useState('');
@@ -38,7 +38,7 @@ export default function AdminLogin() {
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <Link to="/">
-            <img src="/assets/IMG_3937.jpg" alt="MB Moda Brasil" className="mx-auto h-14 w-auto rounded-lg" />
+            <img src="/assets/IMG_3937.jpg" alt="MB MARCA BRASILEIRA" className="mx-auto h-14 w-auto rounded-lg" />
           </Link>
           <p className="mt-4 text-xs font-medium uppercase tracking-widest text-neutral-500">Painel Administrativo</p>
         </div>

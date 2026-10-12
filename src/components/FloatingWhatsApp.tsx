@@ -1,7 +1,7 @@
 import { siteConfig, whatsappLink } from '@/config/site';
 
 export function FloatingWhatsApp() {
-  const message = 'Olá! Gostaria de tirar uma dúvida sobre os produtos da MB Moda Brasil.';
+  const message = 'Olá! Gostaria de tirar uma dúvida sobre os produtos da MB MARCA BRASILEIRA.';
   const href = whatsappLink(siteConfig.whatsapp, message);
 
   return (
