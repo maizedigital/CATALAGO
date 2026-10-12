@@ -40,7 +40,6 @@ export function Footer() {
           <div>
             <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-white">Compre</h3>
             <ul className="space-y-2.5 text-sm text-white/50">
-              <li><Link to={catalogPath('/feminino')} className="transition-colors hover:text-white">Feminino</Link></li>
               <li><Link to={catalogPath('/masculino')} className="transition-colors hover:text-white">Masculino</Link></li>
               <li><Link to={catalogPath('/categoria/geral')} className="transition-colors hover:text-white">Geral</Link></li>
               <li><Link to={catalogPath('/ofertas')} className="transition-colors hover:text-white">Promoção</Link></li>

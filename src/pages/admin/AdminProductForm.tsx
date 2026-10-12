@@ -7,6 +7,7 @@ import { ADMIN_BASE } from '@/config/site';
 import { Logo } from '@/components/Logo';
 import type { Product, Gender, ProductType } from '@/types';
 import { CLOTHING_SIZES, FOOTWEAR_SIZES } from '@/types';
+import { MB_CATALOG_ID } from '@/lib/domain';
 
 const slugify = (s: string) =>
   s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -16,6 +17,12 @@ function generateBarcode(): string {
   const rand = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
   return `${now}${rand}`;
 }
+
+const CATEGORIES_BY_GENDER: Record<Gender, string[]> = {
+  masculino: ['Camisetas', 'Camisas', 'Camisas Polo', 'Calças', 'Bermudas', 'Regatas', 'Shorts', 'Jaquetas', 'Conjuntos', 'Acessórios', 'Calçados', 'Geral'],
+  feminino: ['Blusas', 'Camisetas', 'Vestidos', 'Calças', 'Shorts', 'Saia', 'Conjuntos', 'Croppeds', 'Regatas', 'Macaquinhos', 'Sandálias', 'Calçados', 'Acessórios', 'Geral'],
+  unissex: ['Camisetas', 'Regatas', 'Shorts', 'Calças', 'Conjuntos', 'Acessórios', 'Calçados', 'Sandálias', 'Geral'],
+};
 
 interface FormState {
   name: string; slug: string; gender: Gender; product_type: ProductType;
@@ -75,6 +82,10 @@ export default function AdminProductForm() {
       const next = { ...prev, [field]: value };
       if (field === 'name' && !isEdit) next.slug = slugify(value as string);
       if (field === 'product_type') next.sizes = [];
+      if (field === 'gender') {
+        const cats = CATEGORIES_BY_GENDER[value as Gender] || [];
+        if (!cats.includes(next.category)) next.category = '';
+      }
       return next;
     });
   };
@@ -120,6 +131,7 @@ export default function AdminProductForm() {
       product_type: form.product_type, colors: form.colors.split(',').map((s) => s.trim()).filter(Boolean),
       images: form.images, stock: 999, featured: form.featured, bestseller: false,
       new_arrival: form.new_arrival, on_sale: form.on_sale, active: form.active,
+      catalog_id: MB_CATALOG_ID,
     };
     try {
       if (isEdit) await adminApi.put(`/products/${id}`, payload);
@@ -138,6 +150,8 @@ export default function AdminProductForm() {
       </AdminLayout>
     );
   }
+
+  const availableCategories = CATEGORIES_BY_GENDER[form.gender] || [];
 
   return (
     <AdminLayout>
@@ -192,21 +206,23 @@ export default function AdminProductForm() {
           <div className="space-y-4">
             <div><label className={labelClass}>Nome do produto *</label><input type="text" required value={form.name} onChange={(e) => handleChange('name', e.target.value)} className={inputClass} placeholder="Ex: Camiseta MB Essential" /></div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div><label className={labelClass}>Gênero *</label><select value={form.gender} onChange={(e) => handleChange('gender', e.target.value as Gender)} className={inputClass}><option value="feminino">Feminino</option><option value="masculino">Masculino</option></select></div>
-              <div><label className={labelClass}>Categoria (opcional)</label>
-              <select value={form.category} onChange={(e) => handleChange('category', e.target.value)} className={inputClass}>
-                <option value="">Selecione...</option>
-                <option value="Camisetas">Camisetas</option>
-                <option value="Blusas">Blusas</option>
-                <option value="Calças">Calças</option>
-                <option value="Vestidos">Vestidos</option>
-                <option value="Shorts">Shorts</option>
-                <option value="Conjuntos">Conjuntos</option>
-                <option value="Calçados">Calçados</option>
-                <option value="Sandálias">Sandálias</option>
-                <option value="Geral">Geral</option>
-              </select>
-            </div>
+              <div>
+                <label className={labelClass}>Público *</label>
+                <select value={form.gender} onChange={(e) => handleChange('gender', e.target.value as Gender)} className={inputClass}>
+                  <option value="feminino">Feminino</option>
+                  <option value="masculino">Masculino</option>
+                  <option value="unissex">Unissex</option>
+                </select>
+              </div>
+              <div>
+                <label className={labelClass}>Categoria *</label>
+                <select value={form.category} onChange={(e) => handleChange('category', e.target.value)} className={inputClass}>
+                  <option value="">Selecione...</option>
+                  {availableCategories.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div><label className={labelClass}>Descrição (opcional)</label><textarea value={form.description} onChange={(e) => handleChange('description', e.target.value)} rows={2} className={inputClass} placeholder="Breve descrição do produto" /></div>
             <div>

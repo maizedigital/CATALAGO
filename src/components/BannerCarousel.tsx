@@ -15,6 +15,7 @@ export function BannerCarousel() {
         .from('banners')
         .select('*')
         .eq('active', true)
+        .or('type.eq.banner,type.is.null')
         .order('sort_order', { ascending: true });
       if (!cancelled && data) {
         setBanners(data);

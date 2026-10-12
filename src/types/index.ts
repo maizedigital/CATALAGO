@@ -1,4 +1,4 @@
-export type Gender = 'feminino' | 'masculino';
+export type Gender = 'feminino' | 'masculino' | 'unissex';
 export type ProductType = 'roupas' | 'calcados';
 
 export interface Product {
@@ -29,6 +29,7 @@ export interface Product {
   subcategory?: string | null;
   stock_minimum?: number;
   active?: boolean;
+  sort_order?: number;
   created_at: string;
 }
 
@@ -47,6 +48,8 @@ export interface Banner {
   desktop_image_url?: string | null;
   mobile_video_url?: string | null;
   desktop_video_url?: string | null;
+  type?: 'banner' | 'category';
+  category_name?: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -1,5 +1,6 @@
 import { useSEO } from '@/hooks/useSEO';
 import { BannerCarousel } from '@/components/BannerCarousel';
+import { CategoryCarousel } from '@/components/CategoryCarousel';
 import { ProductGrid } from '@/components/ProductGrid';
 import { useProducts } from '@/hooks/useProducts';
 import { useCatalog } from '@/hooks/useCatalogContext';
@@ -38,10 +39,12 @@ export default function Home() {
       {/* Animated gradient bar below banner */}
       <div className="gradient-bar h-0.5 w-full" style={gradientBarStyle} />
 
+      {/* Category carousel — admin-managed via Banners tab */}
+      <CategoryCarousel />
+
       <section className="border-b border-neutral-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-4 md:px-6">
           <nav className="flex items-center justify-center gap-6 md:gap-10">
-            <Link to={catalogPath('/feminino')} className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900 md:text-sm">Feminino</Link>
             <Link to={catalogPath('/masculino')} className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900 md:text-sm">Masculino</Link>
             <Link to={catalogPath('/categoria/geral')} className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900 md:text-sm">Geral</Link>
             <Link to={catalogPath('/ofertas')} className="shrink-0 text-xs font-bold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900 md:text-sm">Promoção</Link>

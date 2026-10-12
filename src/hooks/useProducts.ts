@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import type { Product } from '@/types';
 
 const PUBLIC_PRODUCT_COLUMNS =
-  'id, sku, name, slug, category, subcategory, gender, product_type, description, price, promo_price, images, sizes, colors, stock, featured, bestseller, new_arrival, on_sale, active, created_at';
+  'id, sku, name, slug, category, subcategory, gender, product_type, description, price, promo_price, images, sizes, colors, stock, featured, bestseller, new_arrival, on_sale, active, sort_order, created_at';
 
 const escapeFilter = (value: string) => value.replace(/[(),.:"\\*]/g, ' ').trim();
 
@@ -26,6 +26,7 @@ export function useProducts(catalogId: string) {
         .select(PUBLIC_PRODUCT_COLUMNS)
         .eq('active', true)
         .eq('catalog_id', catalogId)
+        .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false });
       if (cancelled) return;
       if (queryError) {

@@ -214,6 +214,18 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    // --- Product reorder ---
+    if (resource === "products-reorder" && req.method === "POST") {
+      const body = await req.json();
+      const items: { id: string; sort_order: number }[] = body.items || [];
+      for (const item of items) {
+        const query = supabase.from("products").update({ sort_order: item.sort_order }).eq("id", item.id);
+        if (currentCatalogId) await query.eq("catalog_id", currentCatalogId);
+        else await query;
+      }
+      return json({ success: true });
+    }
+
     // --- Orders ---
     if (resource === "orders") {
       if (req.method === "GET" && id) {

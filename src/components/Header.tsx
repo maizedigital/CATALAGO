@@ -7,7 +7,6 @@ import { catalogPath } from '@/hooks/useCatalogPath';
 
 const navLinks = [
   { label: 'Início', to: catalogPath('/') },
-  { label: 'Feminino', to: catalogPath('/feminino') },
   { label: 'Masculino', to: catalogPath('/masculino') },
   { label: 'Geral', to: catalogPath('/categoria/geral') },
   { label: 'Promoção', to: catalogPath('/ofertas') },

@@ -93,7 +93,6 @@ export default function App() {
                 <Routes>
                   {/* Public catalog routes — MB Moda Brasil at root */}
                   <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
-                  <Route path="/feminino" element={<PublicLayout><Catalog gender="feminino" /></PublicLayout>} />
                   <Route path="/masculino" element={<PublicLayout><Catalog gender="masculino" /></PublicLayout>} />
                   <Route path="/geral" element={<PublicLayout><Catalog /></PublicLayout>} />
                   <Route path="/promocao" element={<PublicLayout><Catalog offersOnly /></PublicLayout>} />
