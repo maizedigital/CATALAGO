@@ -94,8 +94,13 @@ export default function App() {
               <CatalogProvider>
                 <ScrollToTop />
                 <Routes>
-                  {/* Public catalog routes at root */}
-                  <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
+                  {/* Bio is the landing page at root */}
+                  <Route path="/" element={<Bio />} />
+                  <Route path="/bio" element={<Navigate to="/" replace />} />
+                  <Route path="/bill" element={<Navigate to="/" replace />} />
+
+                  {/* Catalog and shop routes under PublicLayout */}
+                  <Route path="/catalogo" element={<PublicLayout><Home /></PublicLayout>} />
                   <Route path="/masculino" element={<PublicLayout><Catalog gender="masculino" /></PublicLayout>} />
                   <Route path="/geral" element={<PublicLayout><Catalog /></PublicLayout>} />
                   <Route path="/promocao" element={<PublicLayout><Catalog offersOnly /></PublicLayout>} />
@@ -108,8 +113,6 @@ export default function App() {
                   <Route path="/sobre" element={<PublicLayout><About /></PublicLayout>} />
                   <Route path="/contato" element={<PublicLayout><Contact /></PublicLayout>} />
                   <Route path="/privacidade" element={<PublicLayout><Privacy /></PublicLayout>} />
-                  <Route path="/bio" element={<Bio />} />
-                  <Route path="/bill" element={<Bio />} />
                   <Route path="/admin" element={<Navigate to={ADMIN_BASE} replace />} />
 
                   {/* Admin login — public */}

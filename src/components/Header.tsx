@@ -6,9 +6,9 @@ import { useCart } from '@/hooks/useCart';
 import { catalogPath } from '@/hooks/useCatalogPath';
 
 const navLinks = [
-  { label: 'Início', to: catalogPath('/') },
+  { label: 'Início', to: '/' },
+  { label: 'Catálogo', to: catalogPath('/catalogo') },
   { label: 'Masculino', to: catalogPath('/masculino') },
-  { label: 'Geral', to: catalogPath('/categoria/geral') },
   { label: 'Promoção', to: catalogPath('/ofertas') },
 ];
 

@@ -87,7 +87,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
               Ver loja
             </div>
             <div className="mt-1 truncate text-sm font-semibold text-[#19E66B]">
-              mbmodabrasil.com.br
+              mbmarcabrasileira.com
             </div>
           </a>
         </div>

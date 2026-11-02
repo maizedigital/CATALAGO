@@ -3,4 +3,4 @@ Allow: /
 Disallow: /painel-mb-7X4K9
 Disallow: /painel-mb-7X4K9/
 
-Sitemap: https://mbmodabrasil.com.br/sitemap.xml
+Sitemap: https://mbmarcabrasileira.com/sitemap.xml

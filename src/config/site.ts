@@ -4,7 +4,7 @@ export const siteConfig = {
   name: 'MB MARCA BRASILEIRA',
   shortName: 'MB',
   tagline: 'Vista-se com estilo',
-  domain: 'mbmodabrasil.com.br',
+  domain: 'mbmarcabrasileira.com',
   whatsapp: '5573999929009',
   whatsappDisplay: '(73) 99992-9009',
   instagram: '@mbmodabrasil',

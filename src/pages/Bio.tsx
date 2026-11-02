@@ -1,20 +1,20 @@
 import { useSEO } from '@/hooks/useSEO';
+import { Link } from 'react-router-dom';
 import { MessageCircle, Users, Instagram, MapPin, ShoppingBag } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 
-const links = [
-  { label: 'Compre Online', href: 'https://mbmodabrasil.com.br', icon: ShoppingBag, highlight: true },
-  { label: 'Whatsapp', href: 'https://wa.me/5573999929009', icon: MessageCircle, highlight: false },
-  { label: 'Grupo Vip', href: 'https://chat.whatsapp.com/CkDGPDbvHm126M6oJPeP6s', icon: Users, highlight: false },
-  { label: 'Instagram', href: 'https://www.instagram.com/mbmodabrasil', icon: Instagram, highlight: false },
-  { label: 'Localização', href: 'https://maps.app.goo.gl/4rzDt8WC8tBagiyA7?g_st=ipc', icon: MapPin, highlight: false },
+const externalLinks = [
+  { label: 'Whatsapp', href: 'https://wa.me/5573999929009', icon: MessageCircle },
+  { label: 'Grupo Vip', href: 'https://chat.whatsapp.com/CkDGPDbvHm126M6oJPeP6s', icon: Users },
+  { label: 'Instagram', href: 'https://www.instagram.com/mbmodabrasil', icon: Instagram },
+  { label: 'Localização', href: 'https://maps.app.goo.gl/4rzDt8WC8tBagiyA7?g_st=ipc', icon: MapPin },
 ] as const;
 
 export default function Bio() {
   useSEO({
     title: 'MB MARCA BRASILEIRA | Links',
     description: 'Acesse os links oficiais da MB MARCA BRASILEIRA.',
-    canonical: 'https://mbmodabrasil.com.br/bio',
+    canonical: 'https://mbmarcabrasileira.com/',
   });
 
   return (
@@ -44,15 +44,22 @@ export default function Bio() {
           className="flex w-full flex-col items-center gap-4 py-8"
           aria-label="Links principais"
         >
-          {links.map(({ label, href, icon: Icon, highlight }) => (
+          {/* Primary CTA — opens catalog */}
+          <Link
+            to="/catalogo"
+            className="group flex w-full items-center justify-center gap-4 rounded-lg border border-[#19e66b]/40 bg-gradient-to-b from-[#19e66b]/20 to-[#19e66b]/5 py-5 px-5 text-center text-[13px] font-semibold tracking-wide text-white backdrop-blur-sm transition-all duration-300 hover:border-[#19e66b] hover:glow-green active:border-[#19e66b] focus-visible:border-[#19e66b] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+          >
+            <ShoppingBag className="h-5 w-5 shrink-0 opacity-90" strokeWidth={1.5} />
+            <span>Compre Online</span>
+          </Link>
+
+          {externalLinks.map(({ label, href, icon: Icon }) => (
             <a
               key={label}
               href={href}
               target="_blank"
               rel="noreferrer"
-              className={`group flex w-full items-center justify-center gap-4 rounded-lg border border-transparent bg-gradient-to-b from-white/[0.14] to-white/[0.04] py-5 px-5 text-center text-[13px] font-normal tracking-wide text-white backdrop-blur-sm transition-all duration-300 hover:border-[#19e66b] hover:glow-green active:border-[#19e66b] focus-visible:border-[#19e66b] ${
-                highlight ? 'shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]' : ''
-              }`}
+              className="group flex w-full items-center justify-center gap-4 rounded-lg border border-transparent bg-gradient-to-b from-white/[0.14] to-white/[0.04] py-5 px-5 text-center text-[13px] font-normal tracking-wide text-white backdrop-blur-sm transition-all duration-300 hover:border-[#19e66b] hover:glow-green active:border-[#19e66b] focus-visible:border-[#19e66b]"
             >
               <Icon
                 className="h-5 w-5 shrink-0 opacity-90"
