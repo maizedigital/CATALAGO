@@ -5,7 +5,9 @@
   <url><loc>https://mbmarcabrasileira.com/masculino</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://mbmarcabrasileira.com/geral</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://mbmarcabrasileira.com/promocao</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://mbmarcabrasileira.com/ofertas</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://mbmarcabrasileira.com/buscar</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
   <url><loc>https://mbmarcabrasileira.com/sobre</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://mbmarcabrasileira.com/contato</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://mbmarcabrasileira.com/privacidade</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>

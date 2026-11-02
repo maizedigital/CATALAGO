@@ -7,7 +7,7 @@ import { catalogPath } from '@/hooks/useCatalogPath';
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
-  useSEO({ title: 'Finalizar pedido — MB', description: 'Finalize seu pedido na MB.' });
+  useSEO({ title: 'Finalizar pedido — MB', description: 'Finalize seu pedido na MB.', noindex: true });
 
   if (items.length === 0) {
     return (

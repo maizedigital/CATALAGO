@@ -7,7 +7,6 @@ import { CartDrawer } from '@/components/CartDrawer';
 import { FloatingWhatsApp } from '@/components/FloatingWhatsApp';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { PublicAccessGate } from '@/components/PublicAccessGate';
 import { CartProvider } from '@/hooks/useCart';
 import { TrackingProvider } from '@/hooks/useTracking';
 import { AdminAuthProvider } from '@/hooks/useAdminAuth';
@@ -71,15 +70,13 @@ function ScrollToTop() {
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <PublicAccessGate>
-      <div className="flex min-h-screen flex-col bg-white">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <CartDrawer />
-        <FloatingWhatsApp />
-      </div>
-    </PublicAccessGate>
+    <div className="flex min-h-screen flex-col bg-white">
+      <Header />
+      <main className="flex-1">{children}</main>
+      <Footer />
+      <CartDrawer />
+      <FloatingWhatsApp />
+    </div>
   );
 }
 

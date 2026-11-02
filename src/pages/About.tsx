@@ -7,8 +7,8 @@ import { catalogPath } from '@/hooks/useCatalogPath';
 export default function About() {
   const storeName = siteConfig.name;
   useSEO({
-    title: `Sobre — ${storeName}`,
-    description: `Conheça a ${storeName}.`,
+    title: `Sobre a MB MARCA BRASILEIRA — Calçados em Santa Cruz Cabrália`,
+    description: 'A MB MARCA BRASILEIRA é uma loja de calçados em Coroa Vermelha, Santa Cruz Cabrália. Calçados masculinos e femininos com qualidade e estilo.',
   });
 
   return (

@@ -7,7 +7,7 @@ import { catalogPath } from '@/hooks/useCatalogPath';
 
 export default function Cart() {
   const { items, updateQuantity, removeItem, total, clearCart } = useCart();
-  useSEO({ title: 'Carrinho — MB', description: 'Revise os itens do seu carrinho na MB.' });
+  useSEO({ title: 'Carrinho — MB', description: 'Revise os itens do seu carrinho na MB.', noindex: true });
 
   if (items.length === 0) {
     return (

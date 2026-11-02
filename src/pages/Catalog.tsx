@@ -29,15 +29,17 @@ export default function Catalog({ gender, offersOnly }: { gender?: Gender; offer
   const isFemale = gender === 'feminino';
   useSEO({
     title: offersOnly
-      ? `Promoção — ${storeName}`
+      ? `Promoção de Calçados — ${storeName}`
       : urlCategory && urlCategory.toLowerCase() === 'geral'
-        ? `Geral — ${storeName}`
+        ? `Catálogo Geral — ${storeName}`
         : urlCategory
           ? `${decodeURIComponent(urlCategory)} — ${storeName}`
-          : `${isFemale ? 'Feminino' : 'Masculino'} — ${storeName}`,
+          : `${isFemale ? 'Calçados Femininos' : 'Calçados Masculinos'} — ${storeName}`,
     description: offersOnly
-      ? `Ofertas especiais da ${storeName}. Aproveite os melhores preços.`
-      : `Catálogo ${isFemale ? 'feminino' : 'masculino'} da ${storeName}. Filtre por categoria, tamanho, cor e preço.`,
+      ? `Ofertas e promoções de calçados na ${storeName}. Tênis, sandálias e botas com desconto. Aproveite os melhores preços.`
+      : urlCategory
+        ? `${decodeURIComponent(urlCategory)} na ${storeName}. Filtre por tamanho, cor e preço.`
+        : `Catálogo ${isFemale ? 'feminino' : 'masculino'} da ${storeName}. Calçados, tênis, sandálias e botas com qualidade.`,
   });
 
   const baseProducts = useMemo(() => {

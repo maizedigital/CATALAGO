@@ -20,8 +20,9 @@ export default function Home() {
   const { products, loading, error } = useProducts(catalog.id);
   const storeName = siteConfig.name;
   useSEO({
-    title: storeName,
-    description: `Catálogo de produtos da ${storeName}.`,
+    title: 'Catálogo de Calçados | MB MARCA BRASILEIRA',
+    description: 'Catálogo online de calçados masculinos e femininos da MB MARCA BRASILEIRA. Tênis, sandálias, botas e promoções com os melhores preços.',
+    canonical: 'https://mbmarcabrasileira.com/catalogo',
   });
 
   const ofertas = useMemo(

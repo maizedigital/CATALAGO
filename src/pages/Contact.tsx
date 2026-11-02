@@ -8,7 +8,7 @@ export default function Contact() {
   const insta = siteConfig.instagram;
   useSEO({
     title: `Contato — ${storeName}`,
-    description: `Entre em contato com a ${storeName}.`,
+    description: 'Fale com a MB MARCA BRASILEIRA via WhatsApp ou Instagram. Atendimento em Santa Cruz Cabrália, BA.',
   });
 
   return (

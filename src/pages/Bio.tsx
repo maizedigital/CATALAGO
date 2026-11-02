@@ -6,14 +6,14 @@ import { siteConfig } from '@/config/site';
 const externalLinks = [
   { label: 'Whatsapp', href: 'https://wa.me/5573999929009', icon: MessageCircle },
   { label: 'Grupo Vip', href: 'https://chat.whatsapp.com/CkDGPDbvHm126M6oJPeP6s', icon: Users },
-  { label: 'Instagram', href: 'https://www.instagram.com/mbmodabrasil', icon: Instagram },
+  { label: 'Instagram', href: 'https://www.instagram.com/mbmarcabrasileira', icon: Instagram },
   { label: 'Localização', href: 'https://maps.app.goo.gl/4rzDt8WC8tBagiyA7?g_st=ipc', icon: MapPin },
 ] as const;
 
 export default function Bio() {
   useSEO({
-    title: 'MB MARCA BRASILEIRA | Links',
-    description: 'Acesse os links oficiais da MB MARCA BRASILEIRA.',
+    title: 'MB MARCA BRASILEIRA | Links Oficiais',
+    description: 'Acesse o catálogo online, WhatsApp, Instagram e localização da MB MARCA BRASILEIRA — calçados masculinos e femininos em Santa Cruz Cabrália, BA.',
     canonical: 'https://mbmarcabrasileira.com/',
   });
 
